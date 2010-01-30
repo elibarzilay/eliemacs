@@ -1,4 +1,4 @@
-;;; eliemacs.el --- EliEmacs initialization file
+;;; eliemacs.el --- EliEmacs main file
 
 (eval-and-compile (defconst eli-version
 ;;     /***************************************************************\    ;;
@@ -6,7 +6,7 @@
 ;;    ***                                                             ***   ;;
 ;;    ***              Eli's Emacs initialization file!               ***   ;;
                                 "[2010-01-30]"
-;;    *** Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org) ***   ;;
+;;    *** Written by Eli Barzilay: Maze is Life!   <eli@barzilay.org> ***   ;;
 ;;    ***                                                             ***   ;;
 ;;    \*****************************************************************/   ;;
 ;;     \***************************************************************/    ;;

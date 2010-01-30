@@ -2,8 +2,6 @@
 ;;-----------------------------------------------------------------------------
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
-;;; Code:
-
 ;; maybe switch to `bs-show' instead?
 ;;   (including `bs-cycle-previous' and `bs-cycle-next' instead of S-tab?)
 

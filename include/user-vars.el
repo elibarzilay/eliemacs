@@ -2,8 +2,6 @@
 ;;-----------------------------------------------------------------------------
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
-;;; Code:
-
 ;; Colors, fonts, gui stuff
 (defvar eli-color-style 'dark
   "*Default color style to use: 'dark or 'light.")

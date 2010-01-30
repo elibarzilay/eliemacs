@@ -2,12 +2,9 @@
 ;;-----------------------------------------------------------------------------
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
-;;; Commentary:
 ;; Setup the Emacs window when it starts - size, position, font, GUI stuff etc.
 ;; The window configuration part is useful when there is no .Xdefaults around
 ;; (NTEmacs), annoying otherwise.
-
-;;; Code:
 
 (defvar personal-window-configurations nil
   "*A user configurable list of window configurations.

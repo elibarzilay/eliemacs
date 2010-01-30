@@ -1,3 +1,5 @@
+;; This file is a simple hook to compile "~/EliEmacs/eliemacs.el"
+
 (defvar x-select-enable-clipboard nil)
 (require 'time)
 (require 'longlines)
