@@ -8,7 +8,7 @@ Arrow Keys etc:
   <home/end>   | mv beg/end line | beg/end file | mv+select | sentence move
   <page-up/dn> | move page       | mv+scrl line | mv+select | page move (to ^L)
   <ins>        | ins/ovrwrt mode | copy         | paste     | paste-prev
-  <del>        | delete (slcted) | del word     | cut       | del parens
+  <del>        | delete (region) | del word     | cut       | del parens
   <bksp>       | del back        | del wrd back |           | del prns bk
   <tab>        | indent          | other window | prev bffr |
 
@@ -17,21 +17,21 @@ Function Keys:
   <f1>  | open a file    | buffer-list   | open raw file   | speedbar
   <f2>  | save buffer    | save all bfrs | save-as/move    | quit emacs
   <f3>  | insert file    | insert buffer | insert raw file |
-  <f4>  | shell command  | shell         | shell-on-select | terminal emulator
+  <f4>  | shell command  | shell         | shell-on-region | terminal emulator
   <f5>  | query replace  | replace       | q-replace regex | replace regexp
   <f6>  | spell word     | spell buffer  | spell selection | spell-complete
   <f7>  | i-search       | regexp search | i-search bckwrd | regexp srch bkwrd
   <f8>  | eval lisp expr | eval buffer   | eval region     | load elisp file
   <f9>  | apropos        | compile crrnt | grep            | next grep hit
   <f10> | kill cur buffer| kill+save bfr | menu-simulation | kill buffers
-  <f11> | marker keys    |               |                 |
+  <f11> | marker keys    | copy to marker|                 |
   <f12> | single window  | goto-line     | goto-char       | toggle long lines
 
 General features:
   <M-z>        start/end recording a keyboard macro.
   <M-S-z>      start/end recording a keyboard macro.
   <C-enter>    calculator.
-  <C-c f6>     flyspell mode
+  <C-x f6>     flyspell mode
   <C-M-keypad> set a position marker, again for saving more info.
   <C-keypad>   jump to marker (restore more info).
   <C-S-l>      recolor buffer (if it gets messed up).
