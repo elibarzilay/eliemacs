@@ -11,8 +11,6 @@ only v22 was supported -- easier to just keep the previous environment
 as-is to be used with older versions.  Emacs 23 is now the current
 version, meaning less things to do still.
 
-Note: the following is outdated in several places.
-
 The version that you use is displayed after Emacs finishes initializing.
 The latest version can be found at
 
@@ -35,7 +33,7 @@ Installing:
 -----------
 
 The whole thing works on any platform, as long as you have GNU Emacs
-version 22.  Here is what you need to do:
+version 23.  Here is what you need to do:
 
 1. Open EliEmacs.tgz in an appropriate place (using tar+gunzip, or
    winzip).
@@ -44,6 +42,9 @@ version 22.  Here is what you need to do:
    Windows machine, the file can also be called "_emacs", and it should
    be placed in a home directory -- which is the value of the
    environment variable "HOME".
+
+
+Note: the following is mostly outdated.
 
 
 Customizing:
