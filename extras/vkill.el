@@ -1,13 +1,13 @@
 ;;; vkill.el --- view and kill Unix processes from within Emacs
 
 ;; Copyright (C) 1987, 1989 Kyle E. Jones
-;; Copyright (C) 1991, 1993, 1996 Noah S. Friedman
+;; Copyright (C) 1991, 93, 96, 2000 Noah S. Friedman
 
 ;; Author: Kyle E. Jones <kyle@uunet.uu.net>
-;;         Noah Friedman <friedman@prep.ai.mit.edu>
-;; Maintainer: friedman@prep.ai.mit.edu
+;;         Noah Friedman <friedman@splode.com>
+;; Maintainer: friedman@splode.com
 
-;; $Id: vkill.el,v 1.4 1996/07/15 00:38:43 friedman Exp $
+;; $Id: vkill.el,v 1.7 2002/03/20 18:48:18 friedman Exp $
 
 ;; Verbatim copies of this file may be freely redistributed.
 ;;
@@ -33,28 +33,59 @@
 
 ;;; ChangeLog:
 
-;; Sat Apr 20 03:42:32 1996  Noah Friedman  <friedman@prep.ai.mit.edu>
+;; 2002-03-20  Noah Friedman  <friedman@splode.com>
 ;;
-;;         * vkill.el: Comment fixes.
-;;         Recognize Linux systems.
-;;         (process-list-vkill, process-list-all-vkill): New commands.
-;;         (vkill-toggle-truncate-lines): Use recenter to update display.
+;; 	* vkill.el (vkill-ps-command): Convert user-uid to string for concat.
 ;;
-;; Mon Mar 29 00:00:00 1993  Noah Friedman  <friedman@prep.ai.mit.edu>
+;; 2001-09-09  Noah Friedman  <friedman@splode.com>
 ;;
-;;         * vkill.el: Set goal column to start of command.
+;; 	* vkill.el (vkill-update-process-info): Nuke trailing whitespace
+;; 	from ps output.
 ;;
-;; Thu Jun 27 00:00:00 1991  Noah Friedman  <friedman@prep.ai.mit.edu>
+;; 2000-03-10  Noah Friedman  <friedman@splode.com>
 ;;
-;;         * vkill.el: Changed bsd ps arguments to get the complete command
-;;         line, added "w" command to toggle between truncated lines and
-;;         line wrapping in the process list buffer.
+;; 	* vkill.el (vkill-goal-column): Variable deleted.
+;; 	(vkill): Don't set goal column.
+;; 	(vkill-command-column-regexp): New variable.
+;; 	(vkill-update-process-info): Use it to set goal column here.
+;; 	(vkill-send-signal): Handle variable amount of whitespace after
+;; 	signal markers.
+;; 	Use syntax table regexps instead of literal whitespace.
+;; 	(vkill-after-send-signal-hook): New variable.
+;; 	(vkill-send-signal): Run it.
 ;;
-;; Sun Apr 28 00:00:00 1991  Noah Friedman  <friedman@prep.ai.mit.edu>
+;; 1996-07-15  Noah Friedman  <friedman@splode.com>
 ;;
-;;         * vkill.el: handle differences in `ps' under various operating
-;;         systems.
+;; 	* vkill.el (vkill-goal-column, vkill-ps-command,
+;; 	vkill-all-ps-command): Add gnu/linux as recognized system type.
+;; 	(vkill-ps-command, vkill-all-ps-command): For linux systems, do not
+;; 	pass `-g' option to `ps'.
 ;;
+;; 1996-04-20  Noah Friedman  <friedman@splode.com>
+;;
+;; 	* vkill.el: Comment fixes.  Recognize Linux systems.
+;; 	(process-list-vkill, process-list-all-vkill): New commands.
+;; 	(vkill-toggle-truncate-lines): Use recenter to update display.
+;;
+;; 1996-02-14  Noah Friedman  <friedman@splode.com>
+;;
+;; 	* vkill.el (vkill-goal-column, vkill-ps-command,
+;; 	vkill-all-ps-command): Updated for linux.
+;;
+;; 1993-03-29  Noah Friedman  <friedman@splode.com>
+;;
+;; 	* vkill.el: Set goal column to start of command.
+;;
+;; 1991-06-27  Noah Friedman  <friedman@splode.com>
+;;
+;; 	* vkill.el: Changed bsd ps arguments to get the complete command
+;; 	line, added "w" command to toggle between truncated lines and line
+;; 	wrapping in the process list buffer.
+;;
+;; 1991-04-28  Noah Friedman  <friedman@splode.com>
+;;
+;; 	* vkill.el: Handle differences in `ps' under various
+;;	operating systems.
 
 ;;; Code:
 
@@ -65,23 +96,18 @@
 Normally if you are not the superuser, only your own processes are
 displayed.")
 
-(defvar vkill-goal-column
-  (cond ((memq system-type '(hpux))
-         49)
-        ((memq system-type '(berkeley-unix netbsd))
-         57)
-        ((memq system-type '(linux lignux gnu/linux))
-         59)
-        (t
-         49)))
+(defvar vkill-command-column-regexp "\\b\\(CMD\\|COMMAND\\)\\b")
 
+;(setq vkill-ps-command (concat "ps -wwwfu " (number-to-string (user-uid))))
 (defvar vkill-ps-command
   (cond ((memq system-type '(berkeley-unix netbsd))
          "ps -uxgww")
         ((memq system-type '(linux lignux gnu/linux))
-         "ps uxww")
+         ;; Alternate SYSV style
+         ;;(concat "ps -wwwfu " (number-to-string (user-uid)))
+         "ps uxwww")
         (t
-         (concat "ps -fu " (user-uid))))
+         (concat "ps -fu " (number-to-string (user-uid)))))
   "*Command used to get list of processes owned by the current user.
 Arguments to the \"ps\" command differ under various operating
 systems.")
@@ -90,12 +116,16 @@ systems.")
   (cond ((memq system-type '(berkeley-unix netbsd))
          "ps -auxgww")
         ((memq system-type '(linux lignux gnu/linux))
-         "ps auxww")
+         ;;"ps -wwwef"
+         "ps auxwww")
         (t
          "ps -ef"))
   "*Command used to get list of all processes currently running on the
 system.  Arguments to the \"ps\" command differ under various
 operating systems.")
+
+(defvar vkill-after-send-signal-hook nil
+  "*Hook to run after all else in `vkill-send-signal'")
 
 (defvar vkill-keymap nil
   "Keymap for vkill commands")
@@ -169,8 +199,7 @@ Commands:
 		 truncate-lines t
 		 revert-buffer-function 'vkill-revert
 		 major-mode 'vkill-mode
-		 mode-name "Vkill"
-		 goal-column vkill-goal-column)
+		 mode-name "Vkill")
 	   (use-local-map vkill-keymap)))
 
     (if (or new list)
@@ -269,7 +298,7 @@ processes."
   "Update the vkill process information.  This throws away all process marks."
   (interactive)
   (or quietly (message "Updating process information..."))
-  (let (buffer-read-only)
+  (let ((buffer-read-only nil))
     (erase-buffer)
     (shell-command-on-region (point-min) (point-max)
 			     (if (or vkill-show-all-processes
@@ -279,6 +308,15 @@ processes."
     (while (not (eobp))
       (insert "  ")
       (forward-line))
+    (save-match-data
+      (goto-char (point-min))
+      (while (re-search-forward "[ \t\r]+$" nil t)
+        (delete-region (match-beginning 0) (match-end 0)))
+      (goto-char (point-min))
+
+      (and (boundp 'vkill-command-column-regexp)
+           (re-search-forward vkill-command-column-regexp nil t)
+           (setq goal-column (1- (match-beginning 0)))))
     (goto-line 2)
     (sort-numeric-fields 2 (point) (point-max)))
   (or quietly (input-pending-p)
@@ -295,19 +333,21 @@ minibuffer."
   (if (equal signal "")
       (setq signal "TERM"))
   (let ((workbuf (get-buffer-create " *vkill*")))
-    (copy-to-buffer workbuf (point-min) (point-max))
-    (set-buffer workbuf)
-    (goto-char (point-min))
-    (delete-matching-lines "^  ")
-    (goto-char (point-min))
-    (if (not (looking-at "\\* "))
-	(error "No processes marked"))
-    (while (re-search-forward "\\* [^ ]+[ ]+\\([0-9]+\\).*\n" nil t)
-      (replace-match " \\1" t nil))
-    (goto-char (point-min))
-    (insert "kill -" (if (numberp signal) (int-to-string signal) signal))
-    (call-process shell-file-name nil 0 nil "-c" (buffer-string))
-    (kill-buffer workbuf)))
+    (save-excursion
+      (copy-to-buffer workbuf (point-min) (point-max))
+      (set-buffer workbuf)
+      (goto-char (point-min))
+      (delete-matching-lines "^\\s-")
+      (goto-char (point-min))
+      (if (not (looking-at "^\\* "))
+          (error "No processes marked"))
+      (while (re-search-forward "^\\*\\s-+\\S-+\\s-+\\([0-9]+\\).*\n" nil t)
+        (replace-match " \\1" t nil))
+      (goto-char (point-min))
+      (insert "kill -" (if (numberp signal) (int-to-string signal) signal))
+      (call-process shell-file-name nil 0 nil "-c" (buffer-string)))
+    (kill-buffer workbuf))
+  (run-hooks 'vkill-after-send-signal-hook))
 
 (defun vkill-help ()
   "Provide help for the vkill user."
