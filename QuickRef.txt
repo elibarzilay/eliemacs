@@ -1,0 +1,71 @@
+EliEmacs Quick Reference
+========================
+
+Arrow Keys etc:
+               | [normal]        | [ctrl]       | [shft]    | [meta]
+  <left/right> | move back/forwd | word move    | mv+select | paren move
+  <up/down>    | move up/down    | scroll line  | mv+select | paragraph move
+  <home/end>   | mv beg/end line | beg/end file | mv+select | sentence move
+  <page-up/dn> | move page       | mv+scrl line | mv+select | page move (to ^L)
+  <ins>        | ins/ovrwrt mode | copy         | paste     | paste-prev
+  <del>        | delete (slcted) | del word     | cut       | del parens
+  <bksp>       | del back        | del wrd back |           | del prns bk
+  <tab>        | indent          | other window | prev bffr |
+
+Function Keys:
+        | [normal]       | [ctrl]        | [shift]         | [shft+ctrl]
+  <f1>  | open a file    | buffer-list   | open raw file   | speedbar
+  <f2>  | save buffer    | save all bfrs | save-as/move    | quit emacs
+  <f3>  | insert file    | insert buffer | insert raw file |
+  <f4>  | shell command  | shell         | shell-on-select | terminal emulator
+  <f5>  | query replace  | replace       | q-replace regex | replace regexp
+  <f6>  | spell word     | spell buffer  | spell selection | spell-complete
+  <f7>  | i-search       | regexp search | i-search bckwrd | regexp srch bkwrd
+  <f8>  | eval lisp expr | eval buffer   | eval region     | load elisp file
+  <f9>  | apropos        | compile crrnt | grep            | next grep hit
+  <f10> | kill cur buffer| kill+save bfr | menu-simulation | kill buffers
+  <f11> | marker keys    |               |                 |
+  <f12> | single window  | goto-line     | goto-char       | toggle long lines
+
+General features:
+  <M-z>        start/end recording a keyboard macro.
+  <M-S-z>      start/end recording a keyboard macro.
+  <C-enter>    calculator.
+  <C-c f6>     flyspell mode
+  <C-M-keypad> set a position marker, again for saving more info.
+  <C-keypad>   jump to marker (restore more info).
+  <C-S-l>      recolor buffer (if it gets messed up).
+  <C-S-f>      disable/enable buffer colors.
+
+User variables:  (Use <C-h v> or look at "include/user-vars.el" to learn more)
+  `eli-color-style'           Color style (dark or light)
+  `eli-font'                  Font
+  `eli-background'            Background color
+  `eli-foreground'            Foreground color
+  `eli-cursor-color'          Cursor color
+  `eli-blink-cursor'          Use a blinking cursor or not
+  `eli-region-colors'         Selection colors
+  `eli-isearch-colors'        ISearch colors
+  `eli-isearch-lazy-colors'   Lazy-ISearch colors (for Emacs v.21)
+  `eli-modeline-colors'       Modeline colors
+  `eli-headerline-colors'     Headerline colors (v.21)
+  `eli-paren-colors'          Paren-highlight colors
+  `eli-paren-mismatch-colors' Mismatched paren highlight colors
+  `eli-paren-no-match-colors' Unmatched paren highlight colors
+  `eli-window-pos'            Default window position
+  `eli-use-menubar'           Use a menu-bar?
+  `eli-use-toolbar'           Use a tool-bar?
+  `eli-use-scrollbar'         Use a scroll-bar?
+  `eli-use-modeline'          Use a mode-line?
+  `eli-backup-method'         Backup settings
+  `eli-text-indications'      Some Emacs 21 indications for files.
+  `eli-auto-revert-on-change' Revert automatically when a file changes on disk?
+  `initial-logo-result'       Simulate a constant initial keypress
+
+##Local Variables:
+##hide-local-variable-section: t
+##eval:(set-regexp-face "^\\(EliEmacs.*$\\|=+$\\|[^ \n].*:\\)" 'yellow/red4-bold-underline)
+##eval:(set-regexp-face "<[^<>]+>" 'yellow/purple4-bold)
+##eval:(set-regexp-face "\\[[^][]+\\]" 'yellow/blue4-bold)
+##eval:(set-regexp-face "`[^`']+'" 'yellow/magenta4-bold)
+##End:

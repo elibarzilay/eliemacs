@@ -1,0 +1,208 @@
+                        The EliEmacs Environment
+                        ========================
+
+This environment started as a small hack to make life easier for myself,
+then it was used by some more people, so I continued working on it,
+improving things until I got a good version.  When Emacs 21 came out, I
+finally got to rewrite the whole thing in a more reasonable way, and
+also make it work with XEmacs too, but support for Emacs 19 is gone.
+Then came Emacs 22, and another major overhaul was done.  This time,
+only v22 was supported -- easier to just keep the previous environment
+as-is to be used with older versions.  Emacs 23 is now the current
+version, meaning less things to do still.
+
+Note: the following is outdated in several places.
+
+The version that you use is displayed after Emacs finishes initializing.
+The latest version can be found at
+
+  http://barzilay.org/misc/EliEmacs.tgz
+
+To use this environment, simply load the eliemacs.elc file in your
+.emacs, for example, my .emacs file has:
+
+  (load "~eli/EliEmacs/eliemacs")
+
+On a Windows machine, you might use something like:
+
+  (load "c:/EliEmacs/eliemacs")
+
+All questions regarding my environment in specific or Emacs in general
+should be go to me: Eli Barzilay <eli@barzilay.org>
+
+
+Installing:
+-----------
+
+The whole thing works on any platform, as long as you have GNU Emacs
+version 22.  Here is what you need to do:
+
+1. Open EliEmacs.tgz in an appropriate place (using tar+gunzip, or
+   winzip).
+
+2. Edit your ".emacs" file so it loads "eliemacs" as above.  On a
+   Windows machine, the file can also be called "_emacs", and it should
+   be placed in a home directory -- which is the value of the
+   environment variable "HOME".
+
+
+Customizing:
+------------
+
+The .emacs file contains a simple load command for the new environment
+file which loads up everything in EliEmacs.  You can set up things
+either before or after doing this.  There are some variables that can
+customize the way EliEmacs sets things up (so they should be set before
+loading it).  See the QuickRef for more variables.
+
+
+Files:
+------
+
+There are many files now, all in EliEmacs.  You don't need everything
+but it's useful to see what I have there -- read "eliemacs.el" to learn
+abou them.  The following is a list of things that you can delete if you
+copy it to your machine (either NTEmacs or Emacs on Linux should work
+fine) according to your space limitations, least to most important
+(roughly):
+
+1. The "extras" directory contains extra packages -- you can safely
+   remove all source files (.el) and the compiled code if you don't use
+   that package.  It contains some subdirectories containing big
+   packages that can be removed if unused too.
+
+2. The "include" directory holds files that are compiled into the single
+   "eliemacs.elc" file.
+
+2. ".el" files in the "include" directories are compiled into
+   "eliemacs.elc" so it is safe to throw them away.  Even the sources in
+   "EliEmacs" itself can be removed.
+
+3. If you're really short in space, you could get along with
+   "eliemacs.elc" and nothing else.
+
+
+Features:
+---------
+
+This is a very brief list.  I need to get more info here.
+
+1. QuickRef access with `C-h e'.
+2. A single elc file that you can easily move between accounts and
+   machines, some more stuff is external but not strictly needed.
+3. Lots of sensible key and mouse bindings.  Heavy usage of function
+   keys, and otherwise keep standard keys the same (except for very few
+   cases).
+4. Works with FSF Emacs v.20 and v.21, and XEmacs v.21.
+5. Easy customization variables for colors etc (see QuickRef).
+6. Ability to supress any parts of EliEmacs you don't like using
+   `eli-suppressed-features' and command-line arguments.
+7. Some functions to make life simpler for writing ELisp code (e.g,
+   define-keys).
+8. An easy function to sort a whole buffer.
+9. Backspace erases indentation when appropriate.
+10. A convenient function to save and kill the current buffer (C-f10).
+11. Easy function to toggle line truncating with horizontal scrolling
+    (C-S-f12).
+12. Functions that do negative transposing (C-S-t, M-S-t, M-C-S-t).
+13. Convenient buffer and window navigation (S-tab and C-tab).
+14. A sensible join-line function (M-j).
+15. An intelligent fill-paragraph/region or toggle refill-mode (M-q).
+16. C-f in isearch mode grabs the next character.
+17. Ability to define a buffer-local key rather than mode-local (C-c b)
+    with a fuction to undo these bindings (C-c B).
+18. A function that compares the current buffer with the recent one
+    (M-S-c).
+19. Smart insertion of paired characters - parens, brackets, braces,
+    angles, quotes, stars etc.  (M-\(, M-\[, M-\{, M-<, M-\", M-* etc).
+20. Convenient and smart line-comment toggling (C-;).
+21. A local variable that can be set to hide the local-variable section
+    (hide-local-variable-section).
+22. Counter keys that insert a counter value and increase it (M-esc *,
+    M-esc =, M-esc +), good for keyboard macros.
+23. A key that allows to send any characted directly to a running
+    process (M-q, in comint).
+24. A thin layer of functionality that makes life with both XEmacs and
+    Emacs nicer.
+25. Some sensible defaults for NTEmacs.
+26. Initialization of window properties, which makes color, font etc
+    settings possible from ELisp rather than XDefaults, registry or
+    whatever.
+27. A lot of sensible default variable settings that took years to
+    collect.
+28. Settings to make the minibuffer resize when needed.
+29. Default settings for Emacs' calendar, diary etc.
+30. A facility to make all your backup files go into a single directoy,
+    plus easy settings for no backups, or super-safety mode.
+31. Using electric-buffer-list for convenient buffer switching (C-f1).
+32. Make history for minibuffer entries unique so you can save more.
+33. Make shell-command complete filenames the smart way.
+34. Beter minibuffer history searches (C-up/down, M-up/down).
+35. Some electric when reading filenames ("/", "~", "\\", ":").
+36. Improved mode-line display (truncate some info).
+37. Solution for C-h problems in remote ttys - C-h is normal help, but
+    when hit twice without ever using backspace then it'll rebind itself
+    to backspace.
+38. Convenient keys for saving marks (C-M-kp...), when used more than
+    once save window/frame conf as well, and jumping to a mark with
+    (C-kp...).
+39. Convenient macro key definition (M-z, M-S-z for local), and saving
+    (C-M-f12) in addition to standard editing (C-x C-k).  Can even hack
+    mouse clicks to apply a macro key.
+40. Improved scrolling commands that leave the cursor at the same place,
+    and make it possible to scroll back to exactly the last position.
+41. Shifted arrow keys start and extend an existing selection, also use
+    delete-selection mode for convenient editing.  (An improved
+    pc-select).
+42. A convenient fuction to create color faces-on-demand, allow `M-g o'
+    to read and use these on-demand specs.
+43. Functions to set the color of a region or all matches of a regular
+    expression (for programs, not interactive).
+44. Use a sophisticated paren-highlight package (mic-paren) with a
+    simple paren-hightlight-mode toggle (C-\().
+45. Allow any colors in `M-g M-f' and `M-g M-b'.
+46. Customizing sensibly, and globally enabling font-lock.
+47. Attempt to set sensible default colors for font-lock.
+48. Ability to interactively add regexps to highlight with font-lock and
+    specify a color (C-S-a and C-S-r to remove).
+49. Better font-lock supoprt for dired and prolog-mode.
+50. Mail and news settings.
+51. A smart tab key command for mail/news messages that moves between
+    header fields and the message body.
+52. Enable abbrev mode for interactive expansion of mail aliases.
+53. Dynamic word completion that tries to complete based on the current
+    buffer contents (M-/).
+54. Smart completion that allows a `b-c-f' command to expand to
+    `byte-compile-file', and the same with file name.
+55. Enable the smart completion in shells.
+56. Enable automatic de/compression for compressed files.
+57. Make buffer names unique using their directory name.
+58. Make auto-fill-mode use only one line's context, and make refilling
+    smarter (respect quoting, numbered items, bullet-like things etc).
+59. A much improved generic-mode file with lots of small useful modes
+    (various configuration, FVWM, INI, INF, BAT files etc).
+60. Make help-buffers and shell-output buffer popup in a more reasonable
+    way (so `q' restores the screen).
+61. Setup extra info directory if one is found.
+62. Various fixes for things I haven't had the time to nag the Emacs
+    maintainers enough (but I'm slowly getting them done).  Include
+    tabbings, delete-selection mode, filename wildcard expansion.
+63. Automatically revert a buffer that has been modified outside, but
+    allow undoing to the previous version (not in `super-safe' mode).
+64. Hack the smart completion mode so it can do the same trick (expand
+    `/u/l/b/gp' to `/usr/local/bin/gphoto').
+65. Save and restore the active `desktop' - buffers that are open, and
+    various input histories.  If escape is used at the logo screen (or
+    -fast was given on the command line), don't load previous buffers.
+66. A lot of nice stuff in the extras directory all optional.  These
+    include: my calculator (standard part of v.21), mode-based
+    compilation (C-f9), maze draing (C-x f2), big-font for banners,
+    cursor flashing mode, Swindle mode, Matlab mode, finger, vkill (for
+    system processes), folding mode (selective display), vm (great
+    emailer), calc (huge matlab-like thing in Emacs), auctex (improved
+    la/tex editing), ilisp (lisp interactions).
+67. Finally, a beautiful logo (that you cannot get rid of, but you can
+    set `initial-logo-result' and get it to flash for one second only).
+68. A responsive author that will be happy to make more things
+    customizable, and the complete sources so you can hack your own
+    thing.
