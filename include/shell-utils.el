@@ -11,16 +11,22 @@
 ;; Friendlier `shell' and `shell-command'
 
 (defun eli-shell (arg)
-  "Similar to `shell' but a positive numeric argument means jump
-to that shell window, with 1 being the default \"*shell*\", 2 is
-\"*shell*<2>\" etc.  Also, switch normally to the shell buffer,
-so it is a normal part of the visited buffer history, and so it
-occupies the window that we were originally in."
+  "Similar to `shell' but extended as follows:
+- a positive numeric argument means jump to that shell window,
+  with 1 being the default \"*shell*\", 2 is \"*shell*<2>\" etc,
+- a 0 numeric argument will jump to a new shell window (the next
+  one), without asking about the name,
+- it switches to the buffer as usual, in the current window: no
+  switching to a half-screen, and preserve the buffer visit
+  history so there's no inconsistent buffer switching
+  later."
   (interactive "P")
   (switch-to-buffer
    (save-window-excursion
-     (if (and (integerp arg) (> arg 0))
-       (shell (if (= arg 1) "*shell*" (format "*shell*<%S>" arg)))
+     (if (and (integerp arg) (>= arg 0))
+       (shell (cond ((= arg 0) (generate-new-buffer-name "*shell*"))
+                    ((= arg 1) "*shell*")
+                    (t (format "*shell*<%S>" arg))))
        (call-interactively 'shell)))))
 
 (defun eli-shell-command ()
