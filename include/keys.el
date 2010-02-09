@@ -92,7 +92,7 @@
   '([(control shift f3)]        insert-register)
   ;; F4 - shell stuff
   '([(f4)]                      eli-shell-command)
-  '([(control f4)]              shell)
+  '([(control f4)]              eli-shell)
   '([(shift f4)]                eli-shell-command-on-buffer)
   '([(control shift f4)]        eli-term)
   ;; F5 - replacing

@@ -8,7 +8,20 @@
 (add-hook 'shell-mode-hook (lambda () (switch-to-buffer (current-buffer))))
 
 ;;-----------------------------------------------------------------------------
-;; Friendlier shell command
+;; Friendlier `shell' and `shell-command'
+
+(defun eli-shell (arg)
+  "Similar to `shell' but a positive numeric argument means jump
+to that shell window, with 1 being the default \"*shell*\", 2 is
+\"*shell*<2>\" etc.  Also, switch normally to the shell buffer,
+so it is a normal part of the visited buffer history, and so it
+occupies the window that we were originally in."
+  (interactive "P")
+  (switch-to-buffer
+   (save-window-excursion
+     (if (and (integerp arg) (> arg 0))
+       (shell (if (= arg 1) "*shell*" (format "*shell*<%S>" arg)))
+       (call-interactively 'shell)))))
 
 (defun eli-shell-command ()
   "Similar to `shell-command' but sets environment variables $f, $F, and $d
