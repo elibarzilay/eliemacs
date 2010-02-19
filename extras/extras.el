@@ -30,6 +30,12 @@
 (autoload 'bigfont-scroll-big-string "bigfont" nil t)
 
 ;;-----------------------------------------------------------------------------
+;; Git
+
+(autoload 'git-status "git" nil t)
+(autoload 'git-blame-mode "git-blame" nil t)
+
+;;-----------------------------------------------------------------------------
 ;; Vkill
 
 (autoload 'vkill "vkill" nil t)
