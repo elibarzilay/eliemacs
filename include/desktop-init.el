@@ -54,8 +54,8 @@
           (let* ((key (eli-logo
                        (concat "Hit any key to continue, escape/right-click:"
                                " don't load previous desktop.")))
-                 (ktype (if (symbolp key) key (event-basic-type key))))
-            (when (memq ktype '(27 escape mouse-3))
+                 (key (if (integerp key) key (event-basic-type key))))
+            (when (memq key '(27 escape mouse-3))
               (setq load-buffers nil))))
         (eli-use-desktop load-buffers)
         (desktop-read) ; do this because we're running after `after-init-hook'

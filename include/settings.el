@@ -3,7 +3,7 @@
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
 (set-language-environment "UTF-8")
-(set-fringe-mode 2)
+(when (functionp 'set-fringe-mode) (set-fringe-mode 2))
 (require 'uniquify)
 
 (setq-default
@@ -208,7 +208,7 @@
  parens-require-spaces t
  ;; >> emacs/programming/languages/lisp/scheme
  scheme-mit-dialect nil
- scheme-program-name "mzscheme"
+ scheme-program-name "racket"
  ;; >> emacs/programming/languages/c
  ;; c-basic-offset 2 <--?
  ;; >> emacs/programming/languages/pascal
@@ -439,6 +439,9 @@
  redisplay-dont-pause t       ; faster display response
  )
 
+;; Racket files
+(add-to-list 'auto-mode-alist '("\\.rkt.?$" . scheme-mode))
+
 ;; Enables
 (put 'narrow-to-page   'disabled nil)
 (put 'narrow-to-region 'disabled nil)
@@ -470,8 +473,8 @@
    w32-lwindow-modifier 'hyper
    w32-rwindow-modifier 'hyper
    w32-pass-alt-to-system nil
-   w32-pass-lwindow-to-system nil
-   w32-pass-rwindow-to-system nil
+   w32-pass-lwindow-to-system t ; they still work fine
+   w32-pass-rwindow-to-system t ;   as a hyper modifier
    w32-capslock-is-shiftlock nil
    w32-enable-caps-lock t
    w32-enable-num-lock t

@@ -94,15 +94,16 @@ Get the value associated with ELT in LST, '* matches all."
   (menu-bar-mode (if eli-use-menubar 1 -1))
   (push `(menu-bar-lines . ,(if eli-use-menubar 1 0)) props)
   ;; toolbar
-  (tool-bar-mode (if eli-use-toolbar 1 -1))
+  (when (functionp 'tool-bar-mode) (tool-bar-mode (if eli-use-toolbar 1 -1)))
   (push `(tool-bar-lines . ,(if eli-use-toolbar 1 0)) props)
   ;; make the toolbar as small as possible (if enabled)
   (setq tool-bar-button-relief 1)
   (setq tool-bar-button-margin 0)
   (set-face-attribute 'tool-bar nil :box nil)
   ;; scrollbar
-  (set-scroll-bar-mode (if (memq eli-use-scrollbar '(left right nil))
-                         eli-use-scrollbar 'left))
+  (when (functionp 'set-scroll-bar-mode)
+    (set-scroll-bar-mode (if (memq eli-use-scrollbar '(left right nil))
+                           eli-use-scrollbar 'left)))
   ;; modeline
   (unless eli-use-modeline (setq-default mode-line-format nil))
   ;; blink cursor
