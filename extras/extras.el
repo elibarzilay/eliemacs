@@ -77,6 +77,7 @@
     (autoload 'vm              evm "Start VM on your primary inbox" t)
     (autoload 'vm-other-frame  evm "Like `vm' but starts in another frame" t)
     (autoload 'vm-visit-folder evm "Start VM on an arbitrary folder" t)
+    (autoload 'vm-visit-imap-folder evm "Start VM on an IMAP mailbox." t)
     (autoload 'vm-visit-virtual-folder evm "Visit a VM virtual folder" t)
     (autoload 'vm-mode         evm "Run VM major mode on a buffer" t)
     (autoload 'vm-mail         evm "Send a mail message using VM" t)

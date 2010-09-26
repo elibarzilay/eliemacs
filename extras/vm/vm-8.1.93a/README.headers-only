@@ -1,0 +1,51 @@
+The headers-only operation has an outstanding bug which occurs very
+infrequently and is difficult to track down.  
+
+- It only affects the headers-only downloading of IMAP messages.  All
+other features of VM are unaffected.
+
+- It has only been observed on Gnu Emacs 23.  (There is a possibility
+that it has something to do with the Emacs 23 word-wrapping
+functionality, but that is only a guess at this point.  If you turn on
+word-wrapping or visual-line-mode by default, you should remove the
+default because it will get used in VM folder buffers otherwise.)
+
+- Whenever the problem was observed, it caused the body of a message
+to be inserted in the *midst* of its headers instead of inserting it
+after the headers.  An example follows.
+
+- The failure recovery is to delete or rename the imap-cache folder on
+disk and force VM to generate a new cache folder.  (Renaming it is a
+better idea.  You can then send me a sample of the error and I might
+be able to garner some information from it.)
+
+- Permanent damage can occur if you save a message from the IMAP
+folder to a local folder and delete the IMAP copy.  If the message had
+corruption before you saved it, the corrupted copy would have been
+saved.  So, keep an eye out for the problem whenever you save a
+message.
+
+-----
+
+The problem should be normally visible.  Here is an example:
+
+From: "Lucas, Simon M" <...>
+To: ...
+Subject: Re: Unemployment rate among CS graduates
+Date: Sun, 4 Jul 2010 16:09:35 +0100
+X-SoCS-Spam-DQogT25lIG1vcmUgdGhpbmcgdG8gY29uc2lkZXIgd2l0aCB0aGVzZSBzdGF0cyBpcw0KIHRoZWly
+IHJlbGlhYmlsaXR5Lg0KDQogSWYgeW91IHNlbGVjdCBjb21wdXRlciBzY2llbmNlIGFuZCBzb3J0...
+
+The correct message should have been:
+
+From: "Lucas, Simon M" <...>
+To: ...
+Subject: Re: Unemployment rate among CS graduates
+Date: Sun, 4 Jul 2010 16:09:35 +0100
+X-SoCS-Spam-Score: 0.0
+
+DQogT25lIG1vcmUgdGhpbmcgdG8gY29uc2lkZXIgd2l0aCB0aGVzZSBzdGF0cyBpcw0KIHRoZWly
+IHJlbGlhYmlsaXR5Lg0KDQogSWYgeW91IHNlbGVjdCBjb21wdXRlciBzY2llbmNlIGFuZCBzb3J0
+
+The body of the message got inserted 13 places above the correct position.
+

@@ -1,0 +1,106 @@
+This is vm.info, produced by makeinfo version 4.13 from vm.texinfo.
+
+INFO-DIR-SECTION Emacs
+START-INFO-DIR-ENTRY
+* VM: (vm).                             A mail reader.
+END-INFO-DIR-ENTRY
+
+   This file documents the VM mail reader.
+Copyright (C) 1989, 1991, 1999 Kyle E. Jones
+
+Copyright (C) 2003 - 2008 Robert Widhopf-Fenk
+
+Copyright (C) 2008 - 2010 Uday S. Reddy
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+
+Indirect:
+vm.info-1: 531
+vm.info-2: 290179
+
+Tag Table:
+(Indirect)
+Node: Top531
+Node: Preface2843
+Node: Introduction5829
+Node: Starting Up12622
+Node: Local Folders16805
+Node: Spool Files19468
+Node: POP Spool Files23849
+Node: IMAP Spool Files27278
+Node: Index Files30211
+Node: Folder types30731
+Node: Server Folders33201
+Ref: maildrop specification34654
+Node: POP Folders39846
+Node: IMAP Folders41794
+Ref: IMAP Synchronization44701
+Node: Thunderbird Folders46609
+Node: Getting New Mail48997
+Node: Crash Recovery49977
+Node: Selecting Messages53881
+Node: Reading Messages58272
+Node: Previewing58831
+Node: Paging61925
+Node: MIME Messages64521
+Node: Viewing MIME67059
+Node: Attachments68233
+Node: Internal display71490
+Node: External display74805
+Node: Displaying images79818
+Node: MIME type conversion82238
+Node: Character sets83683
+Node: multipart/alternative88026
+Node: Bad MIME90347
+Node: Headers-only Messages91059
+Node: Sending Messages92823
+Node: MIME Composition98943
+Node: MIME attachments99651
+Node: MIME characters101431
+Node: MIME headers103624
+Node: MIME preview104732
+Node: Replying105855
+Node: Forwarding Messages110837
+Node: Saving copies114224
+Node: Saving Messages115769
+Node: Deleting Messages123696
+Node: Editing Messages126742
+Node: Marking Messages127740
+Node: Message Attributes131082
+Node: Sorting Messages134666
+Node: Threading137838
+Node: Digests140277
+Node: Summaries141337
+Node: Summary Format143309
+Node: Thread Folding148566
+Node: Thread Operations150696
+Node: Summary Faces152026
+Node: Virtual Folders155913
+Node: Frames and Windows167983
+Node: Frame Configuration169154
+Node: Window Configuration172834
+Node: Toolbar175640
+Node: Menus181575
+Node: Faces183958
+Node: Using the Mouse185742
+Node: Hooks188121
+Node: History and Administration197741
+Node: Highlights205351
+Node: Future Plans206186
+Node: Bugs206863
+Node: Internals208180
+Node: Folder Internals208626
+Node: Message Internals216182
+Node: Summary Internals230494
+Node: User Interaction237887
+Node: Concept Index238647
+Node: Key Index246931
+Node: Command Index252465
+Node: Variable Index261540
+Node: Internals Index278573
+Node: License290179
+
+End Tag Table

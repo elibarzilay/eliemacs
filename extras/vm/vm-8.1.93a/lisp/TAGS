@@ -1,0 +1,3176 @@
+
+tapestry.el,1476
+(defvar tapestry-version 25,908
+(defvar tapestry-windows-changed 30,1114
+(defun tapestry 33,1168
+(defun set-tapestry 61,2154
+(defun tapestry-frame-map 112,4406
+(defun tapestry-set-frame-map 127,4881
+(defun tapestry-window-map 138,5275
+(defun tapestry-set-window-map 164,6313
+(defun tapestry-buffer-map 219,8397
+(defun tapestry-set-buffer-map 254,9589
+(defun tapestry-position-map 277,10698
+(defun tapestry-set-position-map 290,11045
+(defun tapestry-apply-window-map 306,11696
+(defun tapestry-windows-match-map 344,12866
+(defun tapestry-find-window-map-edges 403,14728
+(defun tapestry-compute-map-width 419,15283
+(defun tapestry-compute-map-height 423,15414
+(defun tapestry-delassq 428,15589
+(defun tapestry-remove-frame-parameters 441,15891
+(defun tapestry-nullify-tapestry-elements 451,16194
+(defun tapestry-replace-tapestry-element 472,16857
+(defun tapestry-window-list 497,17573
+(defun tapestry-first-window 507,17949
+(defun tapestry-window-area 525,18642
+(defun tapestry-window-overlap 529,18755
+(defun tapestry-window-edges 549,19653
+(defun tapestry-frame-list 569,20307
+(defun tapestry-frame-parameters 574,20402
+(defun tapestry-window-frame 579,20522
+(defun tapestry-modify-frame-parameters 584,20620
+(defun tapestry-select-frame 589,20763
+(defun tapestry-selected-frame 594,20861
+(defun tapestry-next-frame 599,20962
+(defun tapestry-make-frame 604,21072
+(defun tapestry-delete-frame 609,21182
+(defun tapestry-frame-live-p 614,21290
+
+u-vm-color.el,1584
+(defconst u-vm-color-version 19,458
+(defvar vm-summary-format)154,6369
+(defgroup u-vm-color 156,6397
+(defcustom u-vm-color-use-gnus-faces 160,6467
+(defface u-vm-color-signature-face165,6598
+(defface u-vm-color-header-face173,6863
+(defface u-vm-color-author-face181,7132
+(defface u-vm-color-recipient-face189,7412
+(defface u-vm-color-subject-face197,7684
+(defface u-vm-color-default-face205,7952
+(defface u-vm-color-time-face210,8047
+(defface u-vm-color-attribute-face218,8307
+(defface u-vm-color-date-face226,8572
+(defface u-vm-color-id-face234,8832
+(defface u-vm-color-label-face239,8939
+(defface u-vm-color-length-face247,9200
+(defface u-vm-color-number-face255,9464
+(defface u-vm-color-user-face263,9728
+(defface u-vm-color-citation-1-face271,10022
+(defface u-vm-color-citation-2-face279,10295
+(defface u-vm-color-citation-3-face287,10564
+(defface u-vm-color-citation-4-face295,10829
+(defface u-vm-color-citation-5-face303,11098
+(defface u-vm-color-spamassassin-face311,11369
+(defface u-vm-color-pgp-inline-signature-face319,11660
+(defun u-vm-color-copy-gnus-faces 327,11939
+(defun u-vm-color-make-specific-length-regexp 357,13271
+(defun u-vm-color-make-summary-keywords 382,14046
+(defvar u-vm-color-summary-mode 561,21733
+(defvar u-vm-color-summary-keywords 565,21888
+(defun u-vm-color-summary-mode 569,22000
+(defun u-vm-color-fontify-regexp 619,23787
+(defun u-vm-color-fontify-signature 641,24743
+(defun u-vm-color-fontify-pgp-signature 651,25108
+(defun u-vm-color-fontify-buffer 674,25980
+(defun u-vm-color-fontify-buffer-even-more 739,28668
+
+vcard.el,1828
+(defgroup vcard 85,3426
+(defcustom vcard-pretty-print-function 92,3568
+(defcustom vcard-standard-filters98,3738
+(defalias 'vcard-char-to-intvcard-char-to-int115,4260
+(defconst vcard-api-version 126,4808
+(defvar vcard-encoding-tags132,5146
+(defvar vcard-region-decoder-methods137,5363
+(defvar vcard-region-decode-base64-table142,5567
+(defun vcard-pretty-print 157,6001
+(defun vcard-parse-string 176,6651
+(defun vcard-parse-region 215,8109
+(defun vcard-parse-region-properties 256,9787
+(defun vcard-parse-region-value 271,10366
+(defun vcard-values 311,12203
+(defun vcard-ref 317,12490
+(defun vcard-proplist-all-properties 343,13672
+(defun vcard-proplist-any-properties 352,13979
+(defun vcard-get-property 361,14297
+(defun vcard-set-property 368,14590
+(defun vcard-delete-property 389,15380
+(defun vcard-standard-filter 408,16131
+(defun vcard-filter-apply-filter-list 413,16378
+(defun vcard-filter-html 428,17088
+(defun vcard-filter-adr-newlines 436,17364
+(defun vcard-filter-tel-normalize 445,17722
+(defun vcard-filter-textprop-cr 461,18436
+(defmacro vcard-hexstring-to-ascii 474,18880
+(defun vcard-region-decode-quoted-printable 479,19073
+(defun vcard-region-decode-base64 492,19655
+(defun vcard-split-string 525,20872
+(defun vcard-copy-tree 554,22057
+(defun vcard-flatten 562,22246
+(defun vcard-format-sample-box 570,22385
+(defun vcard-format-sample-string 582,22923
+(defun vcard-format-sample-lines 589,23241
+(defun vcard-format-sample-get-name 610,24170
+(defun vcard-format-sample-get-telephone 622,24596
+(defun vcard-format-sample-get-address 651,25834
+(defun vcard-format-sample-values-concat 668,26677
+(defun vcard-format-sample-values 672,26881
+(defun vcard-format-sample-ref 678,27091
+(defun vcard-format-sample-offset 690,27535
+(defun vcard-format-sample-max-length 698,27846
+
+vm-autoloads.el,1549
+(defvar vcard-pretty-print-function 33,928
+(defvar vcard-standard-filters 38,1104
+(defvar vm-virtual-auto-folder-alist 402,14339
+(defvar vm-sort-compare-auto-folder-cache 433,15689
+(defvar vm-grepmail-command 1068,37404
+(defvar vm-grepmail-arguments 1073,37527
+(defvar vm-postponed-header 2081,73710
+(defvar vm-postponed-folder 2093,74182
+(defvar vm-postponed-message-headers 2098,74339
+(defvar vm-postponed-message-discard-header-regexp 2107,74828
+(defvar vm-continue-postponed-message-hook 2114,75114
+(defvar vm-postpone-message-hook 2119,75305
+(defvar vm-mail-return-receipt-to 2186,77640
+(defvar vm-mail-priority 2202,78143
+(defvar vm-mail-folder-alist 2213,78445
+(defvar vm-mail-fcc-default 2219,78690
+(defvar vm-mail-to-regexp 2257,80222
+(defvar vm-mail-to-headers 2263,80454
+(defvar vm-ps-print-message-function 2342,83242
+(defvar vm-ps-print-message-separater 2348,83514
+(defvar vm-ps-print-message-font-size 2353,83694
+(defvar vm-ps-print-message-header-lines 2358,83861
+(defvar vm-ps-print-message-left-header 2363,84003
+(defvar vm-ps-print-message-right-header 2368,84304
+(defvar vm-ps-print-message-summary-format 2374,84609
+(defvar vm-ps-print-each-message-header-lines 2380,85113
+(defvar vm-ps-print-each-message-left-header 2385,85265
+(defvar vm-ps-print-each-message-right-header 2392,85748
+(defvar vm-ps-print-each-message-summary-format 2398,86063
+(defvar vm-mime-attach-files-in-directory-regexps-history 2900,105047
+(defvar vm-vcard-format-function 3685,132745
+(defvar vm-vcard-filter 3688,132849
+
+vm-avirtual.el,3002
+(defgroup vm 109,4663
+(defgroup vm-avirtual 113,4704
+(defvar bbdb-get-addresses-headers)137,5496
+(defvar vm-mail-virtual-selector-function-alist140,5633
+(defun vm-avirtual-add-selectors 201,7810
+(defcustom vm-virtual-check-case-fold-search 224,8465
+(defcustom vm-virtual-check-diagnostics 230,8656
+(defvar vm-virtual-check-level 235,8809
+(defun vm-vs-or 237,8844
+(defun vm-vs-and 257,9720
+(defun vm-vs-not 275,10500
+(defun vm-avirtual-check-for-missing-selectors 293,11236
+(defvar vm-virtual-message 312,12025
+(defun vm-vs-folder-name 315,12118
+(defun vm-vs-eval 319,12260
+(defun vm-vs-vm-mode 323,12373
+(defun vm-vs-selected 328,12499
+(defun vm-vs-in-bbdb 333,12612
+(defun vm-mail-vs-in-bbdb 357,13638
+(defun vm-add-spam-word 381,14623
+(defun vm-spam-words-rebuild 404,15533
+(defun vm-mail-vs-eval 417,16008
+(defun vm-mail-vs-mail-mode 420,16077
+(defalias 'vm-vs-mail-mode vm-vs-mail-mode425,16209
+(defun vm-mail-vs-or 427,16260
+(defun vm-mail-vs-and 444,17004
+(defun vm-mail-vs-not 460,17694
+(defun vm-mail-vs-unknown 474,18261
+(defun vm-mail-vs-any 477,18311
+(defun vm-mail-vs-author 480,18342
+(defun vm-mail-vs-recipient 484,18480
+(defun vm-mail-vs-author-or-recipient 494,18870
+(defun vm-mail-vs-subject 498,18980
+(defun vm-mail-vs-sortable-subject 502,19113
+(defun vm-mail-vs-header 524,20130
+(defun vm-mail-vs-text 533,20403
+(defun vm-mail-vs-header-or-text 539,20585
+(defun vm-mail-vs-more-chars-than 544,20715
+(defun vm-mail-vs-less-chars-than 547,20828
+(defun vm-mail-vs-more-lines-than 550,20941
+(defun vm-mail-vs-less-lines-than 553,21037
+(defun vm-mail-vs-replied 556,21133
+(defun vm-mail-vs-forwarded 560,21228
+(defun vm-mail-vs-redistributed 563,21279
+(defun vm-mail-vs-unreplied 566,21369
+(defun vm-mail-vs-unforwarded 570,21486
+(defun vm-mail-vs-unredistributed 573,21553
+(defun vm-mail-vs-older-than 576,21628
+(defun vm-mail-vs-newer-than 581,21823
+(defun vm-virtual-get-selector-member 587,22098
+(defun vm-virtual-get-selector 597,22394
+(defun vm-virtual-check-selector 621,23303
+(defun vm-virtual-check-selector-interactive 634,23782
+(defvar vmpc-current-state 666,25358
+(defun vmpc-virtual-check-selector 668,25405
+(defun vm-virtual-apply-function 682,26080
+(defun vm-virtual-update-folders 707,26995
+(defun vm-virtual-omit-message 753,29250
+(defcustom vm-virtual-auto-delete-message-selector 797,30899
+(defcustom vm-virtual-auto-delete-message-folder 803,31121
+(defcustom vm-virtual-auto-delete-message-expunge 809,31356
+(defun vm-virtual-auto-delete-message 815,31542
+(defun vm-virtual-auto-delete-messages 879,34013
+(defcustom vm-virtual-auto-folder-alist 896,34598
+(defun vm-virtual-auto-select-folder 920,35549
+(defvar vm-sort-compare-auto-folder-cache 976,38039
+(defun vm-sort-compare-auto-folder 979,38139
+(defun vm-sort-insert-auto-folder-names 1001,39005
+(defun vm-virtual-save-message 1042,40471
+(defun vm-virtual-auto-archive-messages 1074,41854
+(defun vm-virtual-make-folder-persistent 1136,44728
+
+vm-biff.el,1447
+(defgroup vm 52,1564
+(defgroup vm-biff 56,1605
+(defcustom vm-biff-position 60,1662
+(defcustom vm-biff-width 70,2004
+(defcustom vm-biff-max-height 75,2101
+(defcustom vm-biff-body-peek 80,2211
+(defcustom vm-biff-focus-popup 86,2349
+(defcustom vm-biff-auto-remove 91,2482
+(defcustom vm-biff-summary-format 97,2718
+(defcustom vm-biff-selector 103,2934
+(defcustom vm-biff-place-frame-function 110,3183
+(defcustom vm-biff-select-hook 115,3341
+(defcustom vm-biff-select-frame-hook 120,3489
+(defcustom vm-biff-folder-list 127,3702
+(defvar vm-biff-keymap 140,4224
+(defun vm-summary-function-V 154,4886
+(defun vm-biff-place-frame 181,5940
+(defconst vm-biff-frame-properties196,6537
+(defvar vm-biff-message-pointer 219,7129
+(defvar vm-biff-folder-buffer 220,7166
+(defvar vm-biff-message-number 221,7201
+(defvar vm-biff-folder-frame 222,7237
+(defvar vm-biff--folder-window 223,7271
+(defun vm-biff-x-p 225,7308
+(defun vm-biff-get-buffer-window 230,7400
+(defun  vm-biff-find-folder-window 233,7499
+(defun  vm-biff-find-folder-frame 243,7865
+(defun vm-biff-select-message 248,8000
+(defun vm-biff-select-message-mouse 284,9243
+(defcustom vm-biff-FvwmCommand-path 289,9362
+(defun vm-biff-fvwm-focus-vm-folder-frame 295,9510
+(defun vm-biff-delete-popup 327,10523
+(defun vm-biff-timer-delete-popup 335,10700
+(defvar vm-biff-message-pointer 340,10832
+(defvar horizontal-scrollbar-visible-p)343,10924
+(defun vm-biff-popup 346,11006
+
+vm-build.el,112
+(defun vm-fix-cygwin-path 7,188
+(defun vm-custom-make-dependencies 69,2112
+(defun vm-built-autoloads 77,2395
+
+vm-crypto.el,452
+(defun vm-md5-region 30,998
+(defun vm-md5-string 72,2401
+(defun vm-md5-raw-string 84,2741
+(defun vm-xor-string 105,3457
+(defun vm-setup-ssh-tunnel 117,3763
+(defun vm-generate-random-data-file 153,4845
+(defun vm-setup-stunnel-random-data-if-needed 168,5269
+(defun vm-tear-down-stunnel-random-data 178,5630
+(defun vm-stunnel-random-data-args 183,5829
+(defun vm-stunnel-configuration-args 190,6035
+(defun vm-stunnel-configuration-file 218,7212
+
+vm-cus-load.el,81
+(defmacro custom-put-if-not 41,1910
+(defvar custom-versions-load-alist 46,2037
+
+vm-delete.el,321
+(defun vm-delete-message 27,947
+(defun vm-delete-message-backward 78,2903
+(defun vm-undelete-message 86,3141
+(defun vm-kill-subject 125,4583
+(defun vm-kill-thread-subtree 167,6117
+(defun vm-delete-duplicate-messages 205,7475
+(defun vm-delete-duplicate-messages-by-body 248,9117
+(defun vm-expunge-folder 296,10884
+
+vm-digest.el,888
+(defun vm-no-frills-encapsulate-message 27,958
+(defun vm-mime-encapsulate-messages 66,2649
+(defun vm-mime-burst-message 146,5978
+(defun vm-mime-burst-layout 166,6736
+(defun vm-rfc934-char-stuff-region 245,9761
+(defun vm-rfc934-char-unstuff-region 256,10186
+(defun vm-rfc934-encapsulate-messages 270,10656
+(defun vm-rfc1153-char-stuff-region 336,13273
+(defun vm-rfc1153-char-unstuff-region 349,13771
+(defun vm-rfc1153-encapsulate-messages 363,14300
+(defun vm-rfc1153-or-rfc934-burst-message 421,16828
+(defun vm-rfc934-burst-message 554,21808
+(defun vm-rfc1153-burst-message 559,21993
+(defun vm-burst-digest 565,22193
+(defun vm-burst-rfc934-digest 650,25362
+(defun vm-burst-rfc1153-digest 656,25491
+(defun vm-burst-mime-digest 662,25623
+(defun vm-burst-digest-to-temp-folder 668,25738
+(defun vm-guess-digest-type 754,29020
+(defun vm-digest-get-header-contents 782,29952
+
+vm-edit.el,242
+(defun vm-edit-message 27,952
+(defun vm-edit-message-other-frame 110,4253
+(defun vm-discard-cached-data 122,4647
+(defun vm-discard-cached-data-internal 147,5908
+(defun vm-edit-message-end 204,8180
+(defun vm-edit-message-abort 297,11840
+
+vm-folder.el,7032
+(defun vm-number-messages 60,1864
+(defun vm-set-numbering-redo-start-point 92,3308
+(defun vm-set-numbering-redo-end-point 117,4390
+(defun vm-do-needed-renumbering 142,5430
+(defun vm-set-summary-redo-start-point 161,6097
+(defun vm-mark-for-summary-update 184,7106
+(defun vm-do-needed-mode-line-update 263,10599
+(defun vm-update-summary-and-mode-line 369,14612
+(defun vm-reverse-link-messages 411,15958
+(defun vm-match-ordered-header 419,16190
+(defun vm-match-header 435,16742
+(defun vm-matched-header 472,18146
+(defun vm-matched-header-name 478,18377
+(defun vm-matched-header-contents 483,18595
+(defun vm-matched-header-start 489,18855
+(defun vm-matched-header-end 493,19005
+(defun vm-matched-header-name-start 497,19151
+(defun vm-matched-header-name-end 502,19318
+(defun vm-matched-header-contents-start 507,19481
+(defun vm-matched-header-contents-end 512,19656
+(defun vm-get-folder-type 517,19827
+(defun vm-convert-folder-type 593,22726
+(defun vm-convert-folder-header 629,24301
+(defun vm-skip-past-folder-header 646,25009
+(defun vm-convert-folder-type-headers 654,25328
+(defun vm-munge-message-separators 691,26852
+(defun vm-compatible-folder-p 713,27755
+(defun vm-leading-message-separator 724,28141
+(defun vm-trailing-message-separator 751,29249
+(defun vm-folder-header 764,29756
+(defun vm-find-leading-message-separator 787,30573
+(defun vm-find-trailing-message-separator 837,32057
+(defun vm-skip-past-leading-message-separator 881,33644
+(defun vm-skip-past-trailing-message-separator 903,34420
+(defun vm-build-message-list 916,34805
+(defun vm-build-header-order-alist 1002,38036
+(defun vm-reorder-message-headers 1031,39282
+(defun vm-read-thunderbird-status 1232,46834
+(defun vm-read-attributes 1294,49226
+(defun vm-read-babyl-attributes 1457,55234
+(defun vm-set-default-attributes 1501,56857
+(defun vm-compute-totals 1523,57910
+(defun vm-emit-totals-blurb 1546,58541
+(defun vm-convert-v4-attributes 1560,59021
+(defun vm-gobble-last-modified 1568,59253
+(defun vm-gobble-labels 1598,60166
+(defun vm-startup-apply-labels 1646,61559
+(defun vm-gobble-bookmark 1651,61787
+(defun vm-startup-apply-bookmark 1682,62672
+(defun vm-gobble-pop-retrieved 1688,62830
+(defun vm-gobble-imap-retrieved 1716,63724
+(defun vm-gobble-visible-header-variables 1744,64623
+(defun vm-startup-apply-header-variables 1768,65362
+(defun vm-gobble-message-order 1783,65979
+(defun vm-has-message-order 1816,66942
+(defun vm-startup-apply-message-order 1832,67375
+(defun vm-gobble-summary 1855,68292
+(defun vm-startup-apply-summary 1879,69051
+(defun vm-add-storage-header 1894,69543
+(defun vm-stuff-message-data 1919,70298
+(defun vm-stuff-folder-data 1997,73312
+(defun vm-stuff-babyl-attributes 2034,74953
+(defun vm-babyl-attributes-string 2068,76011
+(defun vm-babyl-labels-string 2089,76540
+(defun vm-stuff-virtual-message-data 2097,76769
+(defun vm-stuff-thunderbird-status 2105,77067
+(defun vm-stuff-labels 2152,79154
+(defun vm-stuff-bookmark 2210,81318
+(defun vm-stuff-last-modified 2252,82943
+(defun vm-stuff-pop-retrieved 2294,84586
+(defun vm-stuff-imap-retrieved 2346,86486
+(defun vm-stuff-summary 2399,88461
+(defun vm-stuff-header-variables 2445,90281
+(defun vm-stuff-message-order 2492,92155
+(defun vm-remove-message-order 2549,94190
+(defun vm-make-index-file-name 2580,95371
+(defun vm-read-index-file-maybe 2586,95554
+(defun vm-read-index-file 2600,96117
+(defun vm-check-index-file-validity 2721,100018
+(defun vm-generate-index-file-validity-check 2743,100732
+(defun vm-write-index-file-maybe 2755,101089
+(defun vm-write-index-file 2764,101359
+(defun vm-delete-index-file 2917,105941
+(defun vm-change-all-new-to-unread 2922,106111
+(defun vm-unread-message 2932,106355
+(defalias 'vm-flag-message-unread vm-flag-message-unread2954,107302
+(defun vm-flag-message-read 2957,107372
+(defun vm-quit-just-bury 2983,108399
+(defun vm-quit-just-iconify 3011,109399
+(defun vm-quit-no-change 3035,110203
+(defun vm-quit-no-expunge 3041,110360
+(defvar dired-listing-switches)3049,110553
+(defun vm-quit 3052,110631
+(defun vm-start-itimers-if-needed 3153,114408
+(defvar timer-list)3204,116349
+(defun vm-timer-using 3205,116369
+(defvar current-itimer)3214,116546
+(defun vm-check-mail-itimer-function 3219,116726
+(defun vm-get-mail-itimer-function 3265,118428
+(defun vm-flush-itimer-function 3316,120209
+(defun vm-flush-cached-data 3333,120786
+(defun vm-write-file-hook 3363,121836
+(defun vm-save-buffer 3394,122941
+(defun vm-write-file 3410,123489
+(defun vm-unblock-new-mail 3447,124821
+(defun vm-save-folder-no-expunge 3451,124899
+(defun vm-save-folder 3467,125405
+(defun vm-save-and-expunge-folder 3570,129165
+(defun vm-read-folder 3588,129817
+(defun vm-revert-buffer 3627,131268
+(defun vm-revert-folder 3650,132088
+(defun vm-recover-file 3657,132275
+(defun vm-recover-folder 3680,133081
+(defun vm-handle-file-recovery-or-reversion 3689,133374
+(defun vm-handle-file-recovery 3708,134217
+(defun vm-handle-file-reversion 3717,134521
+(defun vm-after-revert-buffer-hook 3728,134976
+(defun vm-help 3733,135112
+(defun vm-spool-move-mail 3758,136181
+(defun vm-gobble-crash-box 3793,137355
+(defun vm-compute-spool-files 3898,141081
+(defun vm-spool-check-mail 3945,142514
+(defun vm-count-messages-in-file 3962,143127
+(defun vm-movemail-specific-spool-file-p 3999,144418
+(defun vm-check-for-spooled-mail 4002,144503
+(defun vm-get-spooled-mail 4057,146500
+(defun vm-get-spooled-mail-normal 4074,147151
+(defun vm-folder-name 4187,151386
+(defun vm-safe-popdrop-string 4195,151603
+(defun vm-popdrop-sans-password 4203,151972
+(defun vm-popdrop-sans-personal-info 4210,152231
+(defun vm-safe-imapdrop-string 4217,152515
+(defun vm-imapdrop-sans-password 4228,152978
+(defun vm-imapdrop-sans-password-and-mailbox 4238,153287
+(defun vm-imapdrop-sans-personal-info 4247,153584
+(defun vm-maildrop-sans-password 4255,153850
+(defun vm-maildrop-sans-personal-info 4262,154209
+(defun vm-maildrop-alist-sans-password 4269,154583
+(defun vm-maildrop-alist-sans-personal-info 4275,154749
+(defun vm-get-new-mail 4282,154940
+(defun vm-assimilate-new-messages 4367,158301
+(defun vm-select-marked-or-prefixed-messages 4494,163701
+(defun vm-display-startup-message 4525,164961
+(defun vm-toggle-read-only 4536,165297
+(defvar scroll-in-place)4546,165708
+(defun vm-mode-internal 4549,165777
+(defun vm-link-to-virtual-buffers 4626,168744
+(defun vm-change-folder-type 4654,169549
+(defun vm-register-global-garbage-files 4736,172718
+(defun vm-garbage-collect-global 4744,172974
+(defun vm-register-folder-garbage-files 4754,173332
+(defun vm-register-folder-garbage 4765,173690
+(defun vm-garbage-collect-folder 4774,173969
+(defun vm-register-fetched-message 4784,174316
+(defun vm-unregister-fetched-message 4820,175689
+(defun vm-discard-fetched-messages 4830,176109
+(defun vm-register-message-garbage-files 4841,176509
+(defun vm-register-message-garbage 4852,176871
+(defun vm-garbage-collect-message 4862,177200
+(defvar after-revert-hook)4877,177740
+
+vm-grepmail.el,425
+(defgroup vm 59,1629
+(defgroup vm-grepmail 63,1670
+(defcustom vm-grepmail-command 69,1829
+(defcustom vm-grepmail-arguments 75,1950
+(defvar vm-grepmail-arguments-history81,2166
+(defvar vm-grepmail-folders-history 85,2265
+(defvar vm-grepmail-folder-buffer 88,2366
+(defun vm-grepmail 95,2573
+(defun vm-grepmail-process-filter 192,6713
+(defun vm-grepmail-process-done 215,7563
+(defun vm-grepmail-grab-message 242,8526
+
+vm-imap.el,7322
+(defvar selectable-only)49,1459
+(defsubst vm-folder-imap-maildrop-spec 80,2695
+(defsubst vm-folder-imap-process 83,2842
+(defsubst vm-folder-imap-uid-validity 86,2957
+(defsubst vm-folder-imap-uid-list 90,3137
+(defsubst vm-folder-imap-mailbox-count 93,3254
+(defsubst vm-folder-imap-read-write 96,3388
+(defsubst vm-folder-imap-can-delete 99,3520
+(defsubst vm-folder-imap-body-peek 102,3664
+(defsubst vm-folder-imap-permanent-flags 105,3791
+(defsubst vm-folder-imap-uid-obarray 108,3926
+(defsubst vm-folder-imap-flags-obarray 111,4077
+(defsubst vm-set-folder-imap-maildrop-spec 115,4234
+(defsubst vm-set-folder-imap-process 117,4321
+(defsubst vm-set-folder-imap-uid-validity 119,4402
+(defsubst vm-set-folder-imap-uid-list 121,4488
+(defsubst vm-set-folder-imap-mailbox-count 123,4570
+(defsubst vm-set-folder-imap-read-write 125,4657
+(defsubst vm-set-folder-imap-can-delete 127,4741
+(defsubst vm-set-folder-imap-body-peek 129,4825
+(defsubst vm-set-folder-imap-permanent-flags 131,4908
+(defsubst vm-set-folder-imap-uid-obarray 133,4997
+(defsubst vm-set-folder-imap-flags-obarray 135,5082
+(defvar vm-imap-log-sessions 140,5201
+(defvar vm-imap-tokens 144,5348
+(defsubst vm-imap-init-log 146,5377
+(defsubst vm-imap-log-token 149,5437
+(defsubst vm-imap-log-tokens 153,5561
+(defun vm-imap-session-type:set 166,6007
+(defun vm-imap-session-type:make-active 169,6083
+(defsubst vm-imap-session-type:assert 173,6213
+(defsubst vm-imap-folder-session-type:assert 176,6305
+(defsubst vm-imap-session-type:assert-active 180,6472
+(defsubst vm-imap-delete-message 186,6630
+(defun vm-imap-protocol-error 202,7240
+(defun vm-imap-normal-error 206,7407
+(defun vm-imap-capability 210,7570
+(defun vm-imap-auth-method 216,7759
+(defsubst vm-accept-process-output 219,7830
+(defvar selectable-only)239,8618
+(defvar vm-imap-connection-mode 241,8644
+(defun delete-common-elements 251,9176
+(defsubst vm-imap-fetch-message 286,10359
+(defun vm-imap-fetch-messages 290,10517
+(defsubst vm-imap-fetch-uid-message 298,10877
+(defun vm-imap-move-mail 314,11547
+(defun vm-imap-check-mail 485,17769
+(defun vm-expunge-imap-messages 557,20123
+(defun vm-imap-clear-invalid-retrieval-entries 722,25503
+(defun vm-imap-recorded-uid-validity 738,26094
+(defun vm-imap-make-session 828,29793
+(defun vm-imap-check-for-server-spec 1061,38216
+(defun vm-imap-end-session 1085,39081
+(defun vm-imap-stat-timer 1151,41681
+(defun vm-imap-stat-did-report 1153,41779
+(defun vm-imap-stat-x-box 1155,41851
+(defun vm-imap-stat-x-currmsg 1157,41960
+(defun vm-imap-stat-x-maxmsg 1159,42074
+(defun vm-imap-stat-x-got 1161,42176
+(defun vm-imap-stat-x-need 1163,42249
+(defun vm-imap-stat-y-box 1165,42330
+(defun vm-imap-stat-y-currmsg 1166,42372
+(defun vm-imap-stat-y-maxmsg 1167,42418
+(defun vm-imap-stat-y-got 1168,42463
+(defun vm-imap-stat-y-need 1169,42506
+(defun vm-set-imap-stat-timer 1171,42551
+(defun vm-set-imap-stat-did-report 1172,42605
+(defun vm-set-imap-stat-x-box 1173,42664
+(defun vm-set-imap-stat-x-currmsg 1174,42718
+(defun vm-set-imap-stat-x-maxmsg 1175,42776
+(defun vm-set-imap-stat-x-got 1176,42833
+(defun vm-set-imap-stat-x-need 1177,42887
+(defun vm-set-imap-stat-y-box 1178,42942
+(defun vm-set-imap-stat-y-currmsg 1179,42996
+(defun vm-set-imap-stat-y-maxmsg 1180,43054
+(defun vm-set-imap-stat-y-got 1181,43111
+(defun vm-set-imap-stat-y-need 1182,43166
+(defun vm-imap-start-status-timer 1184,43223
+(defun vm-imap-stop-status-timer 1191,43430
+(defun vm-imap-report-retrieval-status 1198,43686
+(defun vm-imap-check-connection 1227,44751
+(defun vm-imap-send-command 1234,45028
+(defun vm-imap-select-mailbox 1261,46199
+(defun vm-imap-read-expunge-response 1330,49146
+(defun vm-imap-get-uid-list 1351,49870
+(defun vm-imap-get-message-data 1395,51653
+(defun vm-imap-get-message-data-list 1427,52979
+(defun vm-imap-ask-about-large-message 1494,55451
+(defun vm-imap-retrieve-to-target 1558,57689
+(defun vm-imap-delete-messages 1675,62271
+(defun vm-imap-get-message-size 1685,62665
+(defun vm-imap-get-uid-message-size 1712,63684
+(defun vm-imap-read-capability-response 1753,65052
+(defun vm-imap-read-greeting 1794,66338
+(defun vm-imap-read-ok-response 1807,66741
+(defun vm-imap-cleanup-region 1825,67352
+(defun vm-imap-read-response 1834,67603
+(defun vm-imap-read-response-and-verify 1857,68446
+(defun vm-imap-read-object 1880,69522
+(defun vm-imap-response-matches 2008,74020
+(defun vm-imap-bail-if-server-says-farewell 2057,75476
+(defun vm-imap-scan-list-for-flag 2061,75616
+(defun vm-imap-plist-get 2076,76035
+(defun vm-imap-quote-string 2090,76391
+(defun vm-imap-quote-buffer 2093,76493
+(defun vm-imap-poke-session 2103,76716
+(defun vm-re-establish-folder-imap-session 2136,77826
+(defun vm-establish-new-folder-imap-session 2147,78283
+(defun vm-establish-writable-imap-session 2206,80667
+(defun vm-kill-folder-imap-session 2245,81987
+(defun vm-imap-retrieve-uid-and-flags-data 2250,82153
+(defun vm-imap-dump-uid-and-flags-data 2290,83584
+(defun vm-imap-dump-uid-seq-num-data 2308,84194
+(defun vm-imap-get-message-flags 2328,84889
+(defun vm-imap-update-message-flags 2379,86764
+(defun vm-imap-save-message-flags 2452,89187
+(defvar vm-imap-subst-char-in-string-buffer2570,93765
+(defun vm-imap-subst-CRLF-for-LF 2573,93859
+(defun vm-imap-save-message 2583,94181
+(defun vm-imap-copy-message 2643,96407
+(defun vm-imap-get-synchronization-data 2719,99087
+(defun vm-imap-server-error 2789,101922
+(defun vm-imap-synchronize-folder 2795,102111
+(defvar vm-imap-message-bunch-size 3112,114227
+(defun vm-imap-bunch-messages 3116,114341
+(defun vm-fetch-imap-message 3139,115026
+(defun vm-load-message 3227,118096
+(defun vm-retrieve-marked-or-prefixed-messages 3274,119670
+(defun vm-retrieve-real-message-body 3315,121130
+(defun vm-refresh-message 3375,123765
+(defun vm-unload-message 3383,123990
+(defun vm-discard-real-message-body 3432,125703
+(defun vm-imap-save-attributes 3470,127036
+(defun vm-imap-synchronize 3502,128334
+(defun vm-imap-folder-check-for-mail 3553,130243
+(defun vm-imap-find-name-for-spec 3586,131688
+(defun vm-imap-find-spec-for-buffer 3593,131934
+(defun vm-imap-make-filename-for-spec 3611,132577
+(defun vm-imap-normalize-spec 3623,132959
+(defun vm-imap-account-name-for-spec 3634,133371
+(defun vm-imap-spec-for-account 3649,133996
+(defun vm-imap-parse-spec-to-list 3655,134231
+(defun vm-imap-spec-list-to-host-alist 3660,134398
+(defvar vm-imap-account-folder-cache 3672,134735
+(defun vm-imap-folder-completion-list 3675,134833
+(defun vm-read-imap-folder-name 3719,136431
+(defun vm-imap-directory-separator 3771,138427
+(defun vm-imap-mailbox-list 3802,139623
+(defun vm-imap-mailbox-p 3839,141001
+(defun vm-imap-read-boolean-response 3875,142342
+(defun vm-imap-create-mailbox 3890,142937
+(defun vm-imap-delete-mailbox 3910,143802
+(defun vm-imap-rename-mailbox 3916,144057
+(defun vm-create-imap-folder 3924,144376
+(defun vm-delete-imap-folder 3970,146075
+(defun vm-rename-imap-folder 4011,147669
+(defun vm-list-imap-folders 4059,149609
+(defun vm-imap-save-composition 4109,151407
+(defun vm-imap-start-bug-report 4228,155829
+(defun vm-imap-submit-bug-report 4237,156153
+(defun vm-imap-set-default-attributes 4272,157427
+(defun vm-imap-unset-body-retrieve 4277,157614
+(defun vm-imap-unset-byte-counts 4292,158152
+
+vm-license.el,80
+(defun vm-show-copying-restrictions 27,966
+(defun vm-show-no-warranty 51,1781
+
+vm-macro.el,750
+(defmacro vm-add-to-list 27,996
+(defsubst vm-sit-for 32,1180
+(defsubst vm-marker 38,1465
+(defsubst vm-select-folder-buffer 41,1550
+(defsubst vm-select-folder-buffer-if-possible 57,2179
+(defsubst vm-select-folder-buffer-and-validate 76,2874
+(defsubst vm-error-if-folder-read-only 103,3943
+(defsubst vm-error-if-virtual-folder 107,4072
+(defsubst vm-summary-operation-p 111,4226
+(defsubst vm-build-threads-if-unbuilt 115,4347
+(defsubst vm-binary-coding-system 119,4460
+(defsubst vm-line-ending-coding-system 124,4590
+(defmacro vm-save-restriction 135,4958
+(defmacro vm-save-buffer-excursion 162,5967
+(defmacro vm-assert 172,6270
+(defmacro vm-increment 180,6498
+(defmacro vm-decrement 183,6578
+(defun vm-make-trace-buffer-name 188,6711
+
+vm-mark.el,1202
+(defun vm-clear-all-marks 32,1021
+(defun vm-toggle-all-marks 50,1593
+(defun vm-mark-all-messages 68,2247
+(defun vm-mark-message 84,2777
+(defun vm-unmark-message 110,3726
+(defun vm-mark-summary-region 131,4491
+(defun vm-unmark-summary-region 146,5013
+(defun vm-mark-or-unmark-summary-region 160,5537
+(defun vm-mark-or-unmark-messages-with-selector 183,6238
+(defun vm-mark-matching-messages 213,7199
+(defun vm-unmark-matching-messages 227,7785
+(defun vm-mark-thread-subtree 241,8379
+(defun vm-unmark-thread-subtree 249,8644
+(defun vm-mark-or-unmark-thread-subtree 256,8900
+(defun vm-mark-messages-same-subject 291,10309
+(defun vm-unmark-messages-same-subject 299,10584
+(defun vm-mark-or-unmark-messages-same-subject 306,10850
+(defun vm-mark-messages-same-author 331,11691
+(defun vm-unmark-messages-same-author 339,11963
+(defun vm-mark-or-unmark-messages-same-author 346,12226
+(defun vm-mark-or-unmark-messages-with-virtual-folder 370,13038
+(defun vm-mark-matching-messages-with-virtual-folder 412,14556
+(defun vm-unmark-matching-messages-with-virtual-folder 425,15050
+(defun vm-next-command-uses-marks 438,15551
+(defun vm-marked-messages 450,16026
+(defun vm-mark-help 459,16237
+
+vm-menu.el,3713
+(defvar vm-menu-folders-menu60,2070
+(defvar vm-menu-folder-menu65,2226
+(defvar vm-menu-dispose-menu103,3576
+(defvar vm-menu-motion-menu134,4816
+(defvar vm-menu-virtual-menu161,5798
+(defvar vm-menu-send-menu175,6323
+(defvar vm-menu-mark-menu191,7110
+(defvar vm-menu-label-menu215,8284
+(defvar vm-menu-sort-menu222,8523
+(defvar vm-menu-help-menu245,9699
+(defvar vm-menu-undo-menu258,10134
+(defvar vm-menu-emacs-button262,10205
+(defvar vm-menu-vm-button266,10277
+(defvar vm-menu-mail-menu270,10342
+(defvar vm-menu-mime-dispose-menu386,14044
+(defvar vm-menu-url-browser-menu440,16065
+(defvar vm-menu-mailto-url-browser-menu488,17463
+(defvar vm-menu-subject-menu498,17747
+(defvar vm-menu-author-menu519,18513
+(defvar vm-menu-attachment-menu535,19028
+(defvar vm-menu-image-menu625,21937
+(defvar vm-menu-vm-menubar 665,23476
+(defvar vm-menu-vm-menu667,23509
+(defvar vm-mode-menu-map 688,23948
+(defun vm-menu-run-command 690,23979
+(defun vm-menu-can-revert-p 697,24264
+(defun vm-menu-can-recover-p 704,24430
+(defun vm-menu-can-save-p 715,24699
+(defun vm-menu-can-get-new-mail-p 723,24883
+(defun vm-menu-can-undo-p 731,25111
+(defun vm-menu-can-decode-mime-p 738,25252
+(defun vm-menu-can-expunge-pop-messages-p 749,25555
+(defun vm-menu-can-expunge-imap-messages-p 756,25732
+(defun vm-menu-yank-original 763,25911
+(defun vm-menu-can-send-mail-p 772,26116
+(defun vm-menu-create-subject-virtual-folder 784,26467
+(defun vm-menu-create-author-virtual-folder 792,26770
+(defun vm-menu-xemacs-global-menubar 799,27041
+(defun vm-menu-fsfemacs-global-menubar 804,27171
+(defun vm-menu-initialize-vm-mode-menu-map 807,27262
+(defun vm-menu-make-xemacs-menubar 923,31790
+(defun vm-menu-popup-mode-menu 948,32543
+(defvar vm-menu-fsfemacs-attachment-menu)959,32990
+(defun vm-menu-popup-context-menu 960,33032
+(defvar vm-menu-fsfemacs-url-browser-menu)994,34589
+(defvar vm-menu-fsfemacs-mailto-url-browser-menu)995,34632
+(defvar vm-menu-fsfemacs-mime-dispose-menu)996,34682
+(defun vm-menu-goto-event 998,34727
+(defun vm-menu-popup-url-browser-menu 1011,35277
+(defun vm-menu-popup-mailto-url-browser-menu 1020,35593
+(defun vm-menu-popup-mime-dispose-menu 1029,35930
+(defun vm-menu-popup-attachment-menu 1038,36249
+(defvar vm-menu-fsfemacs-image-menu)1047,36562
+(defun vm-menu-popup-image-menu 1048,36599
+(defvar vm-menu-fsfemacs-mail-menu)1058,36927
+(defvar vm-menu-fsfemacs-dispose-popup-menu)1059,36963
+(defvar vm-menu-fsfemacs-vm-menu)1060,37008
+(defun vm-menu-popup-fsfemacs-menu 1062,37043
+(defun vm-menu-mode-menu 1079,37644
+(defun vm-menu-set-menubar-dirty-flag 1093,38126
+(defun vm-menu-toggle-menubar 1099,38289
+(defun vm-menu-install-menubar 1135,39740
+(defun vm-menu-install-menubar-item 1148,40269
+(defun vm-menu-install-vm-mode-menu 1159,40761
+(defun vm-menu-install-mail-mode-menu 1167,40931
+(defun vm-menu-install-menus 1193,41899
+(defun vm-menu-install-known-virtual-folders-menu 1204,42218
+(defun vm-menu-install-visited-folders-menu 1234,43259
+(defvar vm-menu-hm-no-hidden-dirs 1297,45196
+(defvar vm-menu-hm-hidden-file-list 1300,45306
+(defun vm-menu-hm-delete-folder 1302,45372
+(defun vm-menu-hm-rename-folder 1322,45920
+(defun vm-menu-hm-create-dir 1338,46308
+(defun vm-menu-hm-make-folder-menu 1354,46732
+(defun vm-menu-hm-install-menu 1417,48428
+(defvar vm-menu-hm-tree-ls-flags 1437,49122
+(defun vm-menu-hm-tree-ls-in-temp-buffer 1445,49415
+(defvar vm-menu-hm-tree-temp-buffername 1460,49897
+(defun vm-menu-hm-tree-make-file-list-1 1464,49987
+(defun vm-menu-hm-tree-menu-file-truename 1496,50984
+(defun vm-menu-hm-tree-make-file-list 1499,51097
+(defun vm-menu-hm-tree-hide-file-p 1519,51804
+(defun vm-menu-hm-tree-make-menu 1527,52157
+
+vm-message-history.el,575
+(defgroup vm-message-history 61,2052
+(defcustom vm-message-history-max 65,2136
+(defvar vm-message-history 70,2292
+(defvar vm-message-history-pointer 75,2421
+(define-key vm-mode-map 80,2591
+(define-key vm-mode-map 81,2653
+(define-key vm-mode-map 82,2714
+(defun vm-message-history-add 94,3103
+(defun vm-message-history-backward 119,4273
+(defun vm-message-history-forward 158,5602
+(defvar vm-message-history-menu 164,5824
+(defun vm-message-history-browse-select 167,5929
+(defvar vm-message-history-browse-mode-map178,6384
+(defun vm-message-history-browse 188,6741
+
+vm-message.el,6167
+(defsubst vm-current-message 28,990
+(defsubst vm-location-data-of 35,1255
+(defsubst vm-start-of 38,1387
+(defsubst vm-headers-of 41,1484
+(defsubst vm-vheaders-of 44,1578
+(defsubst vm-text-of 49,1767
+(defsubst vm-text-end-of 53,1949
+(defsubst vm-end-of 56,2035
+(defsubst vm-softdata-of 59,2114
+(defsubst vm-number-of 61,2169
+(defsubst vm-padded-number-of 63,2231
+(defsubst vm-mark-of 65,2300
+(defsubst vm-su-start-of 68,2385
+(defsubst vm-su-end-of 71,2472
+(defsubst vm-real-message-sym-of 74,2577
+(defsubst vm-real-message-of 77,2665
+(defsubst vm-reverse-link-of 80,2796
+(defsubst vm-message-type-of 83,2895
+(defsubst vm-message-id-number-of 87,3049
+(defsubst vm-buffer-of 90,3155
+(defsubst vm-thread-indentation-of 93,3251
+(defsubst vm-thread-list-of 96,3401
+(defsubst vm-babyl-frob-flag-of 99,3528
+(defsubst vm-saved-virtual-attributes-of 102,3673
+(defsubst vm-saved-virtual-mirror-data-of 105,3828
+(defsubst vm-virtual-summary-of 108,3952
+(defsubst vm-mime-layout-of 111,4101
+(defsubst vm-mime-encoded-header-flag-of 113,4169
+(defsubst vm-su-summary-mouse-track-overlay-of 115,4250
+(defsubst vm-message-access-method-of 117,4337
+(defsubst vm-thread-subtree-of 119,4415
+(defsubst vm-attributes-of 123,4515
+(defsubst vm-new-flag 124,4570
+(defsubst vm-unread-flag 125,4629
+(defsubst vm-deleted-flag 126,4691
+(defsubst vm-filed-flag 127,4754
+(defsubst vm-replied-flag 128,4815
+(defsubst vm-written-flag 129,4878
+(defsubst vm-forwarded-flag 130,4941
+(defsubst vm-edited-flag 131,5006
+(defsubst vm-redistributed-flag 132,5068
+(defsubst vm-cached-data-of 134,5160
+(defsubst vm-byte-count-of 136,5255
+(defsubst vm-weekday-of 138,5335
+(defsubst vm-monthday-of 140,5409
+(defsubst vm-month-of 142,5485
+(defsubst vm-year-of 144,5557
+(defsubst vm-hour-of 146,5628
+(defsubst vm-zone-of 148,5698
+(defsubst vm-full-name-of 150,5820
+(defsubst vm-from-of 152,5929
+(defsubst vm-message-id-of 154,6015
+(defsubst vm-line-count-of 156,6123
+(defsubst vm-subject-of 158,6218
+(defsubst vm-vheaders-regexp-of 160,6357
+(defsubst vm-to-of 163,6482
+(defsubst vm-to-names-of 166,6637
+(defsubst vm-month-number-of 168,6722
+(defsubst vm-sortable-datestring-of 170,6848
+(defsubst vm-sortable-subject-of 173,6965
+(defsubst vm-summary-of 176,7065
+(defsubst vm-parent-of 179,7183
+(defsubst vm-references-of 182,7291
+(defsubst vm-headers-to-be-retrieved-of 190,7728
+(defsubst vm-body-to-be-discarded-of 192,7785
+(defsubst vm-body-to-be-retrieved-of 198,8097
+(defsubst vm-body-retrieved-of 200,8174
+(defsubst vm-pop-uidl-of 203,8282
+(defsubst vm-imap-uid-of 206,8411
+(defsubst vm-imap-uid-validity-of 209,8514
+(defsubst vm-spam-score-of 211,8588
+(defsubst vm-mirror-data-of 214,8728
+(defsubst vm-edit-buffer-of 216,8846
+(defsubst vm-virtual-messages-of 218,8977
+(defsubst vm-stuff-flag-of 221,9137
+(defsubst vm-labels-of 223,9244
+(defsubst vm-label-string-of 225,9328
+(defsubst vm-attribute-modflag-of 228,9484
+(defsubst vm-set-location-data-of 230,9556
+(defsubst vm-set-start-of 231,9630
+(defsubst vm-set-headers-of 233,9707
+(defsubst vm-set-vheaders-of 235,9778
+(defsubst vm-set-text-of 237,9852
+(defsubst vm-set-text-end-of 239,9926
+(defsubst vm-set-end-of 241,10004
+(defsubst vm-set-softdata-of 243,10075
+(defsubst vm-set-number-of 245,10144
+(defsubst vm-set-padded-number-of 247,10214
+(defsubst vm-set-mark-of 249,10291
+(defsubst vm-set-su-start-of 251,10363
+(defsubst vm-set-su-end-of 253,10439
+(defsubst vm-set-real-message-sym-of 255,10513
+(defsubst vm-set-reverse-link-of 257,10597
+(defsubst vm-set-reverse-link-sym-of 259,10685
+(defsubst vm-set-message-type-of 261,10769
+(defsubst vm-set-message-id-number-of 263,10851
+(defsubst vm-set-buffer-of 265,10942
+(defsubst vm-set-thread-indentation-of 267,11022
+(defsubst vm-set-thread-list-of 269,11109
+(defsubst vm-set-babyl-frob-flag-of 271,11191
+(defsubst vm-set-saved-virtual-attributes-of 273,11277
+(defsubst vm-set-saved-virtual-mirror-data-of 275,11374
+(defsubst vm-set-virtual-summary-of 277,11470
+(defsubst vm-set-mime-layout-of 279,11556
+(defsubst vm-set-mime-encoded-header-flag-of 281,11642
+(defsubst vm-set-su-summary-mouse-track-overlay-of 283,11737
+(defsubst vm-set-message-access-method-of 285,11844
+(defsubst vm-set-thread-subtree-of 287,11940
+(defsubst vm-set-attributes-of 289,12025
+(defun vm-set-edited-flag-of 291,12167
+(defsubst vm-set-cached-data-of 299,12499
+(defsubst vm-set-byte-count-of 300,12571
+(defsubst vm-set-weekday-of 302,12653
+(defsubst vm-set-monthday-of 304,12728
+(defsubst vm-set-month-of 306,12804
+(defsubst vm-set-year-of 308,12877
+(defsubst vm-set-hour-of 310,12949
+(defsubst vm-set-zone-of 312,13021
+(defsubst vm-set-full-name-of 314,13093
+(defsubst vm-set-from-of 316,13176
+(defsubst vm-set-message-id-of 318,13254
+(defsubst vm-set-line-count-of 320,13330
+(defsubst vm-set-subject-of 322,13413
+(defsubst vm-set-vheaders-regexp-of 324,13497
+(defsubst vm-set-to-of 326,13587
+(defsubst vm-set-to-names-of 328,13664
+(defsubst vm-set-month-number-of 330,13747
+(defsubst vm-set-sortable-datestring-of 332,13828
+(defsubst vm-set-sortable-subject-of 334,13916
+(defsubst vm-set-summary-of 336,14001
+(defsubst vm-set-parent-of 338,14077
+(defsubst vm-set-references-of 340,14152
+(defsubst vm-set-headers-to-be-retrieved-of 342,14231
+(defsubst vm-set-body-to-be-discarded-of 344,14296
+(defsubst vm-set-body-to-be-retrieved-of 346,14385
+(defsubst vm-set-pop-uidl-of 348,14474
+(defsubst vm-set-imap-uid-of 350,14551
+(defsubst vm-set-imap-uid-validity-of 352,14628
+(defsubst vm-set-spam-score-of 354,14714
+(defsubst vm-set-mirror-data-of 356,14793
+(defsubst vm-set-edit-buffer-of 358,14865
+(defsubst vm-set-virtual-messages-of 360,14944
+(defsubst vm-set-virtual-messages-sym-of 362,15036
+(defsubst vm-set-stuff-flag-of 364,15124
+(defsubst vm-set-labels-of 366,15202
+(defsubst vm-set-label-string-of 368,15282
+(defsubst vm-set-attribute-modflag-of 370,15368
+(defun vm-mime-encode-words-in-cache-vector 373,15456
+(defun vm-make-message 446,18340
+(defun vm-find-and-set-text-of 474,19451
+(defsubst vm-virtual-message-p 483,19705
+(defun vm-update-virtual-messages 486,19780
+
+vm-mime.el,13876
+(defvar enable-multibyte-characters)29,953
+(defvar vm-image-list)34,1128
+(defvar vm-image-type)35,1151
+(defvar vm-image-type-name)36,1174
+(defvar vm-extent-list)37,1202
+(defvar vm-overlay-list)38,1226
+(defun vm-mime-error 41,1253
+(defun vm-coding-system-p 65,2219
+(defun vm-get-coding-system-priorities 71,2375
+(defun vm-get-mime-ucs-list 83,2833
+(defun vm-update-mime-charset-maps 96,3319
+(defun vm-make-layout 141,5074
+(defun vm-mm-layout-type 161,5681
+(defun vm-mm-layout-qtype 162,5722
+(defun vm-mm-layout-encoding 163,5764
+(defun vm-mm-layout-id 164,5809
+(defun vm-mm-layout-description 165,5848
+(defun vm-mm-layout-disposition 166,5896
+(defun vm-mm-layout-qdisposition 167,5944
+(defun vm-mm-layout-header-start 168,5993
+(defun vm-mm-layout-header-end 169,6042
+(defun vm-mm-layout-body-start 170,6089
+(defun vm-mm-layout-body-end 171,6136
+(defun vm-mm-layout-parts 172,6182
+(defun vm-mm-layout-cache 173,6225
+(defun vm-mm-layout-message-symbol 174,6268
+(defun vm-mm-layout-message 175,6320
+(defun vm-mm-layout-display-error 178,6463
+(defun vm-mm-layout-is-converted 179,6514
+(defun vm-set-mm-layout-type 181,6565
+(defun vm-set-mm-layout-qtype 182,6620
+(defun vm-set-mm-layout-encoding 183,6676
+(defun vm-set-mm-layout-id 184,6743
+(defun vm-set-mm-layout-description 185,6792
+(defun vm-set-mm-layout-disposition 186,6852
+(defun vm-set-mm-layout-qdisposition 187,6908
+(defun vm-set-mm-layout-header-start 188,6965
+(defun vm-set-mm-layout-header-end 189,7030
+(defun vm-set-mm-layout-body-start 190,7093
+(defun vm-set-mm-layout-body-end 191,7156
+(defun vm-set-mm-layout-parts 192,7214
+(defun vm-set-mm-layout-cache 193,7273
+(defun vm-set-mm-layout-display-error 194,7324
+(defun vm-set-mm-layout-is-converted 195,7383
+(defun vm-mime-make-message-symbol 197,7442
+(defun vm-mime-make-cache-symbol 202,7540
+(defun vm-mm-layout 207,7635
+(defun vm-mm-encoded-header 214,7896
+(defun vm-mime-Q-decode-region 231,8393
+(defun vm-mime-Q-encode-region 239,8658
+(defun vm-mime-B-encode-region 247,8933
+(defun vm-mime-base64-decode-string 250,9027
+(defun vm-mime-base64-encode-string 256,9203
+(defun vm-mime-crlf-to-lf-region 263,9395
+(defun vm-mime-lf-to-crlf-region 273,9652
+(defun vm-encode-coding-region 283,9909
+(defun vm-decode-coding-region 312,10889
+(defun vm-mime-charset-decode-region 341,11906
+(defun vm-mime-transfer-decode-region 382,13445
+(defun vm-mime-base64-decode-region 396,14076
+(defun vm-mime-base64-encode-region 484,17270
+(defun vm-mime-qp-decode-region 579,20569
+(defun vm-mime-qp-encode-region 663,23731
+(defun vm-mime-uuencode-decode-region 755,26857
+(defun vm-decode-mime-message-headers 807,28992
+(defun vm-decode-mime-encoded-words 854,30821
+(defun vm-decode-mime-encoded-words-in-string 900,32562
+(defun vm-reencode-mime-encoded-words 907,32830
+(defun vm-reencode-mime-encoded-words-in-string 946,34148
+(defun vm-mime-get-header-contents 959,34727
+(defun vm-mime-parse-entity 972,35118
+(defun vm-mime-parse-entity-safe 1247,45162
+(defun vm-mime-get-xxx-parameter-internal 1293,46879
+(defun vm-mime-get-xxx-parameter 1307,47369
+(defun vm-mime-get-parameter 1321,47907
+(defun vm-mime-get-disposition-parameter 1325,48101
+(defun vm-mime-set-xxx-parameter 1329,48314
+(defun vm-mime-set-parameter 1342,48759
+(defun vm-mime-set-qparameter 1345,48884
+(defun vm-mime-insert-mime-body 1349,49051
+(defun vm-mime-insert-mime-headers 1354,49248
+(defvar buffer-display-table)1359,49454
+(defvar standard-display-table)1360,49484
+(defvar buffer-file-type)1361,49516
+(defun vm-make-presentation-copy 1362,49542
+(defun vm-make-fetch-copy-if-necessary 1483,54205
+(defun vm-make-fetch-copy 1494,54628
+(defun vm-fetch-message 1614,59174
+(defun vm-fetch-file-message 1663,61228
+(defvar buffer-file-coding-system)1672,61561
+(defun vm-determine-proper-charset 1674,61597
+(defun vm-determine-proper-content-transfer-encoding 1854,68743
+(defun vm-mime-types-match 1878,69356
+(defvar native-sound-only-on-console)1894,69882
+(defun vm-mime-text/html-handler 1896,69921
+(defun vm-mime-can-display-internal 1909,70356
+(defun vm-mime-can-convert 1952,72352
+(defun vm-mime-can-convert-0 1956,72523
+(defun vm-mime-convert-undisplayable-layout 1977,73304
+(defun vm-mime-can-convert-charset 2034,75467
+(defun vm-mime-can-convert-charset-0 2037,75588
+(defun vm-mime-convert-undisplayable-charset 2047,75930
+(defun vm-mime-charset-convert-region 2100,78038
+(defun vm-mime-should-display-button 2126,79020
+(defun vm-mime-should-display-internal 2142,79669
+(defun vm-mime-find-external-viewer 2153,80046
+(defun vm-mime-delete-button-maybe 2170,80611
+(defun vm-decode-mime-message 2180,80971
+(defun vm-mime-get-disposition-filename 2290,85333
+(defun vm-decode-mime-layout 2310,86358
+(defun vm-mime-display-button-text 2391,89546
+(defun vm-mime-display-internal-text 2394,89633
+(defun vm-mime-cid-retrieve 2397,89728
+(defun vm-mime-display-internal-w3m-text/html 2418,90557
+(defun vm-mime-display-internal-lynx-text/html 2425,90831
+(defun vm-mime-display-internal-text/html 2431,91068
+(defun vm-mime-display-internal-text/plain 2499,94194
+(defun vm-mime-display-internal-text/enriched 2525,95298
+(defun vm-mime-display-external-generic 2554,96470
+(defun vm-mime-display-internal-application/octet-stream 2625,98934
+(defun vm-mime-display-button-application 2654,100105
+(defun vm-mime-display-button-audio 2657,100201
+(defun vm-mime-display-button-video 2660,100291
+(defun vm-mime-display-button-message 2663,100379
+(defun vm-mime-display-button-multipart 2666,100469
+(defun vm-mime-display-internal-multipart/mixed 2669,100561
+(defun vm-mime-display-internal-multipart/alternative 2677,100831
+(defun vm-mime-display-internal-show-multipart/alternative 2682,101068
+(defun vm-mime-display-internal-multipart/related 2768,104430
+(defun vm-mime-display-button-multipart/parallel 2787,105111
+(defun vm-mime-display-internal-multipart/digest 2805,105742
+(defun vm-mime-display-button-message/rfc822 2844,107147
+(defun vm-mime-display-internal-message/rfc822 2857,107550
+(defun vm-mime-display-internal-message/delivery-status 2898,108977
+(defun vm-mime-retrieve-external-body 2901,109093
+(defun vm-mime-display-internal-message/external-body 2982,111847
+(defun vm-mime-fetch-url-with-programs 3063,114656
+(defun vm-mime-internalize-local-external-bodies 3129,116388
+(defun vm-mime-display-internal-message/partial 3171,117988
+(defun vm-mime-display-internal-image-xxxx 3303,122705
+(defun vm-mime-display-internal-image-xemacs-xxxx 3312,123105
+(defvar vm-menu-fsfemacs-image-menu)3433,127424
+(defun vm-mime-display-internal-image-fsfemacs-21-xxxx 3435,127462
+(defun vm-mime-display-internal-image-fsfemacs-19-xxxx 3534,131016
+(defun vm-get-image-dimensions 3704,137055
+(defun vm-imagemagick-type-indicator-for 3723,137779
+(defun vm-make-image-strips 3733,138072
+(defun vm-process-sentinel-display-image-strips 3813,140548
+(defun vm-display-image-strips-on-extents 3834,141286
+(defun vm-display-image-strips-on-overlay-regions 3861,142070
+(defun vm-process-filter-display-some-image-strips 3889,143031
+(defun vm-display-some-image-strips-on-extents3916,144014
+(defun vm-display-some-image-strips-on-overlay-regions3946,144942
+(defun vm-mime-display-internal-image/gif 3978,146030
+(defun vm-mime-display-internal-image/jpeg 3981,146141
+(defun vm-mime-display-internal-image/png 3984,146255
+(defun vm-mime-display-internal-image/tiff 3987,146366
+(defun vm-mime-display-internal-image/xpm 3990,146480
+(defun vm-mime-display-internal-image/pbm 3993,146591
+(defun vm-mime-display-internal-image/xbm 3996,146702
+(defun vm-mime-frob-image-xxxx 3999,146813
+(defun vm-mark-image-tempfile-as-message-garbage-once 4035,148251
+(defun vm-mime-rotate-image-left 4041,148512
+(defun vm-mime-rotate-image-right 4044,148607
+(defun vm-mime-mirror-image 4047,148702
+(defun vm-mime-brighten-image 4050,148784
+(defun vm-mime-dim-image 4053,148878
+(defun vm-mime-monochrome-image 4056,148966
+(defun vm-mime-revert-image 4059,149058
+(defun vm-mime-larger-image 4074,149625
+(defun vm-mime-smaller-image 4091,150237
+(defcustom vm-mime-thumbnail-max-geometry 4108,150850
+(defun vm-mime-display-button-image 4114,151028
+(defun vm-mime-display-button-application/pdf 4171,153534
+(defun vm-mime-display-internal-audio/basic 4174,153631
+(defun vm-mime-display-generic 4206,154729
+(defun vm-mime-display-button-xxxx 4212,154938
+(defun vm-find-layout-extent-at-point 4218,155148
+(defun vm-mime-run-display-function-at-point 4232,155560
+(defun vm-mime-reader-map-save-file 4253,156329
+(defun vm-mime-reader-map-save-message 4271,156905
+(defun vm-mime-reader-map-pipe-to-command 4288,157466
+(defun vm-mime-reader-map-pipe-to-printer 4295,157681
+(defun vm-mime-reader-map-display-using-external-viewer 4301,157867
+(defun vm-mime-reader-map-display-using-default 4308,158110
+(defun vm-mime-reader-map-display-object-as-type 4314,158329
+(defun vm-mime-action-on-all-attachments 4320,158545
+(defun vm-delete-all-attachments 4387,161553
+(defalias 'vm-mime-delete-all-attachmentsvm-mime-delete-all-attachments4414,162563
+(defun vm-save-all-attachments 4419,162792
+(defalias 'vm-mime-save-all-attachmentsvm-mime-save-all-attachments4502,165871
+(defun vm-save-attachments 4507,166023
+(defvar vm-menu-mime-dispose-menu)4584,168837
+(defun vm-mime-set-image-stamp-for-type 4586,168873
+(defvar vm-mime-type-images4593,169077
+(defun vm-mime-xemacs-set-image-stamp-for-type 4602,169312
+(defun vm-mime-fsfemacs-set-image-stamp-for-type 4628,170159
+(defun vm-mime-insert-button 4661,171129
+(defun vm-mime-rewrite-failed-button 4706,173012
+(defvar vm-mime-write-file-filter-alist4719,173480
+(defun vm-mime-find-write-filter 4725,173691
+(defun vm-mime-send-body-to-file 4735,174012
+(defun vm-mime-send-body-to-folder 4799,176572
+(defun vm-mime-pipe-body-to-command 4837,178112
+(defun vm-mime-pipe-body-to-queried-command 4883,179728
+(defun vm-mime-pipe-body-to-queried-command-discard-output 4887,179934
+(defun vm-mime-send-body-to-printer 4890,180054
+(defun vm-mime-display-body-as-text 4897,180263
+(defun vm-mime-display-object-as-type 4908,180823
+(defun vm-mime-display-body-using-external-viewer 4921,181373
+(defun vm-mime-convert-body-then-display 4930,181804
+(defun vm-mime-get-button-layout 4940,182201
+(defun vm-mime-scrub-description 4946,182358
+(defun vm-mime-layout-contains-type 4997,184223
+(defun vm-mime-find-digests-in-layout 5010,184606
+(defun vm-mime-plain-message-p 5027,185200
+(defun vm-mime-text-type-p 5046,185926
+(defun vm-mime-text-type-layout-p 5050,186063
+(defun vm-mime-tty-can-display-mime-charset 5055,186249
+(defun vm-mime-charset-internally-displayable-p 5088,187721
+(defun vm-mime-default-face-charset-p 5111,188672
+(defun vm-mime-find-message/partials 5119,188969
+(defun vm-mime-find-leaf-content-id-in-layout-folder 5134,189524
+(defun vm-mime-find-leaf-content-id 5155,190086
+(defun vm-message-at-point 5170,190558
+(defun vm-mime-make-multipart-boundary 5181,190823
+(defun vm-mime-extract-filename-suffix 5192,191134
+(defun vm-mime-find-filename-suffix-for-type 5199,191405
+(defun vm-mime-attach-file 5211,191739
+(defun vm-mime-attach-mime-file 5279,194982
+(defun vm-mime-attach-buffer 5328,197014
+(defun vm-mime-attach-message 5389,199849
+(defun vm-mime-attach-object-from-message 5530,205416
+(defun vm-mime-attach-object 5592,207899
+(defun vm-mime-attachment-forward-local-refs-at-point 5665,211266
+(defun vm-mime-set-attachment-forward-local-refs-at-point 5674,211572
+(defun vm-mime-delete-attachment-button 5683,211899
+(defun vm-mime-delete-attachment-button-keep-infos 5692,212166
+(defun vm-mime-change-content-disposition 5706,212587
+(defun vm-mime-attachment-disposition-at-point 5715,212867
+(defun vm-mime-set-attachment-disposition-at-point 5724,213183
+(defun vm-mime-attachment-encoding-at-point 5734,213531
+(defun vm-mime-set-attachment-encoding-at-point 5741,213780
+(defun vm-disallow-overlay-endpoint-insertion 5748,214044
+(defun vm-mime-fake-attachment-overlays 5756,214355
+(defun vm-mime-default-type-from-filename 5783,215182
+(defun vm-remove-mail-mode-header-separator 5793,215481
+(defun vm-add-mail-mode-header-separator 5802,215731
+(defun vm-mime-transfer-encode-region 5808,215907
+(defun vm-mime-transfer-encode-layout 5837,217058
+(defun vm-mime-text-description 5888,219041
+(defun vm-delete-mime-object 5908,219745
+(defun vm-mime-discard-layout-contents 5980,222702
+(defun vm-mime-encode-words 6072,226568
+(defun vm-mime-encode-words-in-string 6113,228085
+(defun vm-mime-encode-headers 6117,228236
+(defun vm-mime-encode-composition 6154,229542
+(defvar enriched-mode)6186,230519
+(defun vm-mime-xemacs-encode-composition 6191,230658
+(defun vm-mime-fsfemacs-encode-composition 6605,246552
+(defun vm-mime-fragment-composition 7021,262480
+(defun vm-mime-composite-type-p 7098,265145
+(defun vm-mime-sprintf 7112,265641
+(defun vm-mime-compile-format 7125,266139
+(defun vm-mime-compile-format-1 7131,266359
+(defun vm-mime-find-format-for-layout 7247,270104
+(defun vm-mf-content-type 7261,270559
+(defun vm-mf-external-body-content-type 7264,270631
+(defun vm-mf-content-transfer-encoding 7267,270744
+(defun vm-mf-content-description 7270,270827
+(defun vm-mf-text-charset 7282,271181
+(defun vm-mf-parts-count 7286,271283
+(defun vm-mf-parts-count-pluralizer 7289,271374
+(defun vm-mf-partial-number 7292,271478
+(defun vm-mf-partial-total 7296,271574
+(defun vm-mf-attachment-file 7300,271668
+(defun vm-mf-event-for-default-action 7306,271910
+(defun vm-mf-default-action 7311,272042
+(defun vm-mf-default-action-orig 7316,272236
+(defun vm-mime-map-layout-parts 7337,272966
+(defun vm-mime-list-part-structure 7351,273570
+(defun vm-mime-nuke-alternative-text/html-internal 7378,274792
+(defun vm-mime-nuke-alternative-text/html 7419,276588
+
+vm-minibuf.el,614
+(defun vm-minibuffer-complete-word 26,932
+(defun vm-minibuffer-complete-word-and-exit 138,5670
+(defun vm-minibuffer-completion-message 143,5789
+(defun vm-minibuffer-replace-word 158,6336
+(defun vm-minibuffer-show-completions 164,6492
+(defun vm-show-list 182,7205
+(defun vm-minibuffer-completion-help 253,9760
+(defun vm-keyboard-read-string 281,10760
+(defvar last-nonmenu-event)295,11423
+(defun vm-read-string 297,11452
+(defun vm-read-number 314,12240
+(defun vm-keyboard-read-file-name 321,12410
+(defun vm-read-file-name 340,13118
+(defun vm-folder-list 361,13981
+(defun vm-read-folder-name 373,14378
+
+vm-misc.el,4299
+(defun vm-replace-in-string 51,2115
+(defun vm-delete-non-matching-strings 81,3334
+(defun vm-parse 100,3930
+(defun vm-parse-addresses 132,5136
+(defun vm-fix-quoted-address 183,7522
+(defun vm-parse-structured-header 196,8094
+(defvar buffer-file-type)274,10534
+(defun vm-write-string 276,10561
+(defun vm-check-for-killed-summary 294,11154
+(defun vm-check-for-killed-presentation 310,11820
+(defun vm-check-for-killed-folder 320,12187
+(defun vm-abs 329,12552
+(defun vm-last 331,12593
+(defun vm-last-elem 336,12713
+(defun vm-vector-to-list 341,12842
+(defun vm-extend-vector 349,13019
+(defun vm-obarray-to-string-list 356,13251
+(defun vm-mapvector 362,13425
+(defun vm-mapcar 371,13641
+(defun vm-mapc 379,13893
+(defun vm-delete 386,14086
+(defun vm-elems 397,14414
+(defun vm-find 406,14662
+(defun vm-for-all 414,14910
+(defun vm-generate-new-unibyte-buffer 423,15080
+(defun vm-generate-new-multibyte-buffer 434,15456
+(defun vm-make-local-hook 449,16009
+(defun vm-abbreviate-file-name 454,16183
+(defun vm-find-file-name-handler 460,16378
+(defun vm-select-frame-set-input-focus 469,16672
+(defun vm-get-buffer-window 478,16976
+(defun vm-get-visible-buffer-window 491,17537
+(defun vm-force-mode-line-update 505,18069
+(defun vm-delete-directory-file-names 512,18316
+(defun vm-delete-backup-file-names 515,18400
+(defun vm-delete-auto-save-file-names 518,18483
+(defun vm-delete-index-file-names 521,18572
+(defun vm-delete-directory-names 524,18656
+(defun vm-index-file-name-p 527,18735
+(defun vm-delete-duplicates 534,18946
+(defun vm-member-0 560,20007
+(defun vm-delqual 570,20253
+(defun vm-copy-local-variables 584,20529
+(defun vm-error-if-folder-empty 595,20987
+(defun vm-copy 601,21154
+(defun vm-run-message-hook 618,21671
+(defun vm-error-free-call 626,21940
+(defun vm-trace 636,22310
+(defun vm-timezone-make-date-sortable 640,22423
+(defun vm-current-time-zone 674,23597
+(defun vm-should-generate-summary 692,24162
+(defun vm-find-composition-buffer 702,24473
+(defun vm-get-file-buffer 717,24945
+(defun vm-delete-auto-save-file-if-necessary 727,25334
+(defun vm-set-region-face 760,26726
+(defun vm-default-buffer-substring-no-properties 770,27136
+(defun vm-buffer-string-no-properties 785,27650
+(defun vm-insert-region-from-buffer 788,27755
+(defun vm-extent-at 852,29896
+(defun vm-copy-extent 866,30251
+(defun vm-make-tempfile 874,30527
+(defun vm-make-tempfile-name 885,30911
+(defun vm-make-work-buffer 921,32079
+(defun vm-make-multibyte-work-buffer 931,32442
+(defun vm-insert-char 942,32857
+(defun vm-xemacs-compatible-insert-char 951,33183
+(defun vm-symbol-lists-intersect-p 957,33407
+(defun vm-folder-buffer-value 965,33589
+(defsubst vm-with-string-as-temp-buffer 972,33739
+(defun vm-string-assoc 981,34021
+(defun vm-nonneg-string 992,34334
+(defun vm-string-member 997,34411
+(defun vm-string-equal-ignore-case 1008,34707
+(defun vm-time-difference 1014,34892
+(defun vm-get-file-line-ending-coding-system 1045,35844
+(defun vm-new-folder-line-ending-coding-system 1065,36664
+(defun vm-collapse-whitespace 1077,37180
+(defvar vm-paragraph-prefix-regexp 1082,37316
+(defvar vm-empty-line-regexp 1085,37435
+(defun vm-skip-empty-lines 1088,37551
+(defun vm-forward-paragraph 1094,37748
+(defun vm-fill-paragraphs-containing-long-lines 1130,39005
+(defun vm-fill-paragraphs-by-longlines 1180,40903
+(defun vm-make-message-id 1224,42696
+(defun vm-keep-some-buffers 1238,43103
+(defvar enable-multibyte-characters)1259,43890
+(defvar buffer-display-table)1260,43927
+(defun vm-fsfemacs-nonmule-display-8bit-chars 1261,43957
+(defun vm-url-decode-string 1280,44741
+(defun vm-url-decode-buffer 1283,44843
+(defun vm-process-kill-without-query 1303,45530
+(defun vm-process-sentinel-kill-buffer 1308,45737
+(defun vm-fsfemacs-scroll-bar-width 1311,45843
+(defvar vm-disable-modes-ignore 1320,46116
+(defun vm-disable-modes 1326,46369
+(defvar vm-buffer-type-debug 1347,47068
+(defvar vm-buffer-type-debug 1351,47185
+(defvar vm-buffer-type-trail 1353,47276
+(defun vm-buffer-type:enter 1355,47311
+(defun vm-buffer-type:exit 1362,47575
+(defun vm-buffer-type:duplicate 1368,47808
+(defun vm-buffer-type:set 1375,48118
+(defsubst vm-buffer-type:assert 1390,48801
+(defun vm-add-write-file-hook 1394,48940
+(defun vm-add-find-file-hook 1403,49313
+
+vm-motion.el,807
+(defun vm-record-and-change-message-pointer 28,955
+(defun vm-goto-message 36,1211
+(defun vm-goto-message-last-seen 75,2667
+(defun vm-goto-parent-message 88,3090
+(defun vm-check-count 109,3841
+(defun vm-move-message-pointer 117,4102
+(defun vm-should-skip-message 133,4565
+(defun vm-should-skip-hidden-message 154,5351
+(defun vm-next-message 165,5771
+(defun vm-previous-message 294,10711
+(defun vm-next-message-no-skip 309,11322
+(defun vm-previous-message-no-skip 338,12425
+(defun vm-next-unread-message 365,13428
+(defun vm-previous-unread-message 381,14040
+(defun vm-next-message-same-subject 398,14684
+(defun vm-previous-message-same-subject 427,15716
+(defun vm-find-first-unread-message 455,16763
+(defun vm-thoughtfully-select-message 470,17201
+(defun vm-follow-summary-cursor 489,17936
+
+vm-mouse.el,2266
+(defun vm-mouse-set-mouse-track-highlight 26,931
+(defun vm-mouse-button-2 48,1750
+(defun vm-mouse-button-3 74,2693
+(defun vm-mouse-3-help 97,3595
+(defun vm-mouse-get-mouse-track-string 101,3684
+(defun vm-mouse-popup-or-select 130,4631
+(defun vm-mouse-send-url-at-event 163,6004
+(defun vm-mouse-send-url-at-position 174,6481
+(defun vm-mouse-send-url 198,7244
+(defun vm-mouse-send-url-to-netscape 213,7848
+(defun vm-mouse-send-url-to-opera 230,8561
+(defun vm-mouse-send-url-to-mozilla 247,9201
+(defun vm-mouse-send-url-to-netscape-new-window 264,9904
+(defun vm-mouse-send-url-to-opera-new-window 267,10004
+(defun vm-mouse-send-url-to-mozilla-new-window 270,10098
+(defvar buffer-file-type)273,10196
+(defun vm-mouse-send-url-to-mosaic 275,10223
+(defun vm-mouse-send-url-to-mmosaic 278,10369
+(defun vm-mouse-send-url-to-xxxx-mosaic 281,10517
+(defun vm-mouse-send-url-to-mosaic-new-window 326,12194
+(defun vm-mouse-send-url-to-konqueror 329,12290
+(defun vm-mouse-send-url-to-firefox 340,12773
+(defun vm-mouse-send-url-to-konqueror-new-window 351,13263
+(defun vm-mouse-send-url-to-clipboard 354,13361
+(defun vm-mouse-install-mouse 365,13721
+(defun vm-run-background-command 377,14204
+(defun vm-run-command 384,14416
+(defun vm-run-command-on-region 393,14745
+(defvar vm-mouse-read-file-name-prompt)432,16141
+(defvar vm-mouse-read-file-name-dir)433,16181
+(defvar vm-mouse-read-file-name-default)434,16218
+(defvar vm-mouse-read-file-name-must-match)435,16259
+(defvar vm-mouse-read-file-name-initial)436,16303
+(defvar vm-mouse-read-file-name-history)437,16344
+(defvar vm-mouse-read-file-name-return-value)438,16385
+(defvar vm-mouse-read-file-name-should-delete-frame)439,16431
+(defun vm-mouse-read-file-name 441,16485
+(defun vm-mouse-read-file-name-event-handler 484,18416
+(defun vm-mouse-read-file-name-quit-handler 545,20608
+(defvar vm-mouse-read-string-prompt)553,20870
+(defvar vm-mouse-read-string-completion-list)554,20907
+(defvar vm-mouse-read-string-multi-word)555,20953
+(defvar vm-mouse-read-string-return-value)556,20994
+(defvar vm-mouse-read-string-should-delete-frame)557,21037
+(defun vm-mouse-read-string 559,21088
+(defun vm-mouse-read-string-event-handler 592,22566
+(defun vm-mouse-read-string-quit-handler 650,24589
+
+vm-page.el,1241
+(defun vm-scroll-forward 30,993
+(defun vm-scroll-forward-internal 162,6350
+(defun vm-howl-if-eom 213,8087
+(defun vm-emit-eom-blurb 235,8775
+(defun vm-emit-mime-decoding-message 250,9407
+(defun vm-scroll-backward 256,9545
+(defun vm-scroll-forward-one-line 267,9856
+(defun vm-scroll-backward-one-line 275,10081
+(defun vm-highlight-headers 282,10297
+(defun vm-energize-urls 330,12005
+(defun vm-energize-headers 428,15567
+(defun vm-display-xface 494,17954
+(defun vm-display-xface-xemacs 501,18159
+(defun vm-display-xface-fsfemacs 538,19393
+(defun vm-convert-xface-to-fsfemacs-image-instantiator 576,20781
+(defun vm-url-help 618,21982
+(defun vm-energize-urls-in-message-region 634,22470
+(defun vm-highlight-headers-maybe 646,22875
+(defun vm-energize-headers-and-xfaces 656,23195
+(defun vm-narrow-for-preview 675,23839
+(defun vm-preview-current-message 714,25441
+(defun vm-show-current-message 862,31355
+(defun vm-expose-hidden-headers 938,34443
+(defun vm-widen-page 970,35626
+(defun vm-narrow-to-page 979,36037
+(defun vm-beginning-of-message 1019,37644
+(defun vm-end-of-message 1042,38386
+(defun vm-move-to-next-button 1069,39254
+(defun vm-move-to-previous-button 1096,40310
+(defun vm-move-to-xxxx-button 1122,41370
+
+vm-pcrisis.el,4314
+(defvar bbdb-records)59,1795
+(defvar bbdb-file)60,1817
+(defvar bbdb-records)61,1836
+(defconst vmpc-version 66,2015
+(defgroup vmpc 69,2072
+(defcustom vmpc-conditions 73,2148
+(defcustom vmpc-actions 77,2253
+(defun vmpc-alist-set 91,2853
+(defun vmpc-defcustom-alist-type 106,3432
+(defcustom vmpc-actions-alist 118,3949
+(defcustom vmpc-reply-alist 126,4268
+(defcustom vmpc-forward-alist 132,4461
+(defcustom vmpc-automorph-alist 138,4658
+(defcustom vmpc-newmail-alist 144,4859
+(defcustom vmpc-resend-alist 150,5055
+(defcustom vmpc-default-profile 156,5250
+(defcustom vmpc-auto-profiles-file 162,5437
+(defcustom vmpc-auto-profiles-expunge-days 169,5703
+(defvar vmpc-current-state 178,6122
+(defvar vmpc-current-buffer 183,6306
+(defvar vmpc-saved-headers-alist 188,6511
+(defvar vmpc-actions-to-run 191,6618
+(defvar vmpc-true-conditions 194,6676
+(defvar vmpc-auto-profiles 197,6736
+(defvar vmpc-pre-sig-exerlay 205,7098
+(defvar vmpc-sig-exerlay 210,7210
+(defvar vmpc-pre-sig-face 215,7314
+(defvar vmpc-sig-face 222,7574
+(defvar vmpc-intangible-pre-sig 229,7813
+(defvar vmpc-intangible-sig 232,7918
+(defvar vmpc-expect-default-signature 235,8015
+(defun vmpc-my-identities 244,8364
+(defun vmpc-header-field-for-point 256,8862
+(defun vmpc-tab-header-or-tab-stop 266,9222
+(defun vmpc-backward-tab-header-or-tab-stop 293,10200
+(defun vmpc-set-overlay-insertion-types 303,10545
+(defun vmpc-set-extent-insertion-types 334,11902
+(defun vmpc-set-exerlay-insertion-types 345,12356
+(defun vmpc-exerlay-start 356,12858
+(defun vmpc-exerlay-end 363,13037
+(defun vmpc-move-exerlay 370,13208
+(defun vmpc-set-exerlay-detachable-property 377,13482
+(defun vmpc-set-exerlay-intangible-property 384,13737
+(defun vmpc-set-exerlay-face 393,14022
+(defun vmpc-forcefully-detach-exerlay 400,14219
+(defun vmpc-make-exerlay 407,14412
+(defun vmpc-create-sig-and-pre-sig-exerlays 414,14644
+(defmacro vmpc-composition-buffer 452,16157
+(defmacro vmpc-pre-function 462,16569
+(defun vmpc-delete-header 473,17054
+(defun vmpc-insert-header 490,17608
+(defun vmpc-substitute-header 500,17958
+(defun vmpc-add-header 510,18387
+(defun vmpc-get-current-header-contents 532,19386
+(defun vmpc-get-current-body-text 590,22295
+(defun vmpc-get-replied-header-contents 601,22649
+(defun vmpc-get-header-contents 619,23539
+(defun vmpc-get-replied-body-text 627,23918
+(defun vmpc-save-replied-header 642,24442
+(defun vmpc-get-saved-header 651,24856
+(defun vmpc-substitute-replied-header 658,25190
+(defun vmpc-get-header-extents 670,25741
+(defun vmpc-substitute-within-header686,26377
+(defun vmpc-replace-or-add-in-header 721,27942
+(defun vmpc-insert-signature 745,29021
+(defun vmpc-delete-signature 775,30272
+(defun vmpc-signature 785,30677
+(defun vmpc-insert-pre-signature 799,31222
+(defun vmpc-delete-pre-signature 833,32665
+(defun vmpc-pre-signature 844,33073
+(defun vmpc-gregorian-days 854,33427
+(defun vmpc-load-auto-profiles 862,33692
+(defun vmpc-save-auto-profiles 892,34902
+(defun vmpc-fix-auto-profiles-file 910,35667
+(defun vmpc-migrate-profiles-to-BBDB 924,36107
+(defun vmpc-get-profile-for-address 957,37501
+(defun vmpc-save-profile-for-address 976,38316
+(defun vmpc-string-extract-address 1021,40039
+(defun vmpc-split 1027,40273
+(defun vmpc-read-actions 1051,41049
+(defcustom vmpc-prompt-for-profile-headers1071,41853
+(defvar vmpc-profiles-history 1086,42485
+(defun vmpc-read-profile 1089,42559
+(defun vmpc-prompt-for-profile 1104,43127
+(defun vmpc-none-true-yet 1201,47300
+(defun vmpc-other-cond 1227,48256
+(defun vmpc-folder-match 1235,48677
+(defun vmpc-header-match 1239,48810
+(defun vmpc-only-from-match 1258,49749
+(defun vmpc-body-match 1274,50349
+(defun vmpc-xor 1285,50819
+(defun vmpc-true-conditions 1293,51128
+(defun vmpc-build-true-conditions-list 1315,52089
+(defun vmpc-build-actions-to-run-list 1326,52482
+(defun vmpc-run-action 1360,53877
+(defun vmpc-run-actions 1379,54662
+(defun vmpc-init-vars 1404,55773
+(defun vmpc-make-vars-local 1412,56074
+(defadvice vm-do-reply 1451,57780
+(defadvice vm-mail 1462,58095
+(defadvice vm-compose-mail 1473,58411
+(defadvice vm-forward-message 1484,58743
+(defadvice vm-resend-message 1499,59272
+(defvar vmpc-no-automorph 1514,59796
+(defun vmpc-toggle-no-automorph 1520,59937
+(defun vmpc-automorph 1531,60355
+
+vm-pgg.el,3139
+(defgroup vm 117,3793
+(defgroup vm-pgg 121,3834
+(defface vm-pgg-bad-signature125,3915
+(defface vm-pgg-good-signature138,4255
+(defface vm-pgg-unknown-signature-type151,4588
+(defface vm-pgg-error160,4801
+(defface vm-pgg-bad-signature-modeline173,5125
+(defface vm-pgg-good-signature-modeline186,5546
+(defface vm-pgg-unknown-signature-type-modeline199,5960
+(defface vm-pgg-error-modeline208,6220
+(defcustom vm-pgg-fetch-missing-keys 235,7117
+(defcustom vm-pgg-auto-snarf 240,7277
+(defcustom vm-pgg-auto-decrypt 245,7400
+(defcustom vm-pgg-get-author-headers 250,7519
+(defcustom vm-pgg-sign-text-transfer-encoding 256,7747
+(defvar vm-pgg-compose-mode-map262,7978
+(defvar vm-pgg-compose-mode-menu 271,8304
+(defvar vm-pgg-compose-mode 286,8809
+(defun vm-pgg-compose-mode 291,8976
+(defvar vm-pgg-compose-mode-string 305,9397
+(defcustom vm-pgg-ask-function 308,9523
+(defun vm-pgg-compose-mode-activate 346,10829
+(defun vm-pgg-get-emails 352,11004
+(defvar vm-pgg-get-recipients-headers 362,11359
+(defun vm-pgg-get-recipients 365,11471
+(defun vm-pgg-get-author 369,11590
+(defun vm-pgp-goto-body-start 373,11712
+(defun vm-pgp-prepare-composition 380,11920
+(defun vm-pgg-cleartext-encrypt 403,12636
+(defun vm-pgg-make-presentation-copy 415,13102
+(defvar vm-pgg-state 444,14194
+(defvar vm-pgg-state-message 449,14308
+(defvar vm-pgg-mode-line-items454,14431
+(defun vm-pgg-state-set 475,15246
+(defvar vm-pgg-cleartext-begin-regexp514,16647
+(defvar vm-pgg-cleartext-end-regexp518,16798
+(defcustom vm-pgg-cleartext-search-limit 522,16901
+(defun vm-pgg-cleartext-automode-button 527,17057
+(defvar vm-pgg-cleartext-decoded 552,18062
+(defun vm-pgg-set-cleartext-decoded 556,18192
+(defun vm-pgg-cleartext-automode 561,18344
+(defadvice vm-preview-current-message 601,20127
+(defadvice vm-scroll-forward 611,20563
+(defun vm-pgg-cleartext-sign 624,21003
+(defun vm-pgg-cleartext-cleanup 636,21375
+(defadvice vm-mime-transfer-decode-region 662,22426
+(defadvice vm-mime-display-internal-text/plain 678,23024
+(defun vm-pgg-cleartext-verify 696,23726
+(defun vm-pgg-cleartext-decrypt 723,24584
+(defun vm-pgg-crlf-cleanup 764,26024
+(defun vm-pgg-make-crlf 771,26231
+(defvar vm-pgg-mime-decoded 779,26458
+(defun vm-pgg-get-mime-decoded 783,26607
+(defvar vm-pgg-recursion 789,26750
+(defadvice vm-decode-mime-message 792,26810
+(defun vm-pgg-mime-decrypt 805,27277
+(defun vm-mime-display-internal-multipart/encrypted 816,27745
+(defun vm-mime-display-internal-multipart/signed 874,30527
+(defun vm-pgg-mime-snarf-keys 952,34048
+(defun vm-mime-display-internal-application/pgp-keys 963,34517
+(defun vm-pgg-snarf-keys 987,35389
+(defun vm-pgg-attach-public-key 1009,36082
+(defun vm-pgg-make-multipart-boundary 1044,37478
+(defun vm-pgg-save-work 1060,38080
+(defun vm-pgg-sign 1078,38717
+(defun vm-pgg-sign-internal 1110,40074
+(defun vm-pgg-encrypt 1166,42410
+(defun vm-pgg-encrypt-internal 1171,42601
+(defun vm-pgg-sign-and-encrypt 1209,44254
+(defvar vm-pgg-prompt-last-action 1214,44378
+(defvar vm-pgg-prompt-action-alist1217,44475
+(defun vm-pgg-prompt-for-action 1225,44681
+(defun vm-pgg-ask-hook 1261,46084
+
+vm-pine.el,2377
+(defgroup vm 99,3903
+(defgroup vm-pine 103,3944
+(defun vm-summary-function-f 109,4113
+(defcustom vm-postponed-header 169,6723
+(defcustom vm-postponed-folder 184,7316
+(defcustom vm-postponed-message-headers 190,7473
+(defcustom vm-postponed-message-discard-header-regexp 207,8258
+(defcustom vm-continue-postponed-message-hook 215,8521
+(defcustom vm-postpone-message-hook 221,8695
+(defvar vm-postponed-message-folder-buffer 226,8835
+(define-key vm-mode-map 231,9040
+(defun vm-get-persistent-message-ids-for 234,9181
+(defun vm-get-message-pointers-for 249,9712
+(defun vm-continue-postponed-message 289,11545
+(defun vm-reply-by-continue-postponed-message 417,16910
+(defun vm-delete-postponed-message 445,17873
+(defun vm-decode-postponed-mime-message 472,19114
+(defun vm-pine-fake-attachment-overlays 509,20842
+(defun vm-decode-postponed-mime-button 538,21791
+(define-key vm-mail-mode-map 597,24248
+(defvar vm-postpone-message-modes-to-disable599,24311
+(defun vm-postpone-message 605,24581
+(defun vm-buffer-in-vm-mode 757,30817
+(defcustom vm-continue-what-message 763,31042
+(defcustom vm-zero-drafts-start-compose 770,31283
+(defun vm-continue-what-message-composing 776,31526
+(defun vm-continue-what-message 845,34206
+(defun vm-continue-what-message-other-window 884,35824
+(defun vm-continue-what-message-other-frame 890,36019
+(defcustom vm-save-killed-message898,36363
+(defcustom vm-save-killed-messages-folder909,36774
+(defun vm-add-save-killed-message-hook 915,36934
+(defun vm-remove-save-killed-message-hook 919,37085
+(defun vm-save-killed-message-hook 922,37197
+(define-key vm-mail-mode-map 937,37938
+(define-key vm-mail-mode-map 938,38010
+(define-key vm-mail-mode-map 939,38073
+(define-key vm-mail-mode-map 940,38131
+(defcustom vm-mail-return-receipt-to943,38235
+(defun vm-mail-return-receipt-to 950,38435
+(defun vm-mail-notice-requested-upon-delivery-to 964,39043
+(defcustom vm-mail-priority977,39546
+(defun vm-mail-priority 984,39705
+(defun vm-mail-fcc-file-join 999,40187
+(defcustom vm-mail-folder-alist 1007,40384
+(defcustom vm-mail-fcc-default1015,40662
+(defun vm-mail-fcc 1028,41129
+(defun vm-mail-auto-fcc 1069,42638
+(defun vm-mail-get-header-contents 1089,43385
+(defun vm-mail-select-folder 1116,44546
+(defcustom vm-mail-to-regexp 1175,47404
+(defcustom vm-mail-to-headers 1182,47639
+(defun vm-mail-to-fcc 1188,47827
+
+vm-pop.el,2597
+(defsubst vm-folder-pop-maildrop-spec 54,1861
+(defsubst vm-folder-pop-process 56,1936
+(defsubst vm-set-folder-pop-maildrop-spec 59,2006
+(defsubst vm-set-folder-pop-process 61,2092
+(defun vm-pop-find-cache-file-for-spec 64,2173
+(defun vm-pop-move-mail 123,4324
+(defun vm-pop-check-mail 276,9982
+(defun vm-expunge-pop-messages 320,11481
+(defun vm-pop-make-session 433,15270
+(defun vm-pop-end-session 619,21918
+(defun vm-pop-stat-timer 657,23575
+(defun vm-pop-stat-did-report 658,23616
+(defun vm-pop-stat-x-box 659,23662
+(defun vm-pop-stat-x-currmsg 660,23703
+(defun vm-pop-stat-x-maxmsg 661,23748
+(defun vm-pop-stat-x-got 662,23792
+(defun vm-pop-stat-x-need 663,23833
+(defun vm-pop-stat-y-box 664,23875
+(defun vm-pop-stat-y-currmsg 665,23916
+(defun vm-pop-stat-y-maxmsg 666,23961
+(defun vm-pop-stat-y-got 667,24005
+(defun vm-pop-stat-y-need 668,24047
+(defun vm-set-pop-stat-timer 670,24091
+(defun vm-set-pop-stat-did-report 671,24144
+(defun vm-set-pop-stat-x-box 672,24202
+(defun vm-set-pop-stat-x-currmsg 673,24255
+(defun vm-set-pop-stat-x-maxmsg 674,24312
+(defun vm-set-pop-stat-x-got 675,24368
+(defun vm-set-pop-stat-x-need 676,24421
+(defun vm-set-pop-stat-y-box 677,24475
+(defun vm-set-pop-stat-y-currmsg 678,24528
+(defun vm-set-pop-stat-y-maxmsg 679,24585
+(defun vm-set-pop-stat-y-got 680,24641
+(defun vm-set-pop-stat-y-need 681,24695
+(defun vm-pop-start-status-timer 683,24751
+(defun vm-pop-stop-status-timer 690,24955
+(defun vm-pop-report-retrieval-status 697,25207
+(defun vm-pop-check-connection 726,26245
+(defun vm-pop-send-command 732,26507
+(defun vm-pop-read-response 741,26834
+(defun vm-pop-read-past-dot-sentinel-line 759,27448
+(defun vm-pop-read-stat-response 772,27885
+(defun vm-pop-read-list-response 780,28151
+(defun vm-pop-read-uidl-long-response 785,28334
+(defun vm-pop-ask-about-large-message 825,29574
+(defun vm-pop-ask-about-no-uidl 863,30889
+(defun vm-pop-retrieve-to-target 883,31831
+(defun vm-pop-cleanup-region 959,34700
+(defun vm-establish-new-folder-pop-session 981,35461
+(defun vm-pop-get-uidl-data 990,35788
+(defun vm-pop-get-synchronization-data 1029,37030
+(defun vm-pop-synchronize-folder 1056,37864
+(defun vm-pop-folder-check-for-mail 1151,41368
+(defun vm-pop-find-spec-for-name 1160,41678
+(defun vm-pop-find-name-for-spec 1171,42000
+(defun vm-pop-find-name-for-buffer 1182,42321
+(defun vm-pop-make-filename-for-spec 1193,42640
+(defun vm-pop-parse-spec-to-list 1218,43558
+(defun vm-pop-start-bug-report 1224,43742
+(defun vm-pop-submit-bug-report 1233,44061
+(defun vm-pop-set-default-attributes 1268,45319
+
+vm-ps-print.el,1053
+(defgroup vm 66,2446
+(defgroup vm-psprint 70,2487
+(defcustom vm-ps-print-message-function 76,2645
+(defcustom vm-ps-print-message-separater 83,2910
+(defcustom vm-ps-print-message-font-size 89,3080
+(defcustom vm-ps-print-message-header-lines 97,3318
+(defcustom vm-ps-print-message-left-header103,3448
+(defcustom vm-ps-print-message-right-header111,3738
+(defcustom vm-ps-print-message-summary-format119,4028
+(defcustom vm-ps-print-each-message-header-lines 132,4636
+(defcustom vm-ps-print-each-message-left-header138,4770
+(defcustom vm-ps-print-each-message-right-header148,5237
+(defcustom vm-ps-print-each-message-summary-format156,5534
+(defun vm-ps-print-message-internal 164,5865
+(defun vm-ps-print-tokenized-summary 190,7162
+(defun vm-ps-print-message-folder-name 218,8194
+(defun vm-ps-print-message 233,8723
+(defun vm-ps-print-each-message 314,11534
+(defun vm-ps-print-message-presentation 338,12450
+(defun vm-ps-print-message-fix-menu 374,13919
+(defun vm-ps-print-message-infect-vm 392,14567
+(defun vm-ps-print-marked 409,15345
+
+vm-reply.el,3306
+(defun vm-add-reply-subject-prefix 78,3176
+(defun vm-fill-long-lines-in-reply 94,3753
+(defun vm-do-reply 108,4210
+(defun vm-strip-ignored-addresses 229,9560
+(defun vm-ignored-reply-to 242,9997
+(defun vm-mail-yank-default 253,10314
+(defun vm-yank-message-other-folder 276,11240
+(defun vm-yank-message 323,12989
+(defun vm-yank-message-presentation 422,17287
+(defun vm-yank-message-mime 442,18052
+(defun vm-yank-message-text 463,18795
+(defun vm-mail-send-and-exit 549,21741
+(defun vm-keep-mail-buffer 576,22866
+(defun vm-help-tale 579,22980
+(defun vm-mail-mode-insert-message-id-maybe 592,23447
+(defun vm-mail-mode-insert-date-maybe 611,24055
+(defun vm-mail-mode-remove-message-id-maybe 655,25461
+(defun vm-mail-mode-remove-date-maybe 666,25876
+(defvar vm-dont-ask-coding-system-question 677,26267
+(defvar select-safe-coding-system-function)689,26728
+(defvar coding-system-for-write)691,26773
+(defun vm-mail-send 694,26822
+(defun vm-do-fcc-before-mime-encode 779,30090
+(defun vm-mail-mode-get-header-contents 795,30644
+(defun vm-mail-mode-remove-header 812,31149
+(defun vm-rename-current-mail-buffer 828,31670
+(defun vm-mail-mark-replied 854,32677
+(defun vm-mail-mark-forwarded 867,33064
+(defun vm-mail-mark-redistributed 880,33459
+(defun vm-reply 894,33886
+(defun vm-reply-include-text 920,34829
+(defun vm-followup 929,35166
+(defun vm-followup-include-text 938,35459
+(defun vm-forward-message-all-headers 947,35798
+(defun vm-forward-message 963,36464
+(defun vm-resend-bounced-message 1057,39904
+(defun vm-resend-message 1122,42504
+(defun vm-send-digest 1185,44894
+(defun vm-send-rfc934-digest 1307,49426
+(defun vm-send-rfc1153-digest 1314,49644
+(defun vm-send-mime-digest 1321,49865
+(defun vm-continue-composing-message 1328,50095
+(defun vm-mail-to-mailto-url 1365,51620
+(defvar mail-mode-map)1412,53346
+(defvar mail-aliases)1413,53369
+(defvar mail-default-reply-to)1414,53391
+(defvar mail-signature-file)1415,53422
+(defvar mail-personal-alias-file)1416,53451
+(defun vm-sanitize-buffer-name 1418,53486
+(defvar vm-compositions-exist 1430,53925
+(defvar vm-composition-buffer-count 1432,53961
+(defvar vm-ml-composition-buffer-count 1435,54048
+(defun vm-update-ml-composition-buffer-count 1438,54173
+(defun vm-forget-composition-buffer 1443,54392
+(defun vm-new-composition-buffer 1448,54611
+(defun vm-mail-internal1457,54986
+(defun vm-reply-other-frame 1624,61318
+(defun vm-reply-include-text-other-frame 1636,61693
+(defun vm-followup-other-frame 1648,62107
+(defun vm-followup-include-text-other-frame 1660,62491
+(defun vm-forward-message-all-headers-other-frame 1672,62914
+(defun vm-forward-message-other-frame 1684,63340
+(defun vm-resend-message-other-frame 1696,63730
+(defun vm-resend-bounced-message-other-frame 1708,64117
+(defun vm-send-digest-other-frame 1720,64528
+(defun vm-send-rfc934-digest-other-frame 1732,64933
+(defun vm-send-rfc1153-digest-other-frame 1744,65359
+(defun vm-send-mime-digest-other-frame 1756,65788
+(defvar enriched-mode)1767,66193
+(defun vm-preview-composition 1770,66232
+(defun vm-update-composition-buffer-name 1832,68738
+(defun vm-mail-mode-remove-tm-hooks 1860,69884
+(defun vm-mail-mode-show-headers 1868,70211
+(defun vm-mail-mode-hide-headers 1878,70591
+(defun vm-mail-mode-hide-headers-hook 1900,71514
+
+vm-rfaddons.el,4075
+(defgroup vm 62,2181
+(defgroup vm-rfaddons 66,2222
+(defmacro vm-rfaddons-check-option 81,2624
+(defun vm-rfaddons-infect-vm 91,3071
+(defun rf-vm-su-labels 289,11125
+(defvar vm-reply-include-presentation 304,11629
+(defun vm-reply-include-presentation 307,11688
+(defun vm-followup-include-presentation 322,12279
+(defcustom vm-spamassassin-strip-report 386,15094
+(defun vm-strip-spamassassin-report 391,15262
+(defvar vm-switch-to-folder-history 404,15757
+(defun vm-switch-to-folder 407,15814
+(defcustom vm-rmail-mode 438,17185
+(defcustom vm-rmail-mode-list 446,17499
+(defun vm-rmail-toggle 454,17766
+(defun vm-rmail-up 466,18137
+(defun vm-rmail-down 475,18426
+(defun vm-do-with-message 484,18711
+(defun vm-toggle-mark 497,19197
+(defun vm-toggle-deleted 504,19402
+(defcustom vm-mail-subject-prefix-replacements512,19715
+(defcustom vm-mail-subject-number-reply 521,20117
+(defun vm-mail-subject-cleanup 529,20373
+(defun vm-mime-set-8bit-composition-charset 572,22213
+(defun bbdb/vm-set-virtual-folder-alist 587,22927
+(defun vm-virtual-find-selector 626,24799
+(defcustom bbdb/vm-virtual-folder-alist-by-mail-alias-alist 636,25186
+(defun bbdb/vm-set-virtual-folder-alist-by-mail-alias 643,25497
+(defcustom vm-handle-return-receipt-mode 700,28317
+(defcustom vm-handle-return-receipt-peek 709,28725
+(defun vm-handle-return-receipt 714,28886
+(defun vm-mime-find-type-of-message/external-body 772,31235
+(defun vm-mime-display-button-message/external-body 796,32227
+(defvar vm-mime-attach-files-in-directory-regexps-history 863,35451
+(defcustom vm-mime-attach-files-in-directory-default-type 866,35554
+(defcustom vm-mime-attach-files-in-directory-default-charset 874,35920
+(defun vm-mime-is-type-valid 883,36349
+(defun vm-mime-attach-files-in-directory 899,36835
+(defcustom vm-mime-auto-save-all-attachments-subdir967,40083
+(defun vm-mime-auto-save-all-attachments-subdir 979,40598
+(defun vm-mime-auto-save-all-attachments-path 1029,42881
+(defun vm-mime-auto-save-all-attachments 1042,43504
+(defun vm-mime-auto-save-all-attachments-delete-external 1068,44317
+(defun vm-mail-check-recipients 1128,46640
+(defcustom vm-mail-prompt-if-subject-empty 1150,47490
+(defun vm-mail-check-for-empty-subject 1156,47631
+(defface vm-shrunken-headers-face 1169,48236
+(defvar vm-shrunken-headers-keymap1174,48361
+(defun vm-shrunken-headers-toggle 1184,48780
+(defun vm-shrunken-headers-toggle-this-mouse 1190,48922
+(defun vm-shrunken-headers-toggle-this-widget 1198,49140
+(defun vm-shrunken-headers-toggle-this 1204,49314
+(defun vm-shrunken-headers-get-overlays 1223,50066
+(defun vm-shrunken-headers 1235,50499
+(defcustom vm-assimilate-html-command 1299,53410
+(defcustom vm-assimilate-html-mixed 1318,53898
+(defun vm-assimilate-html-message 1325,54130
+(defcustom vm-mail-mode-citation-kill-regexp-alist1398,57145
+(defun vm-mail-mode-citation-clean-up 1431,58420
+(defcustom vm-summary-attachment-label 1449,59007
+(defun vm-summary-attachment-label 1455,59200
+(defun vm-delete-quit 1486,60532
+(defun vm-mail-mode-install-open-line 1501,61090
+(defvar vm-mail-mode-open-line 1510,61521
+(defcustom vm-mail-mode-open-line-regexp 1513,61601
+(defun vm-mail-mode-open-line 1516,61711
+(defcustom vm-mail-mode-elide-reply-region 1570,64093
+(defun vm-mail-mode-elide-reply-region 1576,64261
+(defun vm-save-everything 1591,64976
+(defun vm-get-all-new-mail 1608,65536
+(defun vm-save-message-preview 1621,65935
+(defun vm-mime-take-action-on-attachment 1660,67473
+(defcustom vm-mime-display-internal-multipart/mixed-separater1685,68536
+(defun vm-mime-display-internal-multipart/mixed 1693,68888
+(defun vm-assimilate-outlook-message 1717,69815
+(defun vm-install-rf-faces 1750,71303
+(defun vm-mail-mode-comment-region 1773,72077
+(defcustom vm-mail-mode-fake-date-p 1851,75787
+(defun vm-isearch-presentation 1858,76043
+(defcustom vm-delete-message-action 1869,76523
+(defun vm-delete-message-action 1874,76651
+(defvar vm-smtp-server-online-p-cache 1895,77630
+(defun vm-smtp-server-online-p 1898,77726
+(defun vm-mail-send-or-feed-it 1957,79994
+
+vm-save.el,922
+(defun vm-match-data 31,1157
+(defun vm-auto-select-folder 41,1410
+(defun vm-auto-archive-messages 98,3272
+(defun vm-imap-folder-p 169,6143
+(defun vm-save-message 179,6531
+(defun vm-save-message-to-local-folder 231,8542
+(defun vm-save-message-sans-headers 453,16990
+(defun vm-switch-to-command-output-buffer 546,20472
+(defun vm-pipe-message-part 556,20902
+(defun vm-pipe-message-to-command 568,21306
+(defun vm-pipe-message-to-command-to-string 625,23717
+(defun vm-pipe-message-to-command-discard-output 634,24157
+(defun vm-pipe-command-exit-handler 648,24738
+(defvar vm-pipe-messages-to-command-start 664,25467
+(defvar vm-pipe-messages-to-command-end 670,25774
+(defun vm-pipe-messages-to-command 677,26086
+(defun vm-pipe-messages-to-command-to-string 766,29536
+(defun vm-pipe-messages-to-command-discard-output 783,30254
+(defun vm-print-message 798,30854
+(defun vm-save-message-to-imap-folder 890,34271
+
+vm-search.el,201
+(defun vm-isearch-forward 27,947
+(defun vm-isearch-backward 42,1610
+(defun vm-isearch 56,2262
+(defun vm-isearch-widen 102,4229
+(defun vm-isearch-narrow 107,4319
+(defun vm-isearch-update 116,4623
+
+vm-serial.el,1819
+(defgroup vm 75,2580
+(defgroup vm-serial 79,2621
+(defvar vm-reply-list 104,3303
+(defvar vm-redistribute-list 105,3330
+(defvar vm-forward-list)106,3364
+(defcustom vm-serial-token-alist109,3470
+(defcustom vm-serial-mails-alist217,7984
+(defcustom vm-serial-cookie 341,11451
+(defcustom vm-serial-fcc 347,11644
+(defcustom vm-serial-mail-signature 355,11965
+(defvar vm-serial-to 367,12562
+(defvar vm-serial-body-contents 370,12643
+(defcustom vm-serial-unknown-to 373,12749
+(defvar vm-serial-source-buffer380,12986
+(defvar vm-serial-send-mail-buffer 386,13189
+(defvar vm-serial-send-mail-jobs389,13321
+(defun vm-serial-get-completing-list 397,13626
+(defvar vm-serial-token-history 402,13841
+(defun vm-serial-set-token 404,13879
+(defun vm-serial-set-tokens 426,14824
+(defun vm-serial-get-token 436,15197
+(defun vm-serial-eval-token-value 449,15729
+(defun vm-serial-get-emails 467,16454
+(defun vm-serial-get-to 476,16854
+(defun vm-serial-get-name 481,16983
+(defun vm-serial-get-bbdb-name 496,17561
+(defun vm-serial-set-mails 506,18036
+(defun vm-serial-get-mail 517,18462
+(defvar vm-serial-mail-history 522,18645
+(defun vm-serial-find-default-mail 525,18721
+(defun vm-serial-auto-yank-mail 553,19758
+(defvar vm-serial-yank-mail-choice 569,20574
+(defun vm-serial-yank-mail 572,20672
+(defun vm-serial-random-string 640,23432
+(defun vm-serial-expand-tokens 650,23747
+(defvar vm-serial-insert-token-history 705,26212
+(defun vm-serial-insert-token 707,26257
+(defvar vm-serial-sent-cnt 734,27359
+(defvar vm-serial-edited-cnt 735,27391
+(defvar vm-serial-killed-cnt 736,27425
+(defvar vm-serial-send-mail-exit 737,27459
+(defun vm-serial-send-mail-increment 739,27498
+(defun vm-serial-send-mail-and-exit 745,27650
+(defun vm-serial-send-mail 752,27933
+(defadvice vm-mail-send-and-exit 890,33894
+
+vm-sort.el,1493
+(defun vm-move-message-forward 28,947
+(defun vm-move-message-backward 140,5194
+(defun vm-move-message-forward-physically 155,5793
+(defun vm-move-message-backward-physically 162,6031
+(defun vm-physically-move-message 175,6546
+(defun vm-so-sortable-datestring 220,8616
+(defun vm-so-sortable-subject 234,8991
+(defvar vm-sort-compare-header 260,9935
+(defvar vm-sort-compare-header-history 263,9999
+(defun vm-sort-messages 266,10059
+(defun vm-sort-compare-xxxxxx 511,20149
+(defun vm-sort-compare-thread 530,20682
+(defun vm-sort-compare-author 587,22781
+(defun vm-sort-compare-author-r 594,22950
+(defun vm-sort-compare-full-name 601,23121
+(defun vm-sort-compare-full-name-r 608,23303
+(defun vm-sort-compare-date 615,23487
+(defun vm-sort-compare-date-r 622,23684
+(defun vm-sort-compare-activity 629,23883
+(defun vm-sort-compare-activity-r 636,24122
+(defun vm-sort-compare-recipients 657,24891
+(defun vm-sort-compare-recipients-r 664,25060
+(defun vm-sort-compare-subject 671,25231
+(defun vm-sort-compare-subject-r 678,25425
+(defun vm-sort-compare-line-count 685,25621
+(defun vm-sort-compare-line-count-r 692,25822
+(defun vm-sort-compare-byte-count 699,26025
+(defun vm-sort-compare-byte-count-r 706,26226
+(defun vm-sort-compare-spam-score 713,26429
+(defun vm-sort-compare-spam-score-r 720,26592
+(defun vm-sort-compare-physical-order 728,26772
+(defun vm-sort-compare-physical-order-r 736,26944
+(defun vm-get-headers-of 745,27151
+(defun vm-sort-compare-header 756,27482
+
+vm-summary-faces.el,241
+(defvar vm-summary-faces-hide 60,1811
+(defun vm-summary-faces-hide 64,1911
+(defun vm-summary-faces-add 96,3291
+(defun vm-summary-faces-destroy 116,4063
+(defun vm-summary-faces-mode 126,4351
+(defun vm-summary-faces-fix-pointer 172,6125
+
+vm-summary.el,4994
+(defvar scrollbar-height)45,1399
+(defsubst vm-summary-message-at-point 48,1449
+(defsubst vm-summary-padded-thread-count 57,1779
+(defsubst vm-summary-message-number-thread-descendant 65,2028
+(defsubst vm-summary-expanded-root-p 70,2235
+(defsubst vm-summary-collapsed-root-p 81,2639
+(defsubst vm-summary-mark-root-collapsed 92,3045
+(defsubst vm-summary-mark-root-expanded 102,3353
+(defun vm-summary-mode-internal 112,3659
+(defun vm-summarize 147,5007
+(defun vm-summarize-other-frame 192,6688
+(defun vm-do-summary 201,6997
+(defun vm-expand-thread 299,10385
+(defun vm-collapse-thread 330,11578
+(defun vm-expand-all-threads 372,13300
+(defun vm-collapse-all-threads 393,13974
+(defun vm-toggle-thread 420,14917
+(defun vm-do-needed-summary-rebuild 438,15580
+(defun vm-update-message-summary 460,16482
+(defun vm-set-summary-pointer 542,19367
+(defun vm-summary-highlight-region 634,22671
+(defun vm-folders-summary-highlight-region 637,22797
+(defun vm-summary-xxxx-highlight-region 641,22947
+(defun vm-auto-center-summary 665,23918
+(defun vm-summary-sprintf 670,24071
+(defun vm-summary-compile-format 694,25185
+(defun vm-tokenized-summary-insert 717,26201
+(defun vm-reencode-mime-encoded-words-in-tokenized-summary 784,28544
+(defun vm-summary-compile-format-1 795,28966
+(defun vm-get-header-contents 1007,36184
+(defun vm-string-width 1036,37385
+(defun vm-left-justify-string 1047,37638
+(defun vm-right-justify-string 1053,37809
+(defun vm-numeric-left-justify-string 1060,38034
+(defun vm-numeric-right-justify-string 1067,38256
+(defun vm-truncate-string 1073,38426
+(defun vm-truncate-roman-string 1098,39116
+(defvar vm-postponed-header)1106,39297
+(defun vm-su-postponed-indicator 1108,39349
+(defun vm-su-attachment-indicator 1117,39717
+(defun vm-su-attribute-indicators 1138,40484
+(defun vm-su-attribute-indicators-long 1156,40995
+(defun vm-su-byte-count 1171,41504
+(defun vm-su-size 1181,41812
+(defun vm-su-spam-score-aux 1194,42264
+(defun vm-su-spam-score 1201,42547
+(defun vm-su-weekday 1206,42735
+(defun vm-su-monthday 1212,42983
+(defun vm-su-month 1218,43235
+(defun vm-su-month-number 1222,43331
+(defun vm-su-year 1226,43448
+(defun vm-su-hour-short 1230,43541
+(defun vm-su-hour 1236,43673
+(defun vm-su-zone 1240,43766
+(defun vm-su-mark 1244,43859
+(defun vm-grok-From_-date 1247,43979
+(defun vm-parse-date 1268,44694
+(defun vm-su-do-date 1313,46522
+(defun vm-su-do-month 1382,49763
+(defun vm-su-do-weekday 1390,50033
+(defun vm-run-user-summary-function 1396,50224
+(defun vm-su-full-name 1406,50546
+(defun vm-su-interesting-full-name 1414,50863
+(defun vm-su-from 1427,51433
+(defun vm-su-interesting-from 1435,51737
+(defun vm-grok-From_-author 1449,52367
+(defun vm-su-do-author 1466,52877
+(defun vm-default-chop-full-name 1491,53907
+(defun vm-choose-chop-full-name-function 1515,54864
+(defun vm-su-do-recipients 1543,55892
+(defun vm-su-to 1579,57384
+(defun vm-su-to-names 1586,57683
+(defun vm-su-message-id 1594,58023
+(defun vm-su-line-count 1619,58926
+(defun vm-su-subject 1634,59409
+(defun vm-su-summary 1648,59936
+(defun vm-fix-my-summary 1667,60627
+(defun vm-su-thread-indent 1697,61752
+(defun vm-su-labels 1704,61972
+(defun vm-substring 1711,62168
+(defun vm-make-folder-summary 1732,62774
+(defun vm-fs-folder-of 1735,62861
+(defun vm-fs-total-count-of 1736,62902
+(defun vm-fs-new-count-of 1737,62948
+(defun vm-fs-unread-count-of 1738,62992
+(defun vm-fs-deleted-count-of 1739,63039
+(defun vm-fs-start-of 1740,63087
+(defun vm-fs-end-of 1741,63127
+(defun vm-fs-folder-key-of 1742,63165
+(defun vm-fs-mouse-track-overlay-of 1743,63210
+(defun vm-fs-short-folder-of 1744,63264
+(defun vm-fs-modflag-of 1745,63311
+(defun vm-set-fs-folder-of 1747,63355
+(defun vm-set-fs-total-count-of 1748,63404
+(defun vm-set-fs-new-count-of 1749,63458
+(defun vm-set-fs-unread-count-of 1750,63510
+(defun vm-set-fs-deleted-count-of 1751,63565
+(defun vm-set-fs-start-of 1752,63621
+(defun vm-set-fs-end-of 1753,63669
+(defun vm-set-fs-folder-key-of 1754,63715
+(defun vm-set-fs-mouse-track-overlay-of 1755,63768
+(defun vm-set-fs-short-folder-of 1756,63830
+(defun vm-set-fs-modflag-of 1757,63885
+(defun vm-fs-spooled 1759,63937
+(defun vm-make-folders-summary-key 1769,64226
+(defun vm-open-folders-summary-database 1781,64682
+(defun vm-get-folder-totals 1788,64912
+(defun vm-store-folder-totals 1802,65407
+(defun vm-modify-folder-totals 1827,66327
+(defun vm-folders-summary-sprintf 1881,68262
+(defun vm-folders-summary-compile-format 1895,68812
+(defun vm-folders-summary-compile-format-1 1901,69076
+(defun vm-update-folders-summary-entry 2000,72108
+(defun vm-folders-summary-mode-internal 2053,73951
+(defun vm-do-folders-summary 2073,74678
+(defun vm-update-folders-summary-highlight 2144,77170
+(defun vm-do-needed-folders-summary-update 2165,77909
+(defun vm-mark-for-folders-summary-update 2185,78525
+(defun vm-make-folders-summary-associative-hashes 2206,79213
+(defun vm-follow-folders-summary-cursor 2224,80032
+
+vm-thread.el,1759
+(defvar vm-traced-message-ids 96,3436
+(defun vm-th-thread-symbol 106,3731
+(defun vm-ts-subject-symbol 115,4066
+(defun vm-th-youngest-date-of 124,4416
+(defun vm-th-set-youngest-date-of 127,4487
+(defun vm-th-oldest-date-of 130,4572
+(defun vm-th-set-oldest-date-of 133,4639
+(defun vm-th-thread-date-of 136,4720
+(defsubst vm-th-message-of 142,4955
+(defsubst vm-th-set-message-of 145,5039
+(defsubst vm-th-messages-of 148,5100
+(defsubst vm-th-set-messages-of 155,5292
+(defsubst vm-th-parent-of 158,5366
+(defsubst vm-th-set-parent-of 161,5426
+(defsubst vm-th-children-of 167,5595
+(defun vm-th-child-messages-of 170,5659
+(defsubst vm-th-set-children-of 181,5921
+(defsubst vm-th-date-of 184,5995
+(defsubst vm-th-set-date-of 187,6051
+(defsubst vm-ts-root-of 196,6295
+(defsubst vm-ts-root-date-of 199,6373
+(defsubst vm-ts-members-of 202,6456
+(defsubst vm-ts-messages-of 205,6537
+(defsubst vm-ts-set-root-of 208,6619
+(defsubst vm-ts-set-root-date-of 211,6715
+(defsubst vm-ts-set-members-of 214,6812
+(defsubst vm-ts-set-messages-of 217,6903
+(defun vm-toggle-threads-display 223,7012
+(defun vm-build-reference-threads 251,8292
+(defun vm-build-subject-threads 332,11411
+(defun vm-build-threads 394,13845
+(defun vm-build-thread-lists 432,15425
+(defun vm-thread-mark-for-summary-update 441,15637
+(defun vm-thread-list 460,16295
+(defun vm-unthread-message 551,19666
+(defun vm-references 648,23211
+(defun vm-parent 661,23665
+(defun vm-th-thread-indentation 681,24345
+(defun vm-th-thread-list 705,25115
+(defun vm-th-thread-root 719,25597
+(defun vm-th-thread-root-sym 744,26444
+(defun vm-th-thread-root-p 770,27223
+(defun vm-th-thread-subtree 779,27432
+(defun vm-th-thread-count 829,29128
+(defun vm-th-check-thread-integrity 835,29374
+
+vm-toolbar.el,2355
+(defvar vm-toolbar-specifier 29,991
+(defvar vm-toolbar-next-button31,1026
+(defvar vm-toolbar-next-icon 41,1429
+(defvar vm-toolbar-previous-button45,1557
+(defvar vm-toolbar-previous-icon 55,1988
+(defvar vm-toolbar-autofile-button59,2132
+(defvar vm-toolbar-autofile-icon 64,2337
+(defvar vm-toolbar-file-button66,2376
+(defvar vm-toolbar-file-icon 74,2787
+(defvar vm-toolbar-getmail-button78,2915
+(defvar vm-toolbar-getmail-icon 87,3352
+(defvar vm-toolbar-print-button91,3489
+(defvar vm-toolbar-print-icon 101,3901
+(defvar vm-toolbar-visit-button105,4033
+(defvar vm-toolbar-visit-icon 113,4411
+(defvar vm-toolbar-reply-button117,4542
+(defvar vm-toolbar-reply-icon 127,4965
+(defvar vm-toolbar-forward-button131,5105
+(defvar vm-toolbar-forward-icon 141,5531
+(defvar vm-toolbar-followup-button145,5671
+(defvar vm-toolbar-followup-icon 155,6105
+(defvar vm-toolbar-compose-button159,6241
+(defvar vm-toolbar-compose-icon 167,6618
+(defvar vm-toolbar-decode-mime-button171,6747
+(defvar vm-toolbar-decode-mime-icon 185,7510
+(defvar vm-toolbar-delete-icon 193,7876
+(defvar vm-toolbar-undelete-icon 194,7910
+(defvar vm-toolbar-delete/undelete-button196,7949
+(defvar vm-toolbar-delete/undelete-icon 201,8171
+(defvar vm-toolbar-help-icon 204,8279
+(defvar vm-toolbar-recover-icon 206,8314
+(defvar vm-toolbar-helper-icon 208,8352
+(defvar vm-toolbar-help-button211,8442
+(defvar vm-toolbar-helper-command 225,9080
+(defun vm-toolbar-helper-command 229,9191
+(defvar vm-toolbar-quit-button234,9342
+(defvar vm-toolbar-quit-icon 243,9733
+(defun vm-toolbar-any-messages-p 247,9853
+(defun vm-toolbar-delete/undelete-message 256,10054
+(defun vm-toolbar-can-autofile-p 267,10460
+(defun vm-toolbar-autofile-message 278,10756
+(defun vm-toolbar-can-recover-p 290,11167
+(defun vm-toolbar-can-decode-mime-p 303,11498
+(defun vm-toolbar-can-quit-p 314,11764
+(defun vm-toolbar-mail-waiting-p 321,11933
+(defun vm-toolbar-update-toolbar 331,12188
+(defun vm-toolbar-install-or-uninstall-toolbar 365,13676
+(defcustom vm-toolbar-height 371,13913
+(defun vm-toolbar-install-toolbar 376,14053
+(defun vm-toolbar-make-toolbar-spec 436,16420
+(defun vm-toolbar-initialize 472,17627
+(defun vm-toolbar-fsfemacs-uninstall-toolbar 531,20060
+(defun vm-toolbar-fsfemacs-install-toolbar 535,20196
+(defun vm-toolbar-make-fsfemacs-toolbar-image-spec 670,24527
+
+vm-undo.el,1679
+(defun vm-set-buffer-modified-p 26,941
+(defun vm-undo-boundary 35,1247
+(defun vm-add-undo-boundaries 39,1373
+(defun vm-clear-expunge-invalidated-undos 51,1687
+(defun vm-clear-virtual-quit-invalidated-undos 66,2252
+(defun vm-clear-modification-flag-undos 81,2823
+(defun vm-squeeze-consecutive-undo-boundaries 94,3310
+(defun vm-undo-record 109,3857
+(defun vm-undo-describe 117,4144
+(defun vm-undo-set-message-pointer 152,5186
+(defun vm-undo 166,5640
+(defun vm-set-message-attributes 192,6778
+(defun vm-add-message-labels 274,9798
+(defun vm-add-existing-message-labels 311,11298
+(defun vm-delete-message-labels 359,13245
+(defun vm-add-or-delete-message-labels 391,14604
+(defun vm-set-xxxx-flag 453,16804
+(defun vm-set-xxxx-cached-data-flag 498,18629
+(defun vm-set-labels 544,20473
+(defun vm-set-headers-to-be-retrieved-flag 588,22034
+(defun vm-set-body-to-be-discarded-flag 591,22113
+(defun vm-set-body-to-be-retrieved-flag 595,22273
+(defun vm-set-new-flag 599,22433
+(defun vm-set-unread-flag 602,22542
+(defun vm-set-deleted-flag 605,22657
+(defun vm-set-filed-flag 608,22774
+(defun vm-set-replied-flag 611,22887
+(defun vm-set-written-flag 614,23004
+(defun vm-set-forwarded-flag 617,23121
+(defun vm-set-redistributed-flag 620,23242
+(defun vm-set-new-flag-of 624,23418
+(defun vm-set-unread-flag-of 625,23479
+(defun vm-set-deleted-flag-of 626,23543
+(defun vm-set-filed-flag-of 627,23608
+(defun vm-set-replied-flag-of 628,23671
+(defun vm-set-written-flag-of 629,23736
+(defun vm-set-forwarded-flag-of 630,23801
+(defun vm-set-redistributed-flag-of 631,23868
+(defun vm-set-deleted-flag-in-vector 636,24113
+(defun vm-set-new-flag-in-vector 639,24221
+
+vm-user.el,105
+(defun vm-user-composition-folder-buffer 26,927
+(defun vm-user-composition-real-folder-buffers 43,1538
+
+vm-vars.el,29001
+(defgroup vm 28,960
+(defcustom vm-assimilate-new-messages-sorted 32,1018
+(defcustom vm-init-file 38,1234
+(defcustom vm-preferences-file 44,1382
+(defcustom vm-folder-directory 50,1596
+(defcustom vm-primary-inbox 55,1733
+(defcustom vm-crash-box 60,1869
+(defcustom vm-keep-crash-boxes 73,2353
+(defcustom vm-fetched-message-limit 93,3332
+(defcustom vm-index-file-suffix 100,3594
+(defcustom vm-load-headers-only 115,4179
+(defun vm-spool-files 131,4810
+(defcustom vm-spool-files 142,5181
+(defcustom vm-spool-file-suffixes 300,11991
+(defcustom vm-crash-box-suffix 317,12610
+(defcustom vm-make-spool-file-name 325,12929
+(defcustom vm-make-crash-box-name 333,13233
+(defcustom vm-pop-md5-program 341,13540
+(defcustom vm-pop-max-message-size 347,13703
+(defcustom vm-pop-messages-per-session 363,14396
+(defcustom vm-pop-bytes-per-session 373,14781
+(defcustom vm-pop-expunge-after-retrieving 384,15181
+(defcustom vm-pop-auto-expunge-alist 400,15916
+(defcustom vm-pop-read-quit-response 426,17038
+(defcustom vm-recognize-pop-maildrops 437,17497
+(defcustom vm-pop-folder-alist 445,17903
+(defcustom vm-pop-folder-cache-directory 459,18342
+(defcustom vm-imap-max-message-size 469,18773
+(defcustom vm-imap-messages-per-session 484,19465
+(defcustom vm-imap-bytes-per-session 494,19853
+(defcustom vm-imap-expunge-after-retrieving 505,20256
+(defcustom vm-imap-auto-expunge-alist 517,20715
+(defcustom vm-recognize-imap-maildrops 537,21557
+(defcustom vm-imap-server-list 545,21970
+(defcustom vm-imap-account-alist 565,22618
+(defcustom vm-imap-default-account 588,23273
+(defcustom vm-imap-refer-to-inbox-by-account-name 596,23605
+(defcustom vm-imap-tolerant-of-bad-imap 606,24014
+(defcustom vm-imap-folder-cache-directory 616,24462
+(defcustom vm-imap-save-to-server 626,24897
+(defcustom vm-imap-expunge-retries 639,25433
+(defcustom vm-imap-server-timeout 644,25601
+(defcustom vm-imap-ensure-active-sessions 650,25815
+(defcustom vm-imap-sync-on-get 658,26148
+(defcustom vm-auto-get-new-mail 668,26605
+(defcustom vm-mail-check-interval 681,27189
+(defvar vm-spooled-mail-waiting 695,27709
+(defcustom vm-default-folder-type701,27969
+(defcustom vm-default-From_-folder-type 737,28947
+(defcustom vm-default-new-folder-line-ending-type 757,29642
+(defcustom vm-check-folder-types 776,30342
+(defcustom vm-convert-folder-types 795,31035
+(defcustom vm-trust-From_-with-Content-Length805,31372
+(defvar vm-sync-thunderbird-status 820,32039
+(defvar vm-folder-read-thunderbird-status 841,32997
+(defcustom vm-visible-headers848,33268
+(defcustom vm-invisible-header-regexp 871,34237
+(defcustom vm-highlighted-header-regexp 883,34731
+(defcustom vm-use-lucid-highlighting 899,35455
+(defgroup vm-faces 911,35807
+(defcustom vm-highlighted-header-face 915,35903
+(defcustom vm-preview-lines 927,36377
+(defcustom vm-preview-read-messages 940,36897
+(defconst vm-always-use-presentation-buffer 946,37114
+(defconst vm-always-use-presentation 957,37576
+(defcustom vm-word-wrap-paragraphs 965,37919
+(defcustom vm-word-wrap-paragraphs-in-reply 972,38159
+(defcustom vm-fill-paragraphs-containing-long-lines 980,38436
+(defcustom vm-paragraph-fill-column 999,39181
+(defcustom vm-fill-long-lines-in-reply-column 1006,39432
+(defcustom vm-display-using-mime 1013,39687
+(defcustom vm-mime-ignore-mime-version 1032,40497
+(defcustom vm-mime-require-mime-version-header 1042,40926
+(defcustom vm-mime-ignore-composite-type-opaque-transfer-encoding 1051,41313
+(defcustom vm-mime-ignore-missing-multipart-boundary 1062,41855
+(defcustom vm-send-using-mime 1071,42243
+(defcustom vm-honor-mime-content-disposition 1089,42909
+(defcustom vm-auto-decode-mime-messages 1100,43423
+(defcustom vm-mime-decode-for-preview 1109,43762
+(defvar vm-mime-decode-for-show 1119,44209
+(defcustom vm-auto-displayed-mime-content-types 1123,44379
+(defcustom vm-auto-displayed-mime-content-type-exceptions 1157,45720
+(defcustom vm-mime-internal-content-types 1175,46470
+(defcustom vm-mime-internal-content-type-exceptions 1195,47316
+(defcustom vm-mime-external-content-types-alist 1210,47886
+(defcustom vm-mime-external-content-type-exceptions 1275,50378
+(defcustom vm-mime-delete-viewer-processes 1291,51038
+(defcustom vm-mime-type-converter-alist 1298,51260
+(defcustom vm-mime-charset-converter-alist 1334,52398
+(defcustom vm-mime-alternative-select-method 1368,53525
+(defcustom vm-mime-text/html-handler 1402,55011
+(defcustom vm-mime-text/html-blocker 1420,55776
+(defcustom vm-mime-text/html-blocker-exceptions 1427,56029
+(defcustom vm-mime-default-face-charsets1433,56167
+(defcustom vm-mime-default-face-charset-exceptions 1469,57757
+(defcustom vm-mime-charset-font-alist 1477,58156
+(defcustom vm-mime-use-image-strips 1512,59299
+(defcustom vm-mime-display-image-strips-incrementally 1527,59950
+(defun vm-locate-executable-file 1534,60217
+(defcustom vm-imagemagick-convert-program 1554,60848
+(defcustom vm-imagemagick-identify-program1562,61174
+(defvar vm-mime-image-type-converter-alist1570,61472
+(defcustom vm-mime-delete-after-saving 1583,61999
+(defcustom vm-mime-confirm-delete 1591,62301
+(defcustom vm-mime-savable-types1597,62496
+(defcustom vm-mime-savable-type-exceptions1606,62788
+(defcustom vm-mime-deletable-types1612,62957
+(defcustom vm-mime-deletable-type-exceptions1621,63253
+(defvar vm-mime-auto-save-all-attachments-avoid-recursion 1627,63426
+(defcustom vm-mime-button-face 1630,63512
+(defcustom vm-mime-button-format-alist1635,63675
+(defcustom vm-mime-parts-display-separator 1719,67583
+(defcustom vm-mime-7bit-composition-charset 1725,67737
+(defcustom vm-mime-8bit-composition-charset 1739,68393
+(defcustom vm-mime-8bit-text-transfer-encoding 1757,69251
+(defcustom vm-mime-composition-armor-from-lines 1781,70458
+(defcustom vm-mime-attachment-auto-type-alist1797,71194
+(defcustom vm-mime-attachment-auto-suffix-alist1839,72706
+(defcustom vm-mime-encode-headers-regexp1880,74205
+(defcustom vm-mime-encode-headers-words-regexp1886,74415
+(defcustom vm-mime-encode-headers-type 1893,74706
+(defcustom vm-mime-encode-words-regexp 1902,74956
+(defcustom vm-mime-max-message-size 1907,75093
+(defcustom vm-mime-attachment-save-directory 1915,75442
+(defcustom vm-mime-attachment-source-directory 1922,75764
+(defcustom vm-mime-all-attachments-directory 1929,76093
+(defvar vm-mime-save-all-attachments-history 1935,76344
+(defcustom vm-mime-yank-attachments 1938,76453
+(defcustom vm-infer-mime-types 1945,76677
+(defcustom vm-mime-attachment-infer-type-for-text-attachments 1955,77146
+(defcustom vm-mime-avoid-folding-content-type 1962,77402
+(defcustom vm-mime-base64-decoder-program1978,78069
+(defcustom vm-mime-base64-decoder-switches 1988,78491
+(defcustom vm-mime-base64-encoder-program1994,78675
+(defcustom vm-mime-base64-encoder-switches 2004,79085
+(defcustom vm-mime-qp-decoder-program 2010,79269
+(defcustom vm-mime-qp-decoder-switches 2019,79702
+(defcustom vm-mime-qp-encoder-program 2025,79878
+(defcustom vm-mime-qp-encoder-switches 2034,80299
+(defcustom vm-mime-uuencode-decoder-program 2040,80475
+(defcustom vm-mime-uuencode-decoder-switches 2050,80908
+(defcustom vm-auto-next-message 2056,81096
+(defcustom vm-honor-page-delimiters 2063,81367
+(defcustom vm-page-continuation-glyph 2077,81974
+(defvar vm-default-window-configuration2091,82545
+(defcustom vm-window-configuration-file 2154,84802
+(defcustom vm-expunge-before-quit 2178,85923
+(defcustom vm-expunge-before-save 2185,86152
+(defcustom vm-confirm-quit 2191,86303
+(defcustom vm-confirm-new-folders 2201,86812
+(defcustom vm-delete-empty-folders 2207,87001
+(defcustom vm-folder-file-precious-flag 2215,87343
+(defcustom vm-flush-interval 2224,87717
+(defcustom vm-visit-when-saving 2246,88783
+(defcustom vm-auto-folder-alist 2267,89749
+(defcustom vm-auto-folder-case-fold-search 2302,91436
+(defcustom vm-virtual-folder-alist 2309,91670
+(defcustom vm-virtual-mirror 2435,98308
+(defcustom vm-folder-read-only 2452,99118
+(defcustom vm-included-text-prefix 2468,99896
+(defcustom vm-keep-sent-messages 2473,100021
+(defcustom vm-confirm-mail-send 2485,100571
+(defcustom vm-mail-header-from 2491,100763
+(defcustom vm-mail-mode-hidden-headers 2500,101145
+(defcustom vm-mail-header-insert-date 2509,101509
+(defcustom vm-mail-header-insert-message-id 2523,102055
+(defcustom vm-mail-header-order2538,102681
+(defcustom vm-mail-reorder-message-headers 2551,103043
+(defcustom vm-do-fcc-before-mime-encode 2556,103167
+(defcustom vm-reply-subject-prefix 2563,103414
+(defcustom vm-reply-ignored-addresses 2570,103694
+(defcustom vm-reply-ignored-reply-tos 2582,104166
+(defcustom vm-reply-include-presentation 2596,104709
+(defcustom vm-in-reply-to-format 2604,104989
+(defcustom vm-included-text-attribution-format 2616,105532
+(defcustom vm-included-mime-types-list2624,105924
+(defcustom vm-include-text-from-presentation 2634,106304
+(defcustom vm-included-text-headers 2642,106614
+(defcustom vm-included-text-discard-header-regexp 2665,107658
+(defcustom vm-forwarding-subject-format 2684,108482
+(defcustom vm-forwarded-headers 2693,108925
+(defcustom vm-unforwarded-header-regexp 2716,109938
+(defcustom vm-forwarding-digest-type 2737,110778
+(defcustom vm-mime-forward-local-external-bodies 2756,111280
+(defcustom vm-burst-digest-messages-inherit-labels 2776,112248
+(defcustom vm-digest-preamble-format 2783,112495
+(defcustom vm-digest-center-preamble 2793,112943
+(defcustom vm-digest-identifier-header-format 2800,113222
+(defcustom vm-digest-burst-type 2808,113567
+(defcustom vm-digest-send-type 2837,114658
+(defcustom vm-rfc934-digest-headers2849,114922
+(defcustom vm-rfc934-digest-discard-header-regexp 2879,116068
+(defcustom vm-rfc1153-digest-headers2898,116903
+(defcustom vm-rfc1153-digest-discard-header-regexp 2928,118057
+(defcustom vm-mime-digest-headers2947,118928
+(defcustom vm-mime-digest-discard-header-regexp 2979,120111
+(defcustom vm-resend-bounced-headers2998,120930
+(defcustom vm-resend-bounced-discard-header-regexp 3029,122149
+(defcustom vm-resend-headers 3048,122974
+(defcustom vm-resend-discard-header-regexp 3071,123968
+(defcustom vm-summary-format 3090,124765
+(defcustom vm-restore-saved-summary-formats 3172,128669
+(defcustom vm-summary-postponed-indicator 3178,128842
+(defcustom vm-summary-attachment-indicator 3183,128964
+(defcustom vm-summary-attachment-mime-types 3189,129227
+(defcustom vm-summary-attachment-mime-type-exceptions3196,129534
+(defcustom vm-summary-arrow 3202,129723
+(defcustom vm-summary-highlight-face 3210,130033
+(defcustom vm-mouse-track-summary 3216,130249
+(defcustom vm-summary-show-threads 3222,130397
+(defcustom vm-summary-thread-indentation-by-references 3244,131451
+(defcustom vm-summary-thread-indent-level 3255,131957
+(defcustom vm-summary-maximum-thread-indentation 3270,132727
+(defcustom vm-thread-using-subject 3276,132923
+(defcustom vm-sort-threads-by-youngest-date 3285,133205
+(defcustom vm-summary-uninteresting-senders 3294,133550
+(defcustom vm-summary-uninteresting-senders-arrow 3305,134038
+(defcustom vm-auto-center-summary 3311,134266
+(defvar vm-debug 3320,134737
+(defvar vm-summary-debug 3323,134829
+(defcustom vm-subject-ignored-prefix 3326,134913
+(defcustom vm-subject-ignored-suffix 3335,135239
+(defcustom vm-subject-significant-chars 3344,135563
+(defcustom vm-folders-summary-database 3359,136199
+(defcustom vm-folders-summary-format3365,136420
+(defcustom vm-folders-summary-directories3402,137999
+(defcustom vm-mutable-windows 3409,138316
+(defcustom vm-mutable-frames 3421,138735
+(defcustom vm-raise-frame-at-startup 3436,139266
+(defcustom vm-frame-per-folder 3444,139527
+(defcustom vm-frame-per-summary 3457,140051
+(defcustom vm-frame-per-folders-summary 3470,140567
+(defcustom vm-frame-per-composition 3481,141013
+(defcustom vm-frame-per-edit 3494,141539
+(defcustom vm-frame-per-help 3507,142036
+(defcustom vm-frame-per-completion 3518,142433
+(defcustom vm-frame-parameter-alist 3539,143337
+(defcustom vm-search-other-frames 3579,144952
+(defvar vm-configure-datadir 3586,145194
+(defvar vm-configure-pixmapdir 3591,145342
+(defun vm-pixmap-directory 3596,145489
+(defcustom vm-image-directory 3620,146480
+(defun vm-image-directory 3625,146650
+(defcustom vm-use-toolbar3630,146825
+(defcustom vm-toolbar-orientation 3666,147949
+(defcustom vm-toolbar-pixmap-directory 3679,148384
+(defvar vm-gtk-emacs-p 3684,148554
+(defun vm-toolbar-pixmap-directory 3691,148786
+(defcustom vm-toolbar 3698,149008
+(defcustom vm-use-menus3712,149567
+(defcustom vm-popup-menu-on-mouse-3 3766,151002
+(defcustom vm-warp-mouse-to-new-frame 3772,151214
+(defcustom vm-url-retrieval-methods 3781,151525
+(defcustom vm-url-browser3809,152624
+(defcustom vm-url-browser-switches 3848,154198
+(defcustom vm-highlight-url-face 3855,154436
+(defcustom vm-url-search-limit 3861,154626
+(defcustom vm-display-xfaces 3872,155145
+(defcustom vm-startup-with-summary 3878,155351
+(defcustom vm-follow-summary-cursor 3892,155807
+(defcustom vm-jump-to-new-messages 3899,156102
+(defcustom vm-jump-to-unread-messages 3908,156354
+(defcustom vm-skip-deleted-messages 3922,156954
+(defcustom vm-skip-read-messages 3931,157396
+(defcustom vm-move-after-deleting 3940,157854
+(defcustom vm-move-after-undeleting 3950,158326
+(defcustom vm-move-after-killing 3960,158804
+(defcustom vm-delete-after-saving 3970,159290
+(defcustom vm-delete-after-archiving 3976,159477
+(defcustom vm-delete-after-bursting 3983,159707
+(defcustom vm-circular-folders 3989,159924
+(defcustom vm-search-using-regexps 4011,161021
+(defcustom vm-move-messages-physically 4017,161218
+(defcustom vm-edit-message-mode 4026,161583
+(defvar lpr-command)4031,161711
+(defcustom vm-print-command 4032,161732
+(defvar lpr-switches)4037,161897
+(defcustom vm-print-command-switches 4038,161919
+(defcustom vm-berkeley-mail-compatibility4045,162171
+(defcustom vm-strip-reply-headers 4053,162440
+(defcustom vm-select-new-message-hook 4062,162818
+(defcustom vm-select-unread-message-hook 4071,163178
+(defcustom vm-select-message-hook 4080,163544
+(defcustom vm-showing-message-hook 4089,163876
+(defcustom vm-arrived-message-hook 4097,164183
+(defcustom vm-spooled-mail-waiting-hook 4107,164606
+(defcustom vm-arrived-messages-hook 4114,164820
+(defcustom vm-reply-hook 4125,165281
+(defcustom vm-forward-message-hook 4133,165546
+(defcustom vm-resend-bounced-message-hook 4141,165830
+(defcustom vm-resend-message-hook 4149,166127
+(defcustom vm-send-digest-hook 4157,166408
+(defcustom vm-mail-hook 4165,166683
+(defcustom vm-summary-update-hook 4174,167027
+(defcustom vm-summary-redo-hook 4180,167187
+(defgroup vm-summary-faces 4186,167348
+(defcustom vm-summary-faces-alist4190,167452
+(defface vm-summary-selected4218,168396
+(defface vm-summary-marked4228,168716
+(defface vm-summary-deleted4236,169003
+(defface vm-summary-new4246,169407
+(defface vm-summary-unread4254,169667
+(defface vm-summary-saved4262,169946
+(defface vm-summary-replied4272,170340
+(defface vm-summary-forwarded4280,170626
+(defface vm-summary-edited 4290,171074
+(defface vm-summary-outgoing4298,171329
+(defface vm-summary-expanded4306,171621
+(defface vm-summary-collapsed4315,171913
+(defface vm-summary-high-priority4324,172240
+(defface vm-summary-default4332,172559
+(defcustom vm-visit-folder-hook 4340,172806
+(defcustom vm-retrieved-spooled-mail-hook 4348,173111
+(defcustom vm-edit-message-hook 4358,173514
+(defcustom vm-mail-mode-hook 4365,173740
+(defcustom vm-mode-hook 4372,173976
+(defcustom vm-mode-hooks 4379,174187
+(defcustom vm-summary-mode-hook 4386,174346
+(defcustom vm-summary-mode-hooks 4392,174546
+(defcustom vm-folders-summary-mode-hook 4399,174721
+(defcustom vm-virtual-mode-hook 4405,174937
+(defcustom vm-presentation-mode-hook 4411,175144
+(defcustom vm-quit-hook 4419,175520
+(defcustom vm-summary-pointer-update-hook 4425,175667
+(defcustom vm-display-buffer-hook 4431,175888
+(defcustom vm-undisplay-buffer-hook 4443,176344
+(defcustom vm-iconify-frame-hook 4456,176859
+(defcustom vm-menu-setup-hook 4461,176997
+(defcustom vm-mime-display-function 4466,177139
+(defcustom vm-mime-deleted-object-label 4479,177766
+(defvar vm-mime-show-alternatives 4485,177996
+(defcustom vm-emit-messages-for-mime-decoding 4494,178277
+(defcustom vm-imap-session-preauth-hook 4501,178558
+(defcustom vm-mail-send-hook 4521,179466
+(defcustom vm-rename-current-buffer-function 4568,181249
+(defvar mode-popup-menu 4577,181637
+(defcustom vm-movemail-program 4582,181842
+(defcustom vm-movemail-program-switches 4592,182260
+(defcustom vm-netscape-program 4598,182440
+(defcustom vm-netscape-program-switches 4604,182601
+(defcustom vm-opera-program 4609,182741
+(defcustom vm-opera-program-switches 4615,182890
+(defcustom vm-mozilla-program 4620,183024
+(defcustom vm-mozilla-program-switches 4626,183181
+(defcustom vm-mosaic-program 4631,183319
+(defcustom vm-mosaic-program-switches 4637,183472
+(defcustom vm-mmosaic-program 4642,183608
+(defcustom vm-mmosaic-program-switches 4648,183764
+(defcustom vm-konqueror-program 4653,183902
+(defcustom vm-konqueror-program-switches 4659,184067
+(defcustom vm-konqueror-client-program 4664,184209
+(defcustom vm-konqueror-client-program-switches 4670,184395
+(defcustom vm-firefox-program 4675,184551
+(defcustom vm-firefox-program-switches 4681,184716
+(defcustom vm-firefox-client-program 4686,184862
+(defcustom vm-firefox-client-program-switches 4692,185048
+(defcustom vm-wget-program 4697,185217
+(defcustom vm-w3m-program 4703,185354
+(defcustom vm-fetch-program 4709,185488
+(defcustom vm-curl-program 4716,185681
+(defcustom vm-lynx-program 4722,185818
+(defcustom vm-grep-program 4728,185955
+(defcustom vm-stunnel-program 4735,186175
+(defcustom vm-stunnel-program-switches 4742,186431
+(defcustom vm-stunnel-program-additional-configuration-file 4752,186859
+(defcustom vm-stunnel-random-data-method 4771,187696
+(defcustom vm-ssh-program 4791,188598
+(defcustom vm-ssh-program-switches 4798,188830
+(defcustom vm-ssh-remote-command 4803,188960
+(defcustom vm-uncompface-program 4811,189264
+(defcustom vm-icontopbm-program 4821,189680
+(defvar vm-uncompface-accepts-dash-x4831,190066
+(defvar vm-stunnel-wants-configuration-file 4840,190421
+(defcustom vm-temp-file-directory4844,190600
+(defcustom vm-tale-is-an-idiot 4854,190908
+(defun vm-octal 4862,191183
+(defcustom vm-default-folder-permission-bits 4873,191439
+(defcustom vm-coding-system-priorities 4878,191592
+(defcustom vm-mime-ucs-list 4890,192099
+(defcustom vm-drop-buffer-name-chars 4895,192283
+(defcustom vm-buffer-name-limit 4905,192738
+(defconst vm-maintainer-address 4912,192950
+(defvar vm-mode-map4915,193045
+(defcustom vm-summary-enable-thread-folding 5090,201737
+(defcustom vm-summary-show-thread-count 5096,201929
+(defcustom vm-summary-thread-folding-on-motion 5103,202194
+(defcustom vm-enable-thread-operations 5111,202491
+(defvar vm-summary-threads-collapsed 5120,202788
+(defvar vm-summary-mode-map 5125,202979
+(defvar vm-folders-summary-mode-map 5128,203052
+(defvar vm-mail-mode-map5131,203141
+(defvar vm-edit-message-map5149,203898
+(defvar vm-mime-reader-map5160,204334
+(defvar vm-folder-history 5179,205280
+(defun vm-folder-history 5183,205425
+(defvar vm-skip-collapsed-sub-threads 5186,205487
+(defvar vm-folder-type 5187,205528
+(defvar vm-folder-access-method 5189,205601
+(defvar vm-folder-access-data 5191,205692
+(defvar vm-message-list 5193,205779
+(defvar vm-fetched-messages 5195,205854
+(defvar vm-fetched-message-count 5197,205937
+(defvar vm-virtual-folder-definition 5199,206028
+(defvar vm-virtual-buffers 5201,206129
+(defvar vm-real-buffers 5203,206210
+(defvar vm-message-pointer 5205,206285
+(defvar vm-message-order-changed 5207,206366
+(defvar vm-message-order-header-present 5209,206459
+(defvar vm-last-message-pointer 5211,206566
+(defvar vm-folders-summary-hash 5213,206657
+(defvar vm-folders-summary-spool-hash 5214,206694
+(defvar vm-folders-summary-folder-hash 5215,206737
+(defvar vm-folders-summary-buffer 5216,206781
+(defvar vm-mail-buffer 5217,206820
+(defvar vm-fetch-buffer 5220,206938
+(defvar vm-presentation-buffer 5224,207108
+(defvar vm-presentation-buffer-handle 5227,207257
+(defvar vm-mime-decoded 5230,207420
+(defvar vm-summary-buffer 5233,207546
+(defvar vm-user-interaction-buffer 5236,207672
+(defvar vm-summary-pointer 5238,207772
+(defvar vm-system-state 5240,207853
+(defvar vm-undo-record-list 5242,207928
+(defvar vm-saved-undo-record-list 5244,208011
+(defvar vm-undo-record-pointer 5246,208106
+(defvar vm-last-save-folder 5248,208195
+(defvar vm-last-save-imap-folder 5250,208278
+(defvar vm-last-written-file 5252,208371
+(defvar vm-last-visit-folder 5254,208456
+(defvar vm-last-visit-pop-folder 5255,208490
+(defvar vm-last-visit-imap-folder 5256,208528
+(defvar vm-last-visit-imap-account 5257,208567
+(defvar vm-last-pipe-command 5258,208607
+(defvar vm-messages-not-on-disk 5260,208692
+(defvar vm-totals 5262,208781
+(defvar vm-modification-counter 5264,208844
+(defvar vm-flushed-modification-counter 5266,208933
+(defvar vm-tempfile-counter 5268,209040
+(defvar vm-messages-needing-summary-update 5269,209071
+(defvar vm-buffers-needing-display-update 5270,209119
+(defvar vm-buffers-needing-undo-boundaries 5271,209166
+(defvar vm-numbering-redo-start-point 5272,209214
+(defvar vm-numbering-redo-end-point 5274,209317
+(defvar vm-summary-redo-start-point 5276,209416
+(defvar vm-need-summary-pointer-update 5278,209515
+(defvar vm-thread-obarray 5280,209620
+(defvar vm-thread-subject-obarray 5282,209701
+(defvar vm-label-obarray 5284,209798
+(defvar vm-block-new-mail 5286,209875
+(defvar vm-global-block-new-mail 5288,209954
+(defvar vm-saved-buffer-modified-p 5289,209992
+(defvar vm-kept-mail-buffers 5291,210089
+(defvar vm-inhibit-write-file-hook 5292,210123
+(defvar vm-chop-full-name-function 5297,210386
+(defvar vm-session-beginning 5298,210449
+(defvar vm-init-file-loaded 5299,210481
+(defvar vm-window-configurations 5300,210514
+(defvar vm-window-configuration 5301,210552
+(defvar vm-message-id-number 5302,210589
+(defconst vm-spool-directory5303,210621
+(defconst vm-content-length-search-regexp 5306,210743
+(defconst vm-content-length-header 5307,210822
+(defconst vm-references-header-regexp5308,210876
+(defconst vm-attributes-header-regexp5310,210958
+(defconst vm-attributes-header 5312,211061
+(defconst vm-message-order-header-regexp 5313,211109
+(defconst vm-message-order-header 5314,211174
+(defconst vm-bookmark-header-regexp 5315,211231
+(defconst vm-bookmark-header 5316,211286
+(defconst vm-pop-retrieved-header-regexp 5317,211333
+(defconst vm-pop-retrieved-header 5318,211398
+(defconst vm-imap-retrieved-header-regexp 5319,211455
+(defconst vm-imap-retrieved-header 5320,211522
+(defconst vm-storage-header-regexp 5321,211581
+(defconst vm-storage-header 5322,211634
+(defconst vm-last-modified-header-regexp 5323,211679
+(defconst vm-last-modified-header 5324,211744
+(defconst vm-summary-header-regexp 5325,211801
+(defconst vm-summary-header 5326,211861
+(defconst vm-vheader-header-regexp 5327,211913
+(defconst vm-vheader-header 5328,211966
+(defconst vm-labels-header-regexp 5329,212011
+(defconst vm-labels-header 5330,212062
+(defconst vm-berkeley-mail-status-header 5331,212105
+(defconst vm-berkeley-mail-status-header-regexp 5332,212158
+(defconst vm-internal-unforwarded-header-regexp5333,212230
+(defvar vm-matched-header-vector 5335,212323
+(defconst vm-supported-folder-types5336,212377
+(defconst vm-supported-window-configurations5338,212482
+(defcustom vm-vs-attachment-regexp 5505,217604
+(defvar vm-spam-words 5510,217757
+(defvar vm-spam-words-regexp 5513,217839
+(defcustom vm-spam-words-file5516,217928
+(defcustom vm-vs-spam-score-headers5522,218087
+(defconst vm-supported-sort-keys5541,218859
+(defconst vm-supported-interactive-virtual-selectors5553,219261
+(defconst vm-virtual-selector-function-alist5603,220180
+(defconst vm-supported-attribute-names5658,222011
+(defvar vm-key-functions 5685,222430
+(defconst vm-digest-type-alist 5686,222460
+(defvar vm-completion-auto-correct 5687,222527
+(defvar vm-minibuffer-completion-table 5691,222749
+(defvar vm-completion-auto-space 5694,222915
+(defconst vm-attributes-vector-length 5697,223084
+(defconst vm-cache-vector-length 5698,223125
+(defconst vm-softdata-vector-length 5699,223162
+(defconst vm-location-data-vector-length 5700,223202
+(defconst vm-mirror-data-vector-length 5701,223246
+(defconst vm-folder-summary-vector-length 5702,223288
+(defconst vm-startup-message-lines5703,223334
+(defconst vm-startup-message-displayed 5708,223700
+(defvar vm-mode-line-format-robf5710,223765
+(defvar vm-mode-line-format-classic5734,224566
+(defvar vm-mode-line-format 5753,225239
+(defvar vm-ml-message-attributes-alist5756,225298
+(defvar vm-ml-message-number 5770,225771
+(defvar vm-ml-highest-message-number 5772,225856
+(defvar vm-ml-sort-keys 5774,225957
+(defvar vm-ml-labels 5776,226032
+(defvar vm-ml-message-new 5781,226207
+(defvar vm-ml-message-unread 5783,226286
+(defvar vm-ml-message-read 5785,226371
+(defvar vm-ml-message-edited 5787,226452
+(defvar vm-ml-message-replied 5789,226537
+(defvar vm-ml-message-forwarded 5791,226624
+(defvar vm-ml-message-redistributed 5793,226715
+(defvar vm-ml-message-deleted 5795,226814
+(defvar vm-ml-message-filed 5797,226901
+(defvar vm-ml-message-written 5799,226984
+(defvar vm-ml-message-marked 5801,227071
+(defvar vm-pop-read-point 5804,227195
+(defvar vm-pop-ok-to-ask 5805,227226
+(defvar vm-pop-passwords 5806,227256
+(defvar vm-pop-retrieved-messages 5811,227523
+(defvar vm-pop-messages-to-expunge 5814,227688
+(defvar vm-imap-read-point 5816,227785
+(defvar vm-imap-ok-to-ask 5820,227971
+(defvar vm-imap-passwords 5822,228060
+(defvar vm-imap-retrieved-messages 5827,228330
+(defvar vm-imap-messages-to-expunge 5830,228497
+(defvar vm-imap-capabilities 5832,228596
+(defvar vm-imap-auth-methods 5834,228681
+(defvar vm-pop-keep-failed-trace-buffers 5838,228851
+(defvar vm-imap-keep-failed-trace-buffers 5839,228896
+(defvar vm-kept-pop-buffers 5841,229002
+(defvar vm-kept-imap-buffers 5845,229178
+(defvar vm-pop-keep-trace-buffer 5850,229414
+(defvar vm-imap-keep-trace-buffer 5853,229560
+(defvar vm-imap-session-done 5856,229708
+(defvar vm-reply-list 5857,229742
+(defvar vm-forward-list 5858,229769
+(defvar vm-redistribute-list 5859,229798
+(defvar vm-assertion-checking-off 5863,229868
+(defvar vm-buffer-types 5869,230075
+(defvar vm-imap-session-type 5878,230368
+(defvar vm-fsfemacs-toolbar-installed-p 5894,230822
+(defvar highlight-headers-regexp 5897,230973
+(defvar vm-url-regexp5898,231024
+(defconst vm-month-alist5904,231502
+(defconst vm-weekday-alist5917,231834
+(defvar pop-up-frames 5925,232046
+(defvar vm-parse-date-workspace 5926,232073
+(defvar vm-sortable-date-alist 5930,232274
+(defvar vm-summary-=5931,232310
+(defvar vm-summary-no-=5932,232337
+(defvar vm-summary-overlay 5933,232367
+(defvar vm-summary-tokenized-compiled-format-alist 5935,232448
+(defvar vm-summary-untokenized-compiled-format-alist 5936,232504
+(defvar vm-folders-summary-compiled-format-alist 5937,232562
+(defvar vm-folders-summary-overlay 5938,232616
+(defvar vm-spool-file-message-count-hash 5939,232656
+(defvar vm-page-end-overlay 5940,232717
+(defvar vm-begin-glyph-property 5942,232800
+(defvar vm-thread-loop-obarray 5945,232913
+(defvar vm-delete-duplicates-obarray 5946,232965
+(defvar vm-image-obarray 5947,233022
+(defvar vm-mail-mode-map-parented 5948,233067
+(defvar vm-xface-cache 5949,233106
+(defvar vm-mf-default-action 5950,233149
+(defvar vm-mime-compiled-format-alist 5951,233183
+(defvar vm-mime-default-action-string-alist5952,233226
+(defvar vm-mime-type-description-alist5969,233911
+(defconst vm-mime-base64-alphabet5990,234751
+(defconst vm-mime-base64-alphabet-decoding-vector6000,235086
+(defvar vm-message-garbage-alist 6035,236632
+(defvar vm-folder-garbage-alist 6039,236828
+(defvar vm-global-garbage-alist 6043,237022
+(defconst vm-mime-header-list 6046,237165
+(defconst vm-mime-header-regexp 6047,237226
+(defconst vm-mime-mule-charset-to-coding-alist6048,237292
+(defvar vm-mime-mule-charset-to-charset-alist6089,238511
+(defvar vm-mime-mule-coding-to-charset-alist6108,239131
+(defconst vm-mime-charset-completion-alist6131,239823
+(defconst vm-mime-type-completion-alist6148,240150
+(defconst vm-mime-encoded-word-regexp6165,240482
+(defvar buffer-file-type)6173,240780
+(defvar vm-mf-attachment-file 6174,240806
+(defvar vm-frame-list 6175,240841
+(defvar vm-stunnel-random-data-file 6178,240949
+(defvar vm-stunnel-configuration-file 6179,240990
+(defvar vm-fsfemacs-cached-scroll-bar-width 6180,241033
+(defvar vm-update-composition-buffer-name-timer 6181,241082
+(defcustom vm-enable-addons 6183,241136
+(defcustom vm-summary-enable-faces 6213,242475
+(defcustom vm-disable-modes-before-encoding 6221,242736
+(defvar vm-summary-faces-mode 6230,243084
+(defcustom vm-mail-mode-hidden-headers 6235,243248
+(defun vm-load-init-file 6246,243687
+
+vm-vcard.el,239
+(defvar vm-vcard-format-function 39,1235
+(defvar vm-vcard-filter 43,1354
+(defun vm-mime-display-internal-text/x-vcard 47,1471
+(defun vm-vcard-format-layout 53,1639
+(defun vm-vcard-decode 67,2347
+(defun vm-vcard-format-simple 77,2676
+
+vm-version.el,1043
+(defconst vm-version24,934
+(defun vm-version 35,1218
+(defconst vm-xemacs-p45,1507
+(defconst vm-xemacs-mule-p47,1551
+(defconst vm-xemacs-file-coding-p49,1616
+(defconst vm-fsfemacs-p54,1763
+(defconst vm-fsfemacs-mule-p56,1808
+(defun vm-xemacs-p 60,1935
+(defun vm-xemacs-mule-p 61,1970
+(defun vm-xemacs-file-coding-p 62,2015
+(defun vm-fsfemacs-p 63,2074
+(defun vm-fsfemacs-mule-p 64,2113
+(defun vm-mouse-fsfemacs-mouse-p 66,2163
+(defun vm-mouse-xemacs-mouse-p 70,2260
+(defun vm-menu-fsfemacs-menus-p 74,2353
+(defun vm-menu-fsfemacs19-menus-p 78,2444
+(defun vm-menu-xemacs-menus-p 83,2571
+(defun vm-menu-can-eval-item-name 87,2663
+(defun vm-multiple-frames-possible-p 94,2860
+(defun vm-mouse-support-possible-p 101,3066
+(defun vm-mouse-support-possible-here-p 107,3221
+(defun vm-menu-support-possible-p 113,3399
+(defun vm-toolbar-support-possible-p 119,3528
+(defun vm-multiple-fonts-possible-p 123,3689
+(defun vm-images-possible-here-p 129,3854
+(defun vm-image-type-available-p 136,4143
+(defun vm-load-features 141,4302
+
+vm-virtual.el,2159
+(defun vm-build-virtual-message-list 27,936
+(defun vm-create-virtual-folder 275,9958
+(defun vm-apply-virtual-folder 313,11426
+(defun vm-create-virtual-folder-same-subject 349,12945
+(defun vm-create-virtual-folder-same-author 367,13634
+(defun vm-toggle-virtual-mirror 384,14276
+(defun vm-virtual-help 433,16187
+(defun vm-vs-or 438,16378
+(defun vm-vs-and 451,16856
+(defun vm-vs-not 463,17305
+(defun vm-vs-any 472,17582
+(defun vm-vs-author 474,17607
+(defun vm-vs-recipient 478,17723
+(defun vm-vs-author-or-recipient 482,17839
+(defun vm-vs-subject 486,17940
+(defun vm-vs-sortable-subject 489,18010
+(defun vm-vs-sent-before 492,18098
+(defun vm-vs-sent-after 495,18212
+(defun vm-vs-older-than 498,18325
+(defun vm-vs-newer-than 503,18483
+(defun vm-vs-outgoing 508,18642
+(defun vm-vs-uninteresting-senders 513,18865
+(defun vm-vs-attachment 517,19007
+(defun vm-vs-spam-word 520,19078
+(defun vm-vs-spam-score 540,19956
+(defun vm-vs-header 555,20680
+(defun vm-vs-label 562,20891
+(defun vm-vs-text 565,20955
+(defun vm-vs-header-or-text 572,21165
+(defun vm-vs-more-chars-than 579,21388
+(defun vm-vs-less-chars-than 582,21477
+(defun vm-vs-more-lines-than 585,21566
+(defun vm-vs-less-lines-than 588,21655
+(defun vm-vs-virtual-folder-member 591,21744
+(defun vm-vs-new 594,21814
+(defun vm-vs-unread 596,21884
+(defun vm-vs-read 598,21963
+(defun vm-vs-deleted 599,22032
+(defun vm-vs-replied 600,22078
+(defun vm-vs-forwarded 602,22162
+(defun vm-vs-redistributed 603,22212
+(defun vm-vs-filed 604,22270
+(defun vm-vs-written 605,22312
+(defun vm-vs-marked 606,22358
+(defun vm-vs-edited 607,22398
+(defun vm-vs-undeleted 609,22443
+(defun vm-vs-unreplied 610,22497
+(defun vm-vs-unforwarded 612,22593
+(defun vm-vs-unredistributed 613,22651
+(defun vm-vs-unfiled 614,22717
+(defun vm-vs-unwritten 615,22767
+(defun vm-vs-unmarked 616,22821
+(defun vm-vs-unedited 617,22869
+(defun vm-vs-expanded 618,22921
+(defun vm-vs-collapsed 619,22979
+(defun vm-read-virtual-selector 663,25274
+(defun vm-virtual-quit 701,26518
+(defun vm-virtual-save-folder 792,29626
+(defun vm-virtual-get-new-mail 807,30076
+(defun vm-make-virtual-copy 829,30723
+
+vm-w3.el,362
+(defvar vm-w3-text/html-message 39,1123
+(defvar url-working-buffer)42,1198
+(defvar url-current-content-length)43,1226
+(defvar url-current-mime-encoding)44,1262
+(defvar url-current-mime-type)45,1297
+(defvar url-current-mime-headers)46,1328
+(defun vm-w3-cid-retrieve 48,1363
+(defadvice url-cid 63,2051
+(defun vm-mime-display-internal-w3-text/html 69,2207
+
+vm-w3m.el,631
+(defvar w3m-current-buffer)47,1476
+(defvar w3m-cid-retrieve-function-alist)48,1504
+(defvar w3m-minor-mode-map)49,1545
+(defvar url-working-buffer)50,1573
+(defvar url-current-mime-type)51,1601
+(defvar url-current-mime-headers)52,1632
+(defvar vm-w3m-mode-map 54,1667
+(defgroup vm-w3m 57,1727
+(defcustom vm-w3m-display-inline-images 61,1789
+(defcustom vm-w3m-safe-url-regexp 68,2030
+(defcustom vm-w3m-use-w3m-minor-mode-map 84,2907
+(defun vm-w3m-cid-retrieve 101,3681
+(defun vm-w3m-local-map-property 119,4307
+(defun vm-mime-display-internal-emacs-w3m-text/html 132,4723
+(defun vm-w3m-safe-toggle-inline-images 146,5325
+
+vm-window.el,1214
+(defun vm-display 27,941
+(defun vm-display-buffer 103,3903
+(defun vm-undisplay-buffer 115,4268
+(defun vm-load-window-configurations 123,4571
+(defun vm-store-window-configurations 142,5149
+(defun vm-set-window-configuration 160,5836
+(defun vm-save-window-configuration 241,9059
+(defun vm-buffer-to-label 288,11189
+(defun vm-delete-window-configuration 308,11659
+(defun vm-apply-window-configuration 338,12873
+(defun vm-window-help 355,13380
+(defun vm-iconify-frame 359,13514
+(defun vm-window-loop 369,13818
+(defun vm-frame-loop 402,14970
+(defun vm-maybe-delete-windows-or-frames-on 447,16336
+(defun vm-replace-buffer-in-windows 451,16514
+(defun vm-bury-buffer 454,16598
+(defun vm-unbury-buffer 462,16827
+(defun vm-set-hooks-for-frame-deletion 472,17151
+(defun vm-created-this-frame-p 477,17363
+(defun vm-delete-buffer-frame 480,17468
+(defun vm-register-frame 497,18204
+(defun vm-goto-new-frame 500,18289
+(defun vm-goto-new-summary-frame-maybe 518,19017
+(defun vm-goto-new-folders-summary-frame-maybe 531,19448
+(defun vm-goto-new-folder-frame-maybe 544,19911
+(defun vm-warp-mouse-to-frame-maybe 565,20652
+(defun vm-iconify-frame-xxx 621,22604
+(defun vm-frame-totally-visible-p 658,24041
+
+vm.el,1443
+(defvar enable-multibyte-characters)31,958
+(defun vm 77,2276
+(defun vm-other-frame 413,15570
+(defun vm-other-window 428,16065
+(defun vm-mode 442,16447
+(defun vm-visit-folder 458,16800
+(defun vm-visit-folder-other-frame 516,18854
+(defun vm-visit-folder-other-window 547,19961
+(defun vm-visit-pop-folder 577,20979
+(defun vm-visit-pop-folder-other-frame 626,22838
+(defun vm-visit-pop-folder-other-window 657,23885
+(defun vm-visit-imap-folder 687,24842
+(defun vm-visit-imap-folder-other-frame 730,26459
+(defun vm-visit-imap-folder-other-window 755,27340
+(defun vm-virtual-mode 780,28161
+(defvar scroll-in-place)791,28548
+(defun vm-visit-virtual-folder 794,28589
+(defun vm-visit-virtual-folder-other-frame 904,32564
+(defun vm-visit-virtual-folder-other-window 925,33336
+(defun vm-mail 945,34019
+(defun vm-mail-other-frame 959,34464
+(defun vm-mail-other-window 974,34953
+(defun vm-folders-summarize 992,35442
+(defvar mail-send-actions)1062,38196
+(defun vm-compose-mail 1065,38239
+(defun vm-submit-bug-report 1112,39729
+(defun vm-edit-init-file 1215,43585
+(defun vm-check-emacs-version 1220,43699
+(defun vm-set-debug-flags 1229,44072
+(defun vm-toggle-thread-operations 1242,44353
+(defvar vm-postponed-folder)1257,44938
+(defvar vm-drafts-exist 1259,44968
+(defvar vm-ml-draft-count 1261,44998
+(defvar vm-postponed-folder)1264,45092
+(defun vm-update-draft-count 1266,45122
+(defun vm-session-initialization 1277,45679
+
+vm-startup.el,0
+
+vm-autoload.el,0
