@@ -71,7 +71,7 @@
 ;;-----------------------------------------------------------------------------
 ;; VM setup
 
-;; Make my customizations loaded via autoloading through my file.
+;; Make my customizations loaded by autoloading through my file.
 (let ((evm (concat eli-extras-dir "vm/eli-vm")))
   (when (file-readable-p (concat evm ".elc"))
     (autoload 'vm              evm "Start VM on your primary inbox" t)
@@ -81,9 +81,11 @@
     (autoload 'vm-visit-virtual-folder evm "Visit a VM virtual folder" t)
     (autoload 'vm-mode         evm "Run VM major mode on a buffer" t)
     (autoload 'vm-mail         evm "Send a mail message using VM" t)
-    (autoload 'vm-submit-bug-report evm "Send a bug report about VM" t)))
-(setq read-mail-command 'vm)
-(global-set-key "\C-xm" 'vm-mail)
+    (autoload 'vm-submit-bug-report evm "Send a bug report about VM" t)
+    (autoload 'vm-compose-mail evm)))
+(define-mail-user-agent 'vm-user-agent
+  'vm-compose-mail 'vm-mail-send-and-exit nil nil)
+(setq read-mail-command 'vm mail-user-agent 'vm-user-agent)
 
 ;;-----------------------------------------------------------------------------
 ;; AucTex (disabled)
