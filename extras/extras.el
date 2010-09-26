@@ -88,6 +88,14 @@
 (setq read-mail-command 'vm mail-user-agent 'vm-user-agent)
 
 ;;-----------------------------------------------------------------------------
+;; W3M setup
+
+;; Make my customizations loaded by autoloading through my file.
+(let ((ew3m (concat eli-extras-dir "w3m/eli-w3m")))
+  (when (file-readable-p (concat ew3m ".elc"))
+    (autoload 'w3m ew3m "Start the W3M browser" t)))
+
+;;-----------------------------------------------------------------------------
 ;; AucTex (disabled)
 '
 (let ((auctex-dir (concat eli-extras-dir "auctex/")))
