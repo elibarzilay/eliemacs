@@ -298,4 +298,9 @@
   '(define-keys custom-mode-map
      '([(shift tab)] nil)))
 
+(eval-after-load "view"
+  '(define-keys view-mode-map
+     '([(? )] eli-View-scroll-page-forward)
+     '([(shift ? )] eli-View-scroll-page-backward)))
+
 ;;; keys.el ends here

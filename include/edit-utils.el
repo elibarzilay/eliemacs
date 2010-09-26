@@ -727,4 +727,30 @@ file when you want this section to be hidden.")
     (dynamic-completion-mode)
     (complete arg)))
 
+;;-----------------------------------------------------------------------------
+;; Convenient scrolling with settable number of lines for view mode
+
+(defvar eli-View-scroll-page-lines nil)
+(defun eli-View-scroll-page-forward (&optional lines)
+  "Like `View-scroll-page-forward', but with a prefix argument determines the
+number of lines to use for future calls.  Use a `C-u' prefix to go back to
+full page scrolling."
+  (interactive "P")
+  (if (eq lines '-)
+    (eli-View-scroll-page-backward nil)
+    (progn (when lines
+             (setq eli-View-scroll-page-lines (and (integerp lines) lines)))
+           (View-scroll-page-forward eli-View-scroll-page-lines))))
+(defun eli-View-scroll-page-backward (&optional lines)
+  "Like `View-scroll-page-backward', but with a prefix argument determines the
+number of lines to use for future calls.  Use a `C-u' prefix to go back to
+full page scrolling."
+  (interactive "P")
+  (if (eq lines '-)
+    (eli-View-scroll-page-forward nil)
+    (progn (when lines
+             (setq eli-View-scroll-page-lines (and (integerp lines) lines)))
+           (View-scroll-page-backward eli-View-scroll-page-lines))))
+
+
 ;;; edit-utils.el ends here
