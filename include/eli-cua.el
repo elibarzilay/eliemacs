@@ -61,4 +61,14 @@
 
 (cua-mode 1)
 
+;; HACK: redefine `cua-set-rectangle-mark' so it can do something else
+(defvar eli-override-cua-set-rectangle-mark 'cua-set-rectangle-mark)
+(make-variable-buffer-local 'eli-override-cua-set-rectangle-mark)
+(defun eli-cua-set-rectangle-mark ()
+  "Calls `eli-override-cua-set-rectangle-mark' which normally holds
+`cua-set-rectangle-mark'.  The indirection is so it can be overridden."
+  (interactive)
+  (call-interactively eli-override-cua-set-rectangle-mark))
+(define-key cua-global-keymap '[(shift return)] 'eli-cua-set-rectangle-mark)
+
 ;;; eli-cua.el ends here
