@@ -37,17 +37,16 @@ force the face to be modified if it exists (good for setting properties of
 existing faces)."
   (let* ((spec  (if (stringp spec) spec (symbol-name spec)))
          (spec  (if (equal "" spec) (error "Empty face spec") spec))
-         (face  (or face-name (intern spec)))
-         (attrs (split-string spec "-"))
-         (attrs (mapcar (lambda (a) (replace-regexp-in-string "_" "-" a t))
-                        attrs))
-         (error nil))
+         (face  (or face-name (intern spec))))
     ;; optimize re-generating a simple face with same specs
     (unless (and (not face-name) (equal spec (get face 'simple-face-spec)))
-      (unless (memq face (face-list)) (make-face face))
-      (save-match-data
-        (dolist (attr attrs) (simple-set-face-attribute face attr)))
-      (unless face-name (put face 'simple-face-spec spec)))
+      (let* ((attrs (split-string spec "-"))
+             (attrs (mapcar (lambda (a) (replace-regexp-in-string "_" "-" a t))
+                            attrs)))
+        (unless (memq face (face-list)) (make-face face))
+        (save-match-data
+          (dolist (attr attrs) (simple-set-face-attribute face attr)))
+        (unless face-name (put face 'simple-face-spec spec))))
     face))
 
 (defun simple-set-face-attribute (face attr)
