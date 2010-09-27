@@ -61,8 +61,7 @@
  vm-mime-internal-content-types t
  vm-mime-internal-content-type-exceptions '("text/calendar")
  vm-mime-external-content-types-alist
-   '(;("text/html" "firefox") ("image" "qiv") ("video" "mplayer")
-     )
+   '(("text/html" "firefox") ("image" "qiv") ("video" "mplayer"))
  vm-mime-external-content-type-exceptions '()
  vm-mime-delete-viewer-processes t
  vm-mime-type-converter-alist
@@ -428,7 +427,7 @@
   (interactive)
   (let ((qprefix (regexp-quote vm-included-text-prefix)) end sig start)
     (save-excursion
-      (end-of-buffer)
+      (goto-char (point-max))
       (setq end (search-backward-regexp
                  "-- " (and (> (point) 400) (- (point) 400)) t))
       (setq sig (and end (search-backward-regexp
@@ -452,12 +451,93 @@
 (add-hook 'vm-arrived-messages-hook 'display-time-update)
 (add-hook 'vm-quit-hook 'display-time-update)
 
+;; A smart DWIM thing for mime objects
+(defvar eli-vm-textual-block-delimiter-face
+  (simple-make-face 'yellow/h600-bold-underline))
+(defun eli-vm-mime-operation ()
+  "Ask what to do with the current mime object."
+  (interactive)
+  (let* ((button   (vm-mime-run-display-function-at-point 'identity))
+         (layout   (vm-extent-property button 'vm-mime-layout))
+         (type     (car (vm-mm-layout-type layout)))
+         (isimage  (save-match-data (string-match "^image/" type)))
+         (external (let ((vm-mime-external-content-type-exceptions nil))
+                     (vm-mime-find-external-viewer type)))
+         (internal (vm-mime-should-display-internal layout))
+         (ch (progn
+               (goto-char (vm-extent-start-position button))
+               (message
+                (concat "[s]ave, [d]elete, view as [i]nline "
+                        (if isimage "image" "text")
+                        " or"
+                        " [e]xternally (with "
+                        (prin1-to-string (if external (car external) "cat"))
+                        ")"))
+               (downcase (read-char)))))
+    (case ch
+      ((?s)
+       (message "Saving...")
+       (call-interactively 'vm-mime-reader-map-save-message))
+      ((?d)
+       (message "Deleting...")
+       (call-interactively 'vm-delete-mime-object))
+      ((?i)
+       (message "Viewing as inline %s..." (if isimage "image" "text"))
+       (save-excursion
+         (let ((buffer-read-only nil) p)
+           (unless (bolp) (insert "\n"))
+           (setq p (point))
+           (insert "{{{----------")
+           (insert (format "%s" (vm-mm-layout-type layout)))
+           (insert "----------{{{\n")
+           (set-region-face p (point) eli-vm-textual-block-delimiter-face))
+         (if isimage
+           (let ((buffer-read-only nil))
+             (delete-region (vm-extent-start-position button)
+                            (vm-extent-end-position button))
+             ;; don't insert the image here ...
+             (insert "\n"))
+           (vm-mime-display-body-as-text button))
+         (let ((buffer-read-only nil))
+           (unless (bolp) (insert "\n"))
+           (setq p (point))
+           (insert "}}}------------------------------}}}\n")
+           (set-region-face p (1- (point))
+                            eli-vm-textual-block-delimiter-face)
+           (when isimage
+             ;; ... do it here so it appears between the markers
+             ;; (but don't do it for texts, since we won't know if a
+             ;; newline is needed until the text is there)
+             (goto-char (1- p))
+             (vm-mime-display-generic layout)))))
+      ((?e)
+       (message "Viewing with %s..." (if external (car external) "cat"))
+       (if external
+         (vm-mime-display-external-generic layout)
+         (let (;; HACK1: force it to hop into the window
+               (vm-mutable-windows nil)
+               (prev-win-conf (current-window-configuration)))
+           (vm-mime-pipe-body-to-command "cat" layout)
+           ;; HACK2: restore sanity, instead of an editable buffer
+           (run-with-idle-timer 0.01 nil
+             `(lambda ()
+                (goto-char (point-min))
+                ;; HACK3: exit back to prev conf (and cheat dynamic scope)
+                (view-mode-enter nil
+                  (lambda (b)
+                    (bury-buffer b)
+                    (set-window-configuration ,prev-win-conf))))))))
+      ((?1) (vm-mime-display-internal-application/octet-stream layout))
+      ((?2) (vm-mime-display-generic layout))
+      (t (error "Huh?")))))
+
 (defun vm-expunge-and-quit ()
   (interactive)
   (vm-expunge-folder)
   (vm-quit))
 
-(define-keys vm-mode-map
+(define-keys
+  vm-mode-map
   '("#"  vm-expunge-folder)
   '("Q"  vm-expunge-and-quit)
   '("X"  vm-quit-no-change)
@@ -470,11 +550,13 @@
   '([(return)]     vm-scroll-forward-one-line)
   '([(control shift ?j)] vm-scroll-backward-one-line)
   '([(control shift ?m)] vm-scroll-backward-one-line)
-  '([S-return]           vm-scroll-backward-one-line)
   '([(shift return)]     vm-scroll-backward-one-line)
   '("\\" vm-toggle-thread)
   '("/"  vm-toggle-thread)
-  '(save-buffer vm-save-folder))
+  '(save-buffer vm-save-folder)
+  ;;
+  vm-mime-reader-map
+  '([(return)] eli-vm-mime-operation))
 
 (add-hook 'vm-summary-mode-hook
   ;; HACK: cua-set-rectable-mark cannot be overridden in a normal keymap, so
