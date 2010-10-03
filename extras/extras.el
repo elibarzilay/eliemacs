@@ -86,6 +86,9 @@
 (define-mail-user-agent 'vm-user-agent
   'vm-compose-mail 'vm-mail-send-and-exit nil nil)
 (setq read-mail-command 'vm mail-user-agent 'vm-user-agent)
+;; Still set the key, since going through `compose-mail' is still a mess
+;; (eg, C-c C-a does some expand alias thing)
+(global-set-key "\C-xm" 'vm-mail)
 
 ;;-----------------------------------------------------------------------------
 ;; W3M setup
