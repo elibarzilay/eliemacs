@@ -143,8 +143,9 @@
  vm-do-fcc-before-mime-encode nil ; fcc with encoded (includes attachments)
  vm-reply-subject-prefix "Re: "
  ;; vm-reply-include-presentation nil ; looks like it's not used in the code
- vm-include-text-from-presentation t ; experimental? (this is actually used)
+ ;; vm-include-text-from-presentation t ; experimental? (this is actually used)
    ;; works, but looks like it will send an image, only it doesn't include it
+   ;; UPDATE: breaks replying to multiple emails
  ;; ?? vm-in-reply-to-format "%i"
  vm-included-mime-types-list nil ; include all types that are known
    ;; could use: '("text/plain" "text/enriched" "message/rfc822")
