@@ -565,3 +565,11 @@
   ;; which can be overridden via this buffer local variable
   (lambda ()
     (setq eli-override-cua-set-rectangle-mark 'vm-scroll-backward-one-line)))
+
+;; Use word-wrapping
+(add-hook 'vm-presentation-mode-hook
+  (lambda ()
+    (visual-line-mode 1)
+    (setq truncate-lines nil)
+    (setq word-wrap t)
+    (setq line-move-visual t)))
