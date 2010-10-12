@@ -202,8 +202,8 @@ This is a very brief list.  I need to get more info here.
     system processes), folding mode (selective display), vm (great
     emailer), calc (huge matlab-like thing in Emacs), auctex (improved
     la/tex editing), ilisp (lisp interactions).
-67. Finally, a beautiful logo (that you cannot get rid of, but you can
-    set `initial-logo-result' and get it to flash for one second only).
+67. Finally, a beautiful logo (that you cannot get rid of, unless you
+    look at the sources).
 68. A responsive author that will be happy to make more things
     customizable, and the complete sources so you can hack your own
     thing.

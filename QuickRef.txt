@@ -40,18 +40,7 @@ General features:
 User variables:  (Use <C-h v> or look at "include/user-vars.el" to learn more)
   `eli-color-style'           Color style (dark or light)
   `eli-font'                  Font
-  `eli-background'            Background color
-  `eli-foreground'            Foreground color
-  `eli-cursor-color'          Cursor color
   `eli-blink-cursor'          Use a blinking cursor or not
-  `eli-region-colors'         Selection colors
-  `eli-isearch-colors'        ISearch colors
-  `eli-isearch-lazy-colors'   Lazy-ISearch colors (for Emacs v.21)
-  `eli-modeline-colors'       Modeline colors
-  `eli-headerline-colors'     Headerline colors (v.21)
-  `eli-paren-colors'          Paren-highlight colors
-  `eli-paren-mismatch-colors' Mismatched paren highlight colors
-  `eli-paren-no-match-colors' Unmatched paren highlight colors
   `eli-window-pos'            Default window position
   `eli-use-menubar'           Use a menu-bar?
   `eli-use-toolbar'           Use a tool-bar?
@@ -60,7 +49,6 @@ User variables:  (Use <C-h v> or look at "include/user-vars.el" to learn more)
   `eli-backup-method'         Backup settings
   `eli-text-indications'      Some Emacs 21 indications for files.
   `eli-auto-revert-on-change' Revert automatically when a file changes on disk?
-  `initial-logo-result'       Simulate a constant initial keypress
 
 ##Local Variables:
 ##hide-local-variable-section: t
