@@ -574,6 +574,7 @@ that variable's value is a string."
 (put 'delay                 'scheme-indent-function 0)
 (put 'do                    'scheme-indent-function 2)
 (put 'lambda                'scheme-indent-function 1)
+(put 'λ                     'scheme-indent-function 1)
 (put 'lambda:               'scheme-indent-function 1)
 (put 'case-lambda           'scheme-indent-function 0)
 (put 'lambda/kw             'scheme-indent-function 1)

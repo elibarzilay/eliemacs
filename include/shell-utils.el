@@ -10,12 +10,15 @@
 ;;-----------------------------------------------------------------------------
 ;; Friendlier `shell' and `shell-command'
 
+(defvar eli-last-shell nil)
+
 (defun eli-shell (arg)
   "Similar to `shell' but extended as follows:
 - a positive numeric argument means jump to that shell window,
   with 1 being the default \"*shell*\", 2 is \"*shell*<2>\" etc,
 - a 0 numeric argument will jump to a new shell window (the next
   one), without asking about the name,
+- no argument means jump to the last shell window,
 - it switches to the buffer as usual, in the current window: no
   switching to a half-screen, and preserve the buffer visit
   history so there's no inconsistent buffer switching
@@ -23,11 +26,13 @@
   (interactive "P")
   (switch-to-buffer
    (save-window-excursion
-     (if (and (integerp arg) (>= arg 0))
-       (shell (cond ((= arg 0) (generate-new-buffer-name "*shell*"))
-                    ((= arg 1) "*shell*")
-                    (t (format "*shell*<%S>" arg))))
-       (call-interactively 'shell)))))
+     (cond ((and (integerp arg) (>= arg 0))
+            (shell (setq eli-last-shell
+                         (cond ((= arg 0) (generate-new-buffer-name "*shell*"))
+                               ((= arg 1) "*shell*")
+                               (t (format "*shell*<%S>" arg))))))
+           ((and eli-last-shell (not arg)) (shell eli-last-shell))
+           (t (call-interactively 'shell))))))
 
 (defun eli-shell-command ()
   "Similar to `shell-command' but sets environment variables $f, $F, and $d

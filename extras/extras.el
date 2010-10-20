@@ -64,9 +64,27 @@
                   eli-include-dir))
     (load (concat eli-dir "make.el"))
     (elisp-compile)))
+(defun run-scheme-like-compile ()
+  (setq
+   mc--comp-lst          '("racket" "gracket" "raco make")
+   mc--def-comp          '("racket")
+   mc--compfile-regexp   ""
+   mc--comp-varenv       "RACKET"
+   mc--cflags-varenv     "RACKETFLAGS"
+   mc--comp-options      "-t-"
+   mc--source-ext-lst    '("rkt" "rktl" "scm" "ss")
+   mc--head-ext-lst      '()
+   mc--source-ext-regexp ""  ; <- always use the filename ;"\\.rkt.?$"
+   mc--build-op-args     nil ; don't add -c -o crap
+   mc--outfile-ext       ""
+   )
+  (mc--compile (mc--set-command)))
 (eval-after-load "mode-compile"
-  '(setcar (cdr (assq 'emacs-lisp-mode mode-compile-modes-alist))
-           'eli-elisp-compile))
+  '(progn (setcar (cdr (assq 'emacs-lisp-mode mode-compile-modes-alist))
+                  'eli-elisp-compile)
+          (add-to-list 'mode-compile-modes-alist
+                       '(scheme-mode . (run-scheme-like-compile
+                                        kill-compilation)))))
 
 ;;-----------------------------------------------------------------------------
 ;; VM setup
