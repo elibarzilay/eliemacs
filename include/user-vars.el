@@ -7,12 +7,12 @@
   "*Default color style to use: 'dark or 'light.")
 (defvar eli-size nil
   "*Default size for EliEmacs - a list of two numbers.
-Setting this to nil leaves either the XDefault value, or the stuff from
-`window-configurations' or `personal-window-configurations'.")
+Setting this to nil leaves either the default, or stuff from
+`window-configurations'.")
 (defvar eli-font nil
   "*Default font for EliEmacs.
-Setting this to nil leaves either the XDefault value, or the stuff from
-`window-configurations' or `personal-window-configurations'.")
+Setting this to nil leaves either the default, or stuff from
+`window-configurations'.")
 (defvar eli-blink-cursor nil
   "*If non-nil, use a blinking cursor.")
 (defvar eli-window-pos nil
