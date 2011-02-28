@@ -27,8 +27,7 @@
 (defvar eli-user-homedirs
   ;; taken from "mailalias.el"
   (when (file-readable-p "/etc/passwd")
-    (save-excursion
-      (set-buffer (generate-new-buffer " passwd"))
+    (with-current-buffer (generate-new-buffer " passwd")
       (insert-file-contents "/etc/passwd" nil nil nil t)
       (goto-char (point-min))
       (let ((r nil))
