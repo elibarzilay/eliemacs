@@ -602,7 +602,7 @@ that variable's value is a string."
 (put 'with-input-from-file  'scheme-indent-function 1)
 (put 'with-input-from-port  'scheme-indent-function 1)
 (put 'call-with-output-file 'scheme-indent-function 1)
-(put 'with-output-to-file   'scheme-indent-function 1)
+(put 'with-output-to-file   'scheme-indent-function 'defun)
 (put 'with-output-to-port   'scheme-indent-function 1)
 (put 'with-slots            'scheme-indent-function 2)
 (put 'with-accessors        'scheme-indent-function 2)
