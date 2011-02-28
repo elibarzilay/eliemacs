@@ -147,8 +147,10 @@
    ;; works, but looks like it will send an image, only it doesn't include it
    ;; UPDATE: breaks replying to multiple emails
  ;; ?? vm-in-reply-to-format "%i"
- vm-included-mime-types-list nil ; include all types that are known
-   ;; could use: '("text/plain" "text/enriched" "message/rfc822")
+ vm-included-mime-types-list
+   '("text/plain" "text/html" "text/enriched" "message/rfc822")
+   ;; could use nil for "all types that are known", but it tends to prefer html
+   ;; and for some html-formatted replies this loses the nested ">"s
  ;; ?? vm-included-text-headers '()
  ;; ?? vm-included-text-discard-header-regexp nil
  vm-forwarding-subject-format "[Forwarded from %F] %s"
