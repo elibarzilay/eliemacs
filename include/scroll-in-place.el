@@ -24,19 +24,21 @@
 ;;;###autoload
 (defvar scroll-in-place t
   "*Enable in-place scrolling.
-When this variable is true (i.e., non-`nil'), the standard Emacs vertical
-scrolling commands `scroll-down', `sccroll-up', `scroll-other-window-down',
-and `scroll-other-window' will attempt to keep point at its current position
-in the window (window line and column).  In other words, point stays
+
+When this variable is true (i.e., non-`nil'), the standard Emacs
+vertical scrolling commands `scroll-down', `sccroll-up',
+`scroll-other-window-down', and `scroll-other-window' will
+attempt to keep point at its current position in the
+window (window line and column).  In other words, point stays
 \"in place\" within the window.
 
-When this variable is `nil', or `scroll-preserve-screen-position' is `nil',
-the standard Emacs vertical scrolling commands behave as usual.
-The \"in place\" equivalents, however, are still available as separate
-commands.
+When this variable is `nil', or `scroll-preserve-screen-position'
+is `nil', the standard Emacs vertical scrolling commands behave
+as usual.  The \"in place\" equivalents, however, are still
+available as separate commands.
 
-This variable may be made buffer-local in order to disable (or enable) \"in
-place\" scrolling in particular buffers.")
+This variable may be made buffer-local in order to disable (or
+enable) \"in place\" scrolling in particular buffers.")
 
 (defvar eli-last-scroll-arg nil
   "The last prefix argument scroll was invoked with.")
@@ -50,25 +52,33 @@ place\" scrolling in particular buffers.")
   "The last command used to scroll, and the group of commands it was in.")
 
 (defvar eli-scroll-posns nil
-  "A list of old remembered positions.
-Of the form (UPWARD-POSITIONS DOWNWARD-POSITIONS.")
+  "A (buffer-local) list of remembered positions.
+
+Holds (UPWARD-POSITIONS DOWNWARD-POSITIONS) with a list of
+positions upward from the current position, and downward from it.
+See `eli-get-scroll-position' for the format of a position.")
 (make-variable-buffer-local 'eli-scroll-posns)
 
 ;; Remember original scrolling commands.
-(loop for (new old) in '((eli-original-scroll-up scroll-up)
-			 (eli-original-scroll-down scroll-down)
-			 (eli-original-scroll-other-window scroll-other-window)
-			 (eli-original-scroll-other-window-down scroll-other-window-down))
+(loop for (new old)
+      in '((eli-original-scroll-up scroll-up)
+           (eli-original-scroll-down scroll-down)
+           (eli-original-scroll-other-window scroll-other-window)
+           (eli-original-scroll-other-window-down scroll-other-window-down))
       unless (fboundp new)
-        do (fset new (symbol-function old)))
+      do (fset new (symbol-function old)))
 
 (defun eli-get-scroll-position ()
-  "Get the scroll position, in the format of `eli-scroll-posns'."
+  "Get the current scroll position, a list of values.
+
+Currently contains the cursor position and the window row/column,
+but may change to include more (or different) information."
   (list (point) (window-start) (window-hscroll)))
 
 (defun eli-set-scroll-position (posn)
   "Set the scroll position.
-POSN is in the format of `eli-scroll-posns'."
+
+POSN is in the format of `eli-get-scroll-position'."
   (goto-char (nth 0 posn))
   (set-window-start nil (nth 1 posn) t)
   (set-window-hscroll nil (nth 2 posn)))
@@ -79,7 +89,7 @@ POSN is in the format of `eli-scroll-posns'."
   (let ((posn (posn-at-point)))
     (setq eli-scroll-column
           (if (eq (nth 1 posn) 'right-fringe) ; overflow-newline-into-fringe
-	      (- (window-width) 1)
+            (- (window-width) 1)
             (let ((x (car (posn-x-y posn))))
               (and x (truncate (/ (float x) (frame-char-width)))))))))
 
@@ -100,7 +110,8 @@ cancel each other out."
           (prog1 (and (eq (car eli-last-scroll-command-and-group) last-command)
                       (eq (cdr eli-last-scroll-command-and-group) group)
                       (memq current-prefix-arg '(nil -)))
-            (setq eli-last-scroll-command-and-group (cons this-command group))))
+            (setq eli-last-scroll-command-and-group
+                  (cons this-command group))))
          (arg (if repeated
                 eli-last-scroll-arg
                 (progn (eli-set-visual-column)
@@ -140,9 +151,9 @@ cancel each other out."
            (condition-case nil
                (progn
                  (funcall (if isdown
-			      'eli-original-scroll-down
-			    'eli-original-scroll-up)
-			  arg)
+                            'eli-original-scroll-down
+                            'eli-original-scroll-up)
+                          arg)
                  (eli-goto-visual-column)
                  ;; if we went down and now we see the bottom (and it we know
                  ;; it wasn't visible before), then make it be the bottom
@@ -160,9 +171,9 @@ cancel each other out."
                ;; and fake a second call to use it
                (this-command 'previous-line))
            (with-no-warnings
-            (if (eq direction 'up)
-                (previous-line (abs arg))
-              (next-line (abs arg))))
+             (if (eq direction 'up)
+               (previous-line (abs arg))
+               (next-line (abs arg))))
            (eli-goto-visual-column))
          (goto-char (if (eq direction 'up) (point-min) (point-max))))))))
 
@@ -190,8 +201,9 @@ DOCSTR is the function's docstring, with NAME-PAT replaced appropriately."
                 `((defun ,name (&optional arg)
                     ,docstr (interactive ,inter) ,doit)
                   (put ',name 'CUA 'move)
-		  (put ',name 'scroll-command t)
-                  (put ',name 'isearch-scroll t))))))
+                  (put ',name 'scroll-command t) ; for v24
+                  (put ',name 'isearch-scroll t) ; for v23
+                  )))))
     `(progn ,@(funcall mk "up" nil) ,@(funcall mk "down" t))))
 
 (eli-defun-up/down eli-scroll-XX "^P" nil
@@ -206,48 +218,52 @@ Also:
 (eli-defun-up/down eli-scroll-XX-1-stay "^p" t
   "Like `eli-scroll-XX-1' but stay in the same place.")
 
-;; This only works properly in conjunction with `scroll-preserve-screen-position'.
+;; This only works properly in conjunction with
+;; `scroll-preserve-screen-position'.
 
 (setq scroll-preserve-screen-position 'always)
 
 ;; Replace the standard Emacs commands: preserve their docstrings.
 
-(loop for (std replace original) in '((scroll-up eli-scroll-up eli-original-scroll-up)
-                                      (scroll-down eli-scroll-down eli-original-scroll-down))
+(loop for (std replace original)
+      in '((scroll-up eli-scroll-up eli-original-scroll-up)
+           (scroll-down eli-scroll-down eli-original-scroll-down))
       do
       (let ((old-doc (documentation std)))
         (fset std `(lambda (&optional arg)
-		     (if (and scroll-in-place
-			      (not (null scroll-preserve-screen-position)))
-			 (,replace arg)
-		       ;; Forcibly break any sequence of scrolling commands
-		       ;; which may have been in force before the binding,
-		       ;; in case scroll-in-place is turned on again
-		       (setq eli-scroll-posns nil
-			     eli-last-scroll-command-and-group nil
-			     eli-last-scroll-arg nil
-			     eli-scroll-column nil)
-		       (,original arg))))
-	(put std 'function-documentation old-doc)))
+                     (if (and scroll-in-place
+                              (not (null scroll-preserve-screen-position)))
+                       (,replace arg)
+                       ;; Forcibly break any sequence of scrolling commands
+                       ;; which may have been in force before the binding,
+                       ;; in case scroll-in-place is turned on again
+                       (setq eli-scroll-posns nil
+                             eli-last-scroll-command-and-group nil
+                             eli-last-scroll-arg nil
+                             eli-scroll-column nil)
+                       (,original arg))))
+        (put std 'function-documentation old-doc)))
 
-(loop for (std replace original) in '((scroll-other-window eli-scroll-up eli-original-scroll-other-window)
-                                      (scroll-other-window-down eli-scroll-down eli-original-scroll-other-window-down))
+(loop for (std replace original)
+      in '((scroll-other-window eli-scroll-up eli-original-scroll-other-window)
+           (scroll-other-window-down
+            eli-scroll-down eli-original-scroll-other-window-down))
       do
       (let ((old-doc (documentation std)))
         (fset std `(lambda (&optional arg)
-		     (if (and scroll-in-place
-			      (not (null scroll-preserve-screen-position)))
-			 (save-selected-window
-			   (select-window (other-window-for-scrolling))
-			   (,replace arg))
-		       ;; Forcibly break any sequence of scrolling commands
-		       ;; which may have been in force before the binding,
-		       ;; in case scroll-in-place is turned on again
-		       (setq eli-scroll-posns nil
-			     eli-last-scroll-command-and-group nil
-			     eli-last-scroll-arg nil
-			     eli-scroll-column nil)
-		       (,original arg))))
+                     (if (and scroll-in-place
+                              (not (null scroll-preserve-screen-position)))
+                       (save-selected-window
+                         (select-window (other-window-for-scrolling))
+                         (,replace arg))
+                       ;; Forcibly break any sequence of scrolling commands
+                       ;; which may have been in force before the binding,
+                       ;; in case scroll-in-place is turned on again
+                       (setq eli-scroll-posns nil
+                             eli-last-scroll-command-and-group nil
+                             eli-last-scroll-arg nil
+                             eli-scroll-column nil)
+                       (,original arg))))
         (put std 'function-documentation old-doc)))
 
 (provide 'eli-scroll-in-place)
