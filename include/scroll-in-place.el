@@ -228,6 +228,7 @@ Also:
            (orig    (intern (format "SIP-orig-%s"   std)))
            (old-doc (documentation std)))
       (fset std `(lambda (&optional arg)
+                   (interactive "^P")
                    (if (and scroll-in-place scroll-preserve-screen-position)
                      ,(if other
                         `(save-selected-window
