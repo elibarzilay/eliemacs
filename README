@@ -154,7 +154,7 @@ This is a very brief list.  I need to get more info here.
     and make it possible to scroll back to exactly the last position.
 41. Shifted arrow keys start and extend an existing selection, also use
     delete-selection mode for convenient editing.  (An improved
-    pc-select).
+    shift-select-mode).
 42. A convenient fuction to create color faces-on-demand, allow `M-g o'
     to read and use these on-demand specs.
 43. Functions to set the color of a region or all matches of a regular

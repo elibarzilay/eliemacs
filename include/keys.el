@@ -15,7 +15,7 @@
   ;; cursor keys
   'global
   ;; -- some not needed because they're always the default.
-  ;;    (pc-select is not an excuse because it might be disabled).
+  ;;    (shift-select-mode is not an excuse because it might be disabled).
   '([(left)]                    backward-char)
   '([(control left)]            backward-word)
   '([(meta left)]               backward-sexp)
