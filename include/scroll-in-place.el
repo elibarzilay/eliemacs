@@ -1,4 +1,4 @@
-;;; eli-scroll-in-place.el --- a simpler scroll-in-place replacement
+;;; scroll-in-place.el --- a simpler scroll-in-place replacement
 
 ;;; Copyright (C) 2009 Eli Barzilay <eli@barzilay.org>
 ;;;               2011 Nick Alcock <nix@esperi.org.uk>
@@ -16,8 +16,7 @@
 
 ;;; Requirements:
 
-(with-no-warnings
-  (require 'cl))
+(eval-when-compile (require 'cl))
 
 ;;; Code:
 
@@ -40,64 +39,64 @@ available as separate commands.
 This variable may be made buffer-local in order to disable (or
 enable) \"in place\" scrolling in particular buffers.")
 
-(defvar eli-last-scroll-arg nil
+(defvar SIP-last-scroll-arg nil
   "The last prefix argument scroll was invoked with.")
 
-(defvar eli-scroll-column nil
+(defvar SIP-scroll-column nil
   "The column we were moved to as a consequence of scrolling.")
 
 ;; remember the last command and its group, so we can identify repeated uses
 ;; of groups even when this is invoked from other commands
-(defvar eli-last-scroll-command-and-group nil
+(defvar SIP-last-scroll-command+group nil
   "The last command used to scroll, and the group of commands it was in.")
 
-(defvar eli-scroll-posns nil
+(defvar SIP-scroll-posns nil
   "A (buffer-local) list of remembered positions.
 
-Holds (UPWARD-POSITIONS DOWNWARD-POSITIONS) with a list of
-positions upward from the current position, and downward from it.
-See `eli-get-scroll-position' for the format of a position.")
-(make-variable-buffer-local 'eli-scroll-posns)
+Holds (UPWARD-POSNS DOWNWARD-POSNS) with a list of positions
+upward from the current position, and downward from it.  See
+`SIP-get-scroll-posn' for the format of a position.")
+(make-variable-buffer-local 'SIP-scroll-posns)
 
 ;; Remember original scrolling commands.
 (loop for (new old)
-      in '((eli-original-scroll-up scroll-up)
-           (eli-original-scroll-down scroll-down)
-           (eli-original-scroll-other-window scroll-other-window)
-           (eli-original-scroll-other-window-down scroll-other-window-down))
+      in '((SIP-orig-scroll-up scroll-up)
+           (SIP-orig-scroll-down scroll-down)
+           (SIP-orig-scroll-other-window scroll-other-window)
+           (SIP-orig-scroll-other-window-down scroll-other-window-down))
       unless (fboundp new)
       do (fset new (symbol-function old)))
 
-(defun eli-get-scroll-position ()
+(defun SIP-get-scroll-posn ()
   "Get the current scroll position, a list of values.
 
 Currently contains the cursor position and the window row/column,
 but may change to include more (or different) information."
   (list (point) (window-start) (window-hscroll)))
 
-(defun eli-set-scroll-position (posn)
+(defun SIP-set-scroll-posn (posn)
   "Set the scroll position.
 
-POSN is in the format of `eli-get-scroll-position'."
+POSN is in the format of `SIP-get-scroll-posn'."
   (goto-char (nth 0 posn))
   (set-window-start nil (nth 1 posn) t)
   (set-window-hscroll nil (nth 2 posn)))
 
-(defun eli-set-visual-column ()
+(defun SIP-set-visual-column ()
   "Figure out which column to place the cursor on during scrolling."
   ;; same as the code at the top of `line-move-visual'
   (let ((posn (posn-at-point)))
-    (setq eli-scroll-column
+    (setq SIP-scroll-column
           (if (eq (nth 1 posn) 'right-fringe) ; overflow-newline-into-fringe
             (- (window-width) 1)
             (let ((x (car (posn-x-y posn))))
               (and x (truncate (/ (float x) (frame-char-width)))))))))
 
-(defun eli-goto-visual-column ()
-  "Go to the column suggested by the `eli-scroll-column'."
-  (when eli-scroll-column (vertical-motion (cons eli-scroll-column 0))))
+(defun SIP-goto-visual-column ()
+  "Go to the column suggested by the `SIP-scroll-column'."
+  (when SIP-scroll-column (vertical-motion (cons SIP-scroll-column 0))))
 
-(defun eli-do-scroll (arg isdown group)
+(defun SIP-do-scroll (arg isdown group)
   "Scroll, endeavouring to keep the cursor in the same place on the screen.
 
 ARG is the number of lines to scroll; ISDOWN is t if this is a downward scroll;
@@ -107,27 +106,26 @@ cancel each other out."
          (repeated
           ;; this makes it possible for things to work fine even when called
           ;; through some other command
-          (prog1 (and (eq (car eli-last-scroll-command-and-group) last-command)
-                      (eq (cdr eli-last-scroll-command-and-group) group)
+          (prog1 (and (eq (car SIP-last-scroll-command+group) last-command)
+                      (eq (cdr SIP-last-scroll-command+group) group)
                       (memq current-prefix-arg '(nil -)))
-            (setq eli-last-scroll-command-and-group
-                  (cons this-command group))))
+            (setq SIP-last-scroll-command+group (cons this-command group))))
          (arg (if repeated
-                eli-last-scroll-arg
-                (progn (eli-set-visual-column)
-                       (setq eli-last-scroll-arg arg))))
+                SIP-last-scroll-arg
+                (progn (SIP-set-visual-column)
+                       (setq SIP-last-scroll-arg arg))))
          (direction (if (or (eq arg '-) (< (prefix-numeric-value arg) 0))
                       (- direction) direction))
          (direction (if (> direction 0) 'down 'up))
          ;; these hold the referencing cons cell (so it can be modified)
          past-box future-box
-         (curpos (eli-get-scroll-position)))
-    (unless (and repeated eli-scroll-posns)
-      (setq eli-scroll-posns (list '() '())))
+         (curpos (SIP-get-scroll-posn)))
+    (unless (and repeated SIP-scroll-posns)
+      (setq SIP-scroll-posns (list '() '())))
     ;; pull the right boxes
     (if (eq direction 'up)
-      (setq future-box eli-scroll-posns past-box   (cdr eli-scroll-posns))
-      (setq past-box   eli-scroll-posns future-box (cdr eli-scroll-posns)))
+      (setq future-box SIP-scroll-posns past-box   (cdr SIP-scroll-posns))
+      (setq past-box   SIP-scroll-posns future-box (cdr SIP-scroll-posns)))
     ;; remember where we are now, unless it's in the same place as last time
     (unless (and (consp (car past-box)) (equal curpos (caar past-box)))
       (setcar past-box (cons curpos (car past-box))))
@@ -141,7 +139,7 @@ cancel each other out."
       ((consp (car future-box))
        (let ((posn (caar future-box)))
          (setcar future-box (cdar future-box))
-         (eli-set-scroll-position posn)))
+         (SIP-set-scroll-posn posn)))
       ;; we're at the edge so there is nothing to do
       ((if (eq direction 'up) (bobp) (eobp))
        nil)
@@ -150,11 +148,9 @@ cancel each other out."
             (if (eq direction 'up) (point-min) (point-max)))
            (condition-case nil
                (progn
-                 (funcall (if isdown
-                            'eli-original-scroll-down
-                            'eli-original-scroll-up)
+                 (funcall (if isdown 'SIP-orig-scroll-down 'SIP-orig-scroll-up)
                           arg)
-                 (eli-goto-visual-column)
+                 (SIP-goto-visual-column)
                  ;; if we went down and now we see the bottom (and it we know
                  ;; it wasn't visible before), then make it be the bottom
                  (when (and (eq direction 'down)
@@ -164,9 +160,9 @@ cancel each other out."
              ((beginning-of-buffer end-of-buffer) t)))
        ;; ...but if the edge is visible (or scrolling failed), move instead
        (if (integerp arg)
-         (let ((eli-line-movement-without-dings t)
+         (let ((SIP-line-movement-without-dings t)
                ;; set a goal column, and make sure we do a visual movement
-               (temporary-goal-column (float eli-scroll-column))
+               (temporary-goal-column (float SIP-scroll-column))
                (line-move-visual t)
                ;; and fake a second call to use it
                (this-command 'previous-line))
@@ -174,10 +170,10 @@ cancel each other out."
              (if (eq direction 'up)
                (previous-line (abs arg))
                (next-line (abs arg))))
-           (eli-goto-visual-column))
+           (SIP-goto-visual-column))
          (goto-char (if (eq direction 'up) (point-min) (point-max))))))))
 
-(defmacro eli-defun-up/down (name-pat inter keep docstr)
+(defmacro defun-SIP-up/down (name-pat inter keep docstr)
   "A macro to generate up/down scrolling commands.
 
 NAME-PAT is the name of the group of up/down scrolling commands being
@@ -189,7 +185,7 @@ DOCSTR is the function's docstring, with NAME-PAT replaced appropriately."
               (let* ((name   (intern (replace-regexp-in-string
                                       "XX" u/d (symbol-name name-pat) t)))
                      (docstr (replace-regexp-in-string "XX" u/d docstr t))
-                     (doit `(eli-do-scroll arg ,downp ',name-pat))
+                     (doit `(SIP-do-scroll arg ,downp ',name-pat))
                      (doit (if keep
                              `(let ((p (point)))
                                 ,doit
@@ -206,17 +202,17 @@ DOCSTR is the function's docstring, with NAME-PAT replaced appropriately."
                   )))))
     `(progn ,@(funcall mk "up" nil) ,@(funcall mk "down" t))))
 
-(eli-defun-up/down eli-scroll-XX "^P" nil
+(defun-SIP-up/down SIP-scroll-XX "^P" nil
   "Wrapper for `scroll-XX' that does a scroll-in-place.
 Also:
 - when reaching the edge, move the cursor instead of beeping,
 - consecutive uses with no prefix use the first prefix in the sequence.")
 
-(eli-defun-up/down eli-scroll-XX-1 "^p" nil
-  "Like `eli-scroll-XX' with a default of one line.")
+(defun-SIP-up/down SIP-scroll-XX-1 "^p" nil
+  "Like `SIP-scroll-XX' with a default of one line.")
 
-(eli-defun-up/down eli-scroll-XX-1-stay "^p" t
-  "Like `eli-scroll-XX-1' but stay in the same place.")
+(defun-SIP-up/down SIP-scroll-XX-1-stay "^p" t
+  "Like `SIP-scroll-XX-1' but stay in the same place.")
 
 ;; This only works properly in conjunction with
 ;; `scroll-preserve-screen-position'.
@@ -226,8 +222,8 @@ Also:
 ;; Replace the standard Emacs commands: preserve their docstrings.
 
 (loop for (std replace original)
-      in '((scroll-up eli-scroll-up eli-original-scroll-up)
-           (scroll-down eli-scroll-down eli-original-scroll-down))
+      in '((scroll-up SIP-scroll-up SIP-orig-scroll-up)
+           (scroll-down SIP-scroll-down SIP-orig-scroll-down))
       do
       (let ((old-doc (documentation std)))
         (fset std `(lambda (&optional arg)
@@ -237,17 +233,17 @@ Also:
                        ;; Forcibly break any sequence of scrolling commands
                        ;; which may have been in force before the binding,
                        ;; in case scroll-in-place is turned on again
-                       (setq eli-scroll-posns nil
-                             eli-last-scroll-command-and-group nil
-                             eli-last-scroll-arg nil
-                             eli-scroll-column nil)
+                       (setq SIP-scroll-posns nil
+                             SIP-last-scroll-command+group nil
+                             SIP-last-scroll-arg nil
+                             SIP-scroll-column nil)
                        (,original arg))))
         (put std 'function-documentation old-doc)))
 
 (loop for (std replace original)
-      in '((scroll-other-window eli-scroll-up eli-original-scroll-other-window)
+      in '((scroll-other-window SIP-scroll-up SIP-orig-scroll-other-window)
            (scroll-other-window-down
-            eli-scroll-down eli-original-scroll-other-window-down))
+            SIP-scroll-down SIP-orig-scroll-other-window-down))
       do
       (let ((old-doc (documentation std)))
         (fset std `(lambda (&optional arg)
@@ -259,11 +255,11 @@ Also:
                        ;; Forcibly break any sequence of scrolling commands
                        ;; which may have been in force before the binding,
                        ;; in case scroll-in-place is turned on again
-                       (setq eli-scroll-posns nil
-                             eli-last-scroll-command-and-group nil
-                             eli-last-scroll-arg nil
-                             eli-scroll-column nil)
+                       (setq SIP-scroll-posns nil
+                             SIP-last-scroll-command+group nil
+                             SIP-last-scroll-arg nil
+                             SIP-scroll-column nil)
                        (,original arg))))
         (put std 'function-documentation old-doc)))
 
-(provide 'eli-scroll-in-place)
+(provide 'scroll-in-place)
