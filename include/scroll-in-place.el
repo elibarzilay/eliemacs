@@ -59,13 +59,10 @@ upward from the current position, and downward from it.  See
 (make-variable-buffer-local 'SIP-scroll-posns)
 
 ;; Remember original scrolling commands.
-(loop for (new old)
-      in '((SIP-orig-scroll-up scroll-up)
-           (SIP-orig-scroll-down scroll-down)
-           (SIP-orig-scroll-other-window scroll-other-window)
-           (SIP-orig-scroll-other-window-down scroll-other-window-down))
-      unless (fboundp new)
-      do (fset new (symbol-function old)))
+(dolist (std '(scroll-up scroll-down
+               scroll-other-window scroll-other-window-down))
+  (let ((saved (intern (format "SIP-orig-%s" std))))
+    (unless (fboundp saved) (fset saved (symbol-function std)))))
 
 (defun SIP-get-scroll-posn ()
   "Get the current scroll position, a list of values.
@@ -177,12 +174,13 @@ cancel each other out."
   "A macro to generate up/down scrolling commands.
 
 NAME-PAT is the name of the group of up/down scrolling commands being
-defined, with the up/down portion replaced with 'XX'.
+defined, with the up/down portion replaced with `XX'.
 INTER is the interactive specification of the scrolling command.
 KEEP is T if the cursor should not be moved, only the screen.
-DOCSTR is the function's docstring, with NAME-PAT replaced appropriately."
-  (let ((mk (lambda (u/d downp)
-              (let* ((name   (intern (replace-regexp-in-string
+DOCSTR is the function's docstring, with `XX' replaced appropriately."
+  (let ((mk (lambda (downp)
+              (let* ((u/d    (if downp "down" "up"))
+                     (name   (intern (replace-regexp-in-string
                                       "XX" u/d (symbol-name name-pat) t)))
                      (docstr (replace-regexp-in-string "XX" u/d docstr t))
                      (doit `(SIP-do-scroll arg ,downp ',name-pat))
@@ -200,7 +198,7 @@ DOCSTR is the function's docstring, with NAME-PAT replaced appropriately."
                   (put ',name 'scroll-command t) ; for v24
                   (put ',name 'isearch-scroll t) ; for v23
                   )))))
-    `(progn ,@(funcall mk "up" nil) ,@(funcall mk "down" t))))
+    `(progn ,@(funcall mk nil) ,@(funcall mk t))))
 
 (defun-SIP-up/down SIP-scroll-XX "^P" nil
   "Wrapper for `scroll-XX' that does a scroll-in-place.
@@ -220,46 +218,30 @@ Also:
 (setq scroll-preserve-screen-position 'always)
 
 ;; Replace the standard Emacs commands: preserve their docstrings.
-
-(loop for (std replace original)
-      in '((scroll-up SIP-scroll-up SIP-orig-scroll-up)
-           (scroll-down SIP-scroll-down SIP-orig-scroll-down))
-      do
-      (let ((old-doc (documentation std)))
-        (fset std `(lambda (&optional arg)
-                     (if (and scroll-in-place
-                              (not (null scroll-preserve-screen-position)))
-                       (,replace arg)
-                       ;; Forcibly break any sequence of scrolling commands
-                       ;; which may have been in force before the binding,
-                       ;; in case scroll-in-place is turned on again
-                       (setq SIP-scroll-posns nil
-                             SIP-last-scroll-command+group nil
-                             SIP-last-scroll-arg nil
-                             SIP-scroll-column nil)
-                       (,original arg))))
-        (put std 'function-documentation old-doc)))
-
-(loop for (std replace original)
-      in '((scroll-other-window SIP-scroll-up SIP-orig-scroll-other-window)
-           (scroll-other-window-down
-            SIP-scroll-down SIP-orig-scroll-other-window-down))
-      do
-      (let ((old-doc (documentation std)))
-        (fset std `(lambda (&optional arg)
-                     (if (and scroll-in-place
-                              (not (null scroll-preserve-screen-position)))
-                       (save-selected-window
-                         (select-window (other-window-for-scrolling))
-                         (,replace arg))
-                       ;; Forcibly break any sequence of scrolling commands
-                       ;; which may have been in force before the binding,
-                       ;; in case scroll-in-place is turned on again
-                       (setq SIP-scroll-posns nil
-                             SIP-last-scroll-command+group nil
-                             SIP-last-scroll-arg nil
-                             SIP-scroll-column nil)
-                       (,original arg))))
-        (put std 'function-documentation old-doc)))
+(dolist (dir '(up down))
+  (dolist (other '(nil t))
+    (let* ((std  (intern (if other
+                           (format "scroll-other-window%s"
+                                   (if (eq dir 'up) "" "-down"))
+                           (format "scroll-%s" dir))))
+           (replace (intern (format "SIP-scroll-%s" dir)))
+           (orig    (intern (format "SIP-orig-%s"   std)))
+           (old-doc (documentation std)))
+      (fset std `(lambda (&optional arg)
+                   (if (and scroll-in-place scroll-preserve-screen-position)
+                     ,(if other
+                        `(save-selected-window
+                           (select-window (other-window-for-scrolling))
+                           (,replace arg))
+                        `(,replace arg))
+                     ;; Forcibly break any sequence of scrolling commands
+                     ;; which may have been in force before the binding,
+                     ;; in case scroll-in-place is turned on again
+                     (setq SIP-scroll-posns nil
+                           SIP-last-scroll-command+group nil
+                           SIP-last-scroll-arg nil
+                           SIP-scroll-column nil)
+                     (,orig arg))))
+      (put std 'function-documentation old-doc))))
 
 (provide 'scroll-in-place)
