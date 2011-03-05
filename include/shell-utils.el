@@ -87,14 +87,14 @@ must be sent as well)."
   (if (comint-after-pmark-p)
     (progn (setq this-command 'comint-previous-matching-input-from-input)
            (comint-previous-matching-input-from-input n))
-    (SIP-scroll-down-1-stay n)))
+    (scroll-down-1-stay n)))
 
 (defun comint-next-matching-input-from-input-or-scroll (n)
   (interactive "p")
   (if (comint-after-pmark-p)
     (progn (setq this-command 'comint-next-matching-input-from-input)
            (comint-next-matching-input-from-input n))
-    (SIP-scroll-up-1-stay n)))
+    (scroll-up-1-stay n)))
 
 (eval-after-load "comint"
   '(define-keys comint-mode-map

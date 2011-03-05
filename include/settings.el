@@ -372,7 +372,7 @@
  next-screen-context-lines 2
  window-min-height 2
  window-min-width 4
- scroll-preserve-screen-position 'always ; but use scroll-in-place anyway
+ scroll-preserve-screen-position 'in-place ; use my scroll-in-place feature
  scroll-step 1
  scroll-conservatively 30
  scroll-margin 0 ; maybe use 1? (forces a line, even at bottom or on C-0 C-L)
