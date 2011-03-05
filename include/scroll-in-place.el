@@ -28,6 +28,52 @@
 ;; builtin functions (say, `raw-scroll-up' and `...-down'), then remove the
 ;; hack that saves the current builtins as `SIP-orig-...' and instead make it
 ;; use those and, of course, remove the bit that changes the current functions.
+;;
+;; The original idea for this comes from `scroll-in-place' by Eric Eide, who
+;; took it from `scroll-fix' by Joe Wells.  But the code has no relation to
+;; those, mostly because the hard bit (keeping the point in place) is now done
+;; by Emacs.  The relevant parts of the comments that this file implements are
+;; below (edited: removed comments about things that are not done, possibly
+;; because they're part of Emacs):
+;;
+;;;; + Because the improved scrolling commands keep point at its original
+;;;;   window position, these scrolling commands are "reversible."  The
+;;;;   `scroll-up' command undoes the effect of the immediately previous
+;;;;   `scroll-down' command (if any) and vice versa.  In other words, if you
+;;;;   scroll up and then immediately scroll back down, the window config-
+;;;;   uration is restored to its exact original state.  This allows you to
+;;;;   browse through a buffer more easily, as you can always get back to the
+;;;;   original configuration.
+;;;;
+;;;;   Note, however, that the improved scrolling commands are guaranteed to be
+;;;;   reversible only if there are no intervening non-scrolling commands.
+;;;;   Also, if you give a prefix argument to a scrolling command (in order to
+;;;;   specify the number of lines to scroll by), previous scrolling commands
+;;;;   may no longer be reversible.
+;;;;
+;;;;   You might find it useful to think of the scrolling commands as forming
+;;;;   "chains."  A scrolling command either starts or continues a chain.  By
+;;;;   issuing a non-scrolling command or by changing the number of lines to be
+;;;;   scrolled, you break the chain.  Scrolling commands are guaranteed to be
+;;;;   reversible only within the current chain.  Hopefully that's clear
+;;;;   enough.
+;;;;
+;;;; + When a scrolling command is given a prefix argument (which specifies the
+;;;;   number of lines to scroll by), then that argument becomes the default
+;;;;   scrolling distance for all immediately subsequent scrolling commands.
+;;;;   This means that you can easily set the scrolling distance for a chain
+;;;;   of scrolling commands.  Note that a new prefix argument or any non-
+;;;;   scrolling command breaks the chain (as described above), and any further
+;;;;   scrolling commands will use the usual defaults (or the prefix argument
+;;;;   you specify at that time, of course).
+;;;;
+;;;; + If the scrolling commands cannot keep point at its initial window
+;;;;   position (because a buffer boundary is on screen and the window can't be
+;;;;   scrolled as far as necessary to keep point at the right place), point is
+;;;;   allowed to temporarily stray from its initial window position.  That is,
+;;;;   point moves the correct number of window lines, even if it means that it
+;;;;   has to stray from its desired window position.  This straying is undone
+;;;;   when (and if) the scrolling action is reversed.
 
 ;;; Requirements:
 
