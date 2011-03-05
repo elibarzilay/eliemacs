@@ -177,7 +177,7 @@ POSN is in the format of `SIP-get-scroll-posn'."
       ;; we're at the edge so there is nothing to do
       ((if (eq direction 'up) (bobp) (eobp))
        nil)
-      ;; otherwise try do the needed scroll if the edge is not visible...
+      ;; otherwise try to do the needed scroll if the edge is not visible...
       ((or (pos-visible-in-window-p
             (if (eq direction 'up) (point-min) (point-max)))
            (condition-case nil
@@ -193,8 +193,7 @@ POSN is in the format of `SIP-get-scroll-posn'."
              ((beginning-of-buffer end-of-buffer) t)))
        ;; ...but if the edge is visible (or scrolling failed), move instead
        (if (integerp arg)
-         (let ((SIP-line-movement-without-dings t)
-               ;; set a goal column, and make sure we do a visual movement
+         (let (;; set a goal column, and make sure we do a visual movement
                (temporary-goal-column (float SIP-scroll-column))
                (line-move-visual t)
                ;; and fake a second call to use it
