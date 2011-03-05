@@ -194,9 +194,8 @@ DOCSTR is the function's docstring, with `XX' replaced appropriately."
                      (doit (if keep
                              `(let ((p (point)))
                                 ,doit
-                                ;; go back only if possible
-                                (when (and (< p (window-end nil t))
-                                           (<= (window-start) p))
+                                ;; go back if possible
+                                (when (pos-visible-in-window-p p)
                                   (goto-char p)))
                              doit))
                      (doit (if other
