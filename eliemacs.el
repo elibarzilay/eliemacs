@@ -5,7 +5,7 @@
 ;;    /*****************************************************************\   ;;
 ;;    ***                                                             ***   ;;
 ;;    ***              Eli's Emacs initialization file!               ***   ;;
-                                "[2011-02-28]"
+                                "[2011-03-05]"
 ;;    *** Written by Eli Barzilay: Maze is Life!   <eli@barzilay.org> ***   ;;
 ;;    ***                                                             ***   ;;
 ;;    \*****************************************************************/   ;;
@@ -55,6 +55,7 @@
 (load/include "macro-keys")
 (load/include "eli-marker")
 (load/include "eli-cua")
+(load/include "scroll-in-place")
 (load/include "filladapt")
 (setq-default filladapt-mode t filladapt-mode-line-string nil)
 (load/include "keys")
