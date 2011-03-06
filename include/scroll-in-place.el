@@ -134,8 +134,10 @@ POSN is in the format of `SIP-get-scroll-posn'."
   "Go to the column suggested by the `SIP-scroll-column'."
   (when SIP-scroll-column (vertical-motion (cons SIP-scroll-column 0))))
 
-(defun SIP-do-scroll* (arg isdown group orig)
-  "Implementation of the in-place functionality for `SIP-do-scroll'."
+(defun SIP-do-scroll-internal (arg isdown group orig)
+  ;; This is the body of `SIP-do-scroll', which is dealing with the question of
+  ;; whether to do an in-place scrolling or not, based on
+  ;; `scroll-preserve-screen-position'.
   (let* ((repeated
           ;; this makes it possible for things to work fine even when called
           ;; through some other command
@@ -216,7 +218,7 @@ GROUP designates a group of interrelated scrolling commands that should
 cancel each other out."
   (let ((orig (if isdown 'SIP-orig-scroll-down 'SIP-orig-scroll-up)))
     (if (eq scroll-preserve-screen-position 'in-place)
-      (SIP-do-scroll* arg isdown group orig)
+      (SIP-do-scroll-internal arg isdown group orig)
       ;; forcibly break any sequence of scrolling commands
       (progn (setq SIP-last-scroll-command+group nil)
              (funcall orig arg)))))
