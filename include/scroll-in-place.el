@@ -24,10 +24,8 @@
 ;; `scroll-down-1-stay' do the same but keep the cursor in the same position
 ;; (if possible).
 ;;
-;; This whole thing can easily be adapted to become part of Emacs: rename the
-;; builtin functions (say, `raw-scroll-up' and `...-down'), then remove the
-;; hack that saves the current builtins as `SIP-orig-...' and instead make it
-;; use those and, of course, remove the bit that changes the current functions.
+;; This whole thing can easily be adapted to become part of Emacs, for example,
+;; added to the `scroll-up-command' and `scroll-down-command'.
 ;;
 ;; The original idea for this comes from `scroll-in-place' by Eric Eide, who
 ;; took it from `scroll-fix' by Joe Wells.  But the code has no relation to
