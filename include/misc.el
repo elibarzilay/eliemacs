@@ -23,6 +23,14 @@
                (cons (concat "^" (file-truename (getenv "HOME")))
                      (getenv "HOME"))))
 
+;; Set `abbreviated-home-dir' on windows (hack: rely on its value, it would
+;; break if this value already has ranges).
+(when (eq 'windows-nt system-type)
+  (if (string-match "\\[" abbreviated-home-dir)
+    (warn "looks like `abbreviated-home-dir' has a range, not hacking it")
+    (setq abbreviated-home-dir
+          (replace-regexp-in-string "/" "[/\\\\]" abbreviated-home-dir))))
+
 ;; get user <-> homedir mappings from /etc/passwd
 (defvar eli-user-homedirs
   ;; taken from "mailalias.el"
