@@ -1,6 +1,6 @@
 ;;; scroll-in-place.el --- a simpler scroll-in-place replacement
 
-;;; Copyright (C) 2009 Eli Barzilay <eli@barzilay.org>
+;;; Copyright (C) 2009-2011 Eli Barzilay <eli@barzilay.org>
 ;;;               2011 Nick Alcock <nix@esperi.org.uk>
 
 ;; Author: Eli Barzilay <eli@barzilay.org>
