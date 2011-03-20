@@ -337,7 +337,8 @@ See `run-hooks'."
              '("begin" "begin-for-syntax"
                "call-with-current-continuation" "call/cc"
                "call-with-escape-continuation" "call/ec"
-               "call-with-input-file" "call-with-output-file" "case" "cond"
+               "call-with-input-file" "call-with-input-file*"
+               "call-with-output-file" "call-with-output-file*" "case" "cond"
                "do" "else" "for-each" "if" "lambda" "case-lambda"
                "lambda/kw" "define/kw"
                "let" "let*" "let-syntax" "letrec" "letrec-syntax"
@@ -599,9 +600,11 @@ that variable's value is a string."
 (put 'syntax-id-rules       'scheme-indent-function 1)
 
 (put 'call-with-input-file  'scheme-indent-function 1)
+(put 'call-with-input-file* 'scheme-indent-function 1)
 (put 'with-input-from-file  'scheme-indent-function 1)
 (put 'with-input-from-port  'scheme-indent-function 1)
 (put 'call-with-output-file 'scheme-indent-function 1)
+(put 'call-with-output-file* 'scheme-indent-function 1)
 (put 'with-output-to-file   'scheme-indent-function 'defun)
 (put 'with-output-to-port   'scheme-indent-function 1)
 (put 'with-slots            'scheme-indent-function 2)
