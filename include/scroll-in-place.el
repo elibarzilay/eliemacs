@@ -138,10 +138,21 @@ POSN is in the format of `SIP-get-scroll-posn'."
   ;; `scroll-preserve-screen-position'.
   (let* ((repeated
           ;; this makes it possible for things to work fine even when called
-          ;; through some other command
+          ;; through some other command (and no need for plist on function
+          ;; names)
           (prog1 (and (eq (car SIP-last-scroll-command+group) last-command)
                       (eq (cdr SIP-last-scroll-command+group) group)
-                      (memq current-prefix-arg '(nil -)))
+                      ;; exception hack: for the two basic scroll commands,
+                      ;; check the actual arg -- this work the same for them
+                      ;; since the argument is a "P".  It's needed for some
+                      ;; programmatic uses of these functions (eg, by VM) to
+                      ;; avoid using the last value when called this way with
+                      ;; an actual numeric value but no interactive prefix arg
+                      ;; for the originating command.
+                      (memq (if (eq group 'SIP-scroll-XX)
+                              arg
+                              current-prefix-arg)
+                            '(nil -)))
             (setq SIP-last-scroll-command+group (cons this-command group))))
          (arg (if repeated
                 SIP-last-scroll-arg
