@@ -94,7 +94,8 @@ is not used.")
 (defun win-init-apply-conf (&rest frame)
   (interactive) ; make it easy to use manually
   (let* ((frame (or (car frame) (selected-frame)))
-         (conf (and (window-system) (funcall window-configurations frame)))
+         (conf (and (window-system) window-configurations
+                    (funcall window-configurations frame)))
          ;; chosen configuration
          (w (car eli-size))
          (h (cadr eli-size))
