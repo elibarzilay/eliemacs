@@ -282,8 +282,8 @@ more faces, numbers and flags.
 When called interactively, a positive prefix argument will make it an
 overriding addition, negative prefix makes it a normal addition, and no prefix
 make the style appended over any existing style.  When OVERRIDE is set to
-anything other than `t' or `nil' in any way, the new pattern will be added to
-the end of `font-lock-keywords'.
+anything other than `t' or `nil', the new pattern will be added to the end of
+`font-lock-keywords'.
 Examples:
  (add-color-pattern \"regexp\" 'face)
  (add-color-pattern \"\\\\(r\\\\)egexp\" 'face 1 t)
@@ -302,7 +302,8 @@ Examples:
           expnum 0))
   (let* ((face (simple-make-face face)) ; in case of calling from an expression
          (face (list 'quote face))
-         (add (list (or expnum 0) face override t)))
+         (add (list (or expnum 0) face override t))
+         (add (if (and more (cdr more)) (list add) add)))
     (while (and more (cdr more))
       (let* ((face (simple-make-face (pop more)))
              (new (list (pop more) (list 'quote face) (pop more) t)))
