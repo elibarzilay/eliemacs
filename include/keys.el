@@ -192,13 +192,19 @@
   ;; have these also repeat a search
   isearch-mode-map
   '([(meta ?s)]                 isearch-repeat-forward)
-  '([(meta ?r)]                 isearch-repeat-backward)
+  ;; '([(meta ?r)]                 isearch-repeat-backward)
   '([(meta ?S)]                 isearch-repeat-backward)
   '([(control ?S)]              isearch-repeat-backward)
   '([(f7)]                      isearch-repeat-forward)
   '([(control f7)]              isearch-repeat-forward)
   '([(shift f7)]                isearch-repeat-backward)
   '([(control shift f7)]        isearch-repeat-backward)
+  ;; toggles
+  '([(meta ?a)]                 isearch-highlight-regexp)
+  '([(meta ?w)]                 isearch-toggle-word)
+  '([(meta ?r)]                 isearch-toggle-regexp)
+  '([(f5)]                      isearch-query-replace)
+  '([(shift f5)]                isearch-query-replace-regexp)
   ;; sane yanking
   '([(control ?w)]              isearch-yank-word)
   '([(control ?f)]              isearch-yank-char)

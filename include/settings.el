@@ -374,7 +374,7 @@
  window-min-width 4
  scroll-preserve-screen-position 'in-place ; use my scroll-in-place feature
  scroll-step 1
- scroll-conservatively 30
+ scroll-conservatively 10000
  scroll-margin 0 ; maybe use 1? (forces a line, even at bottom or on C-0 C-L)
  hscroll-step 4
  hscroll-margin 1 ; this works better, it seems
