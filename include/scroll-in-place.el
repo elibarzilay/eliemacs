@@ -22,7 +22,11 @@
 ;; Also binds new scrolling functions: `scroll-up-1' and `scroll-down-1'
 ;; default to one-line scrolling, and `scroll-up-1-stay' and
 ;; `scroll-down-1-stay' do the same but keep the cursor in the same position
-;; (if possible).
+;; (if possible).  (In addition to `scroll-preserve-screen-position', the code
+;; also checks that `scroll-in-place' is non-nil -- this is not really needed,
+;; but there are some uses of the scroll commands that are broken by this
+;; (gnus, vm) and set `scroll-in-place' to nil -- so we check it to respect
+;; those settings.)
 ;;
 ;; This whole thing can easily be adapted to become part of Emacs, for example,
 ;; added to the `scroll-up-command' and `scroll-down-command'.
@@ -142,17 +146,7 @@ POSN is in the format of `SIP-get-scroll-posn'."
           ;; names)
           (prog1 (and (eq (car SIP-last-scroll-command+group) last-command)
                       (eq (cdr SIP-last-scroll-command+group) group)
-                      ;; exception hack: for the two basic scroll commands,
-                      ;; check the actual arg -- this work the same for them
-                      ;; since the argument is a "P".  It's needed for some
-                      ;; programmatic uses of these functions (eg, by VM) to
-                      ;; avoid using the last value when called this way with
-                      ;; an actual numeric value but no interactive prefix arg
-                      ;; for the originating command.
-                      (memq (if (eq group 'SIP-scroll-XX)
-                              arg
-                              current-prefix-arg)
-                            '(nil -)))
+                      (memq current-prefix-arg '(nil -)))
             (setq SIP-last-scroll-command+group (cons this-command group))))
          (arg (if repeated
                 SIP-last-scroll-arg
@@ -216,17 +210,26 @@ POSN is in the format of `SIP-get-scroll-posn'."
            (SIP-goto-visual-column))
          (goto-char (if (eq direction 'up) (point-min) (point-max))))))))
 
+(defvar scroll-in-place t
+  "If this is nil, `scroll-in-place' functionality is disabled.
+The main way for controlling `scroll-in-place' is via
+`scroll-preserve-screen-position', but this variable is also used for older
+packages that expect to disable changing scrolling when it is nil.")
+
 (defun SIP-do-scroll (arg isdown group)
   "Scroll, endeavouring to keep the cursor in the same place on the screen.
 
 Keeps the cursor position only if `scroll-preserve-screen-position' is bound
 to `in-place', otherwise does a plain scroll (eg, using `scroll-up').
+`scroll-in-place' is also checked, since there are some packages that use that
+and expect to avoid different scroll behavior.
 
 ARG is the number of lines to scroll; ISDOWN is t if this is a downward scroll;
 GROUP designates a group of interrelated scrolling commands that should
 cancel each other out."
   (let ((orig (if isdown 'SIP-orig-scroll-down 'SIP-orig-scroll-up)))
-    (if (eq scroll-preserve-screen-position 'in-place)
+    (if (and (eq scroll-preserve-screen-position 'in-place)
+             scroll-in-place)
       (SIP-do-scroll-internal arg isdown group orig)
       ;; forcibly break any sequence of scrolling commands
       (progn (setq SIP-last-scroll-command+group nil)
