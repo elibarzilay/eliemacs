@@ -1,9 +1,13 @@
 (defun input-method/single-inactivate ()
+  "Deactivates the current input method, and removes itself from the
+`post-command-hook'; used to implement the single input method."
   (unless (memq this-command '(eli-input-method/single
                                isearch-toggle-eli-input-method/single))
     (remove-hook 'post-command-hook 'input-method/single-inactivate t)
     (inactivate-input-method)))
+
 (defun set-input-method/single (method)
+  "Sets `method' as the current input, which will be used only for one input."
   (if current-input-method
     (let ((this-command nil)) (input-method/single-inactivate))
     (progn (set-input-method method)
@@ -11,15 +15,21 @@
            ;; method will stay in effect, but will be disabled right
            ;; after switching back to it
            (add-hook 'post-command-hook 'input-method/single-inactivate t t))))
+
 (defun eli-input-method/single ()
-  (interactive) (set-input-method/single "eli"))
+  "Set the `eli' input method for just one character."
+  (interactive)
+  (set-input-method/single "eli"))
+
 (defun isearch-toggle-eli-input-method/single ()
+  "Set the `eli' input method for just one character in isearch-mode."
   (interactive)
   (if current-input-method
     (let ((this-command nil)) (inactivate-input-method))
     (let ((default-input-method "eli"))
       (isearch-toggle-input-method)
       (add-hook 'post-command-hook 'input-method/single-inactivate t t))))
+
 (add-hook 'isearch-mode-end-hook
           ;; for some reason isearch with the above leaves this set
           '(lambda () (setq input-method-function nil)))
