@@ -29,6 +29,15 @@
 (autoload 'bigfont-flash-big-string  "bigfont" nil t)
 (autoload 'bigfont-scroll-big-string "bigfont" nil t)
 
+;; ----------------------------------------------------------------------------
+;; convenient input of unicode characters
+
+(autoload 'eli-input-method/single "special-chars" nil t)
+(autoload 'isearch-toggle-eli-input-method/single "special-chars" nil t)
+(define-keys
+  'global '([(meta return)] eli-input-method/single)
+  isearch-mode-map '([(meta return)] isearch-toggle-eli-input-method/single))
+
 ;;-----------------------------------------------------------------------------
 ;; Git
 

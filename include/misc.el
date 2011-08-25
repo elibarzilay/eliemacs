@@ -11,6 +11,7 @@
   (lambda ()
     (define-keys 'grep-mode-map
       '("q" (lambda () (interactive) (quit-window nil (selected-window)))))
+    (setq truncate-lines t)
     (run-with-idle-timer 0 nil ; ugly hack...
       `(lambda () (select-window (get-buffer-window ,(current-buffer)))))))
 
