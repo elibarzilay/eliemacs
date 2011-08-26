@@ -100,8 +100,11 @@
     ;; Other atom delimiters
     (modify-syntax-entry ?\( "()  " st)
     (modify-syntax-entry ?\) ")(  " st)
+    ;;ELI {{{ from http://debbugs.gnu.org/cgi/bugreport.cgi?bug=3824
     ;; It's used for single-line comments as well as for #;(...) sexp-comments.
-    (modify-syntax-entry ?\; "< 2 " st)
+    ;; (modify-syntax-entry ?\; "< 2 " st)
+    (modify-syntax-entry ?\; "<   " st)
+    ;;ELI }}}
     (modify-syntax-entry ?\" "\"   " st)
     (modify-syntax-entry ?' "'   " st)
     (modify-syntax-entry ?` "'   " st)
@@ -174,8 +177,11 @@
          nil t (("+-*/.<>=!?$%_&~^:" . "w") (?#. "w 14"))
          beginning-of-defun
          (font-lock-mark-block-function . mark-defun)
-         (font-lock-syntactic-face-function
-          . scheme-font-lock-syntactic-face-function)
+         ;;ELI {{{
+         ;; (font-lock-syntactic-face-function
+         ;;  . scheme-font-lock-syntactic-face-function)
+         (font-lock-syntactic-keywords . scheme-font-lock-syntactic-keywords)
+         ;;ELI }}}
          (parse-sexp-lookup-properties . t)
          (font-lock-extra-managed-props syntax-table)))
   (set (make-local-variable 'lisp-doc-string-elt-property)
@@ -294,6 +300,15 @@ See `run-hooks'."
      "^(declare\\(-\\sw+\\)+\\>\\s-+\\(\\sw+\\)" 2))
   "Imenu generic expression for DSSSL mode.  See `imenu-generic-expression'.")
 
+;;ELI {{{
+(defconst scheme-font-lock-syntactic-keywords
+  ;; Treat sexp-comment markers as "whitespace".
+  '(("#\\(;\\)"
+     (1 (if (nth 8 (save-excursion (syntax-ppss (match-beginning 0))))
+            ;; Check parser state to avoid problem with #|comment1|#;comment2
+            nil '(6))))))
+;;ELI }}}
+
 (defconst scheme-font-lock-keywords-1
   (eval-when-compile
     (list
@@ -325,8 +340,28 @@ See `run-hooks'."
      ))
   "Subdued expressions to highlight in Scheme modes.")
 
+;;ELI {{{
+(defun scheme-font-lock-sexp-comment (limit)
+  (when (search-forward "#;" limit t)
+    (let ((beg (match-beginning 0)))
+      (if (nth 8 (save-excursion (syntax-ppss beg)))
+          ;; Not a sexp-comment: keep looking.
+          (scheme-font-lock-sexp-comment limit)
+        (ignore-errors
+          (forward-sexp 1)
+          (set-match-data (list beg (point)))
+          (point))))))
+;;ELI }}}
+;;ELI {{{ my addition
+(defvar sexpr-comment-face (simple-make-face '*/h221104))
+;;ELI }}}
+
 (defconst scheme-font-lock-keywords-2
-  (append scheme-font-lock-keywords-1
+  (append
+   ;;ELI {{{
+   '((scheme-font-lock-sexp-comment (0 sexpr-comment-face)))
+   ;;ELI }}}
+   scheme-font-lock-keywords-1
    (eval-when-compile
      (list
       ;;
