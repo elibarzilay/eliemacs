@@ -3,8 +3,8 @@
 (add-to-list 'Info-default-directory-list
              (concat eli-extras-dir "vm/vm-8.1.93a/info"))
 
-;; these are needed before requiring vm, for some reason
 (require 'vm)
+(eval-when-compile (require 'cl))
 
 (setq
  ;; >> vm
@@ -331,13 +331,15 @@
                  (case n ((1) "One") ((2) "Two") ((3) "Three") ((4) "Four")
                          (t (number-to-string n))))))
     (cond
-      ;; includes negatives -- assume that it's always very recent
-      ((<= secs 45)  "A few seconds ago")
-      ;; being precise  isn't important
-      ((<= secs 90)  "About a minute ago")
-      ((<= mins 10)  (format "%s minutes ago" (funcall 2str mins)))
-      ((<= mins 30)  (format "%s minutes ago"
-                             (funcall 2str (* 5 (round mins 5)))))
+      ;; ;; includes negatives -- assume that it's always very recent
+      ;; ((<= secs 45)  "A few seconds ago")
+      ;; ;; being precise  isn't important
+      ;; ((<= secs 90)  "About a minute ago")
+      ((<= mins 2)   "Just now")
+      ;; ((<= mins 10)  (format "%s minutes ago" (funcall 2str mins)))
+      ((<= mins 8)   "A few minutes ago")
+      ;; ((<= mins 30)  (format "%s minutes ago"
+      ;;                        (funcall 2str (* 5 (round mins 5)))))
       ((<= mins 54)  (format "%s minutes ago"
                              (funcall 2str (* 10 (round mins 10)))))
       ((<= mins 75)  "An hour ago")

@@ -353,13 +353,13 @@ See `run-hooks'."
           (point))))))
 ;;ELI }}}
 ;;ELI {{{ my addition
-(defvar sexpr-comment-face (simple-make-face '*/h221104))
+(defvar sexpr-comment-face (simple-make-face '*/h442211 'sexpr-comment-face))
 ;;ELI }}}
 
 (defconst scheme-font-lock-keywords-2
   (append
    ;;ELI {{{
-   '((scheme-font-lock-sexp-comment (0 sexpr-comment-face)))
+   '((scheme-font-lock-sexp-comment (0 sexpr-comment-face t)))
    ;;ELI }}}
    scheme-font-lock-keywords-1
    (eval-when-compile
