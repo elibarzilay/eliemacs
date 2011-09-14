@@ -11,28 +11,42 @@
 ;; Friendlier `shell' and `shell-command'
 
 (defvar eli-last-shell nil)
-
+(defvar eli-last-shells nil)
 (defun eli-shell (arg)
   "Similar to `shell' but extended as follows:
 - a positive numeric argument means jump to that shell window,
   with 1 being the default \"*shell*\", 2 is \"*shell*<2>\" etc,
 - a 0 numeric argument will jump to a new shell window (the next
   one), without asking about the name,
-- no argument means jump to the last shell window,
+- no argument means jump to the last visited shell window, if it's dead the
+  one visited before that, etc,
+- with a `C-u' prefix, just call `shell',
 - it switches to the buffer as usual, in the current window: no
   switching to a half-screen, and preserve the buffer visit
   history so there's no inconsistent buffer switching
   later."
   (interactive "P")
-  (switch-to-buffer
-   (save-window-excursion
-     (cond ((and (integerp arg) (>= arg 0))
-            (shell (setq eli-last-shell
-                         (cond ((= arg 0) (generate-new-buffer-name "*shell*"))
-                               ((= arg 1) "*shell*")
-                               (t (format "*shell*<%S>" arg))))))
-           ((and eli-last-shell (not arg)) (shell eli-last-shell))
-           (t (call-interactively 'shell))))))
+  (let ((s (cond ((eq arg 0) (generate-new-buffer-name "*shell*"))
+                 ((eq arg 1) "*shell*")
+                 ((and (integerp arg) (> arg 1)) (format "*shell*<%S>" arg))
+                 ((not arg)
+                  (let ((s nil))
+                    (while (and (not s) eli-last-shells)
+                      (if (get-buffer (car eli-last-shells))
+                        (setq s (car eli-last-shells))
+                        (setq eli-last-shells (cdr eli-last-shells))))
+                    s))
+                 (t nil))))
+    (switch-to-buffer
+     (save-window-excursion (if s (shell s) (call-interactively 'shell))))))
+(defun eli-track-last-shell ()
+  (unless (eq eli-last-shell (buffer-name))
+    (setq eli-last-shell (buffer-name))
+    (setq eli-last-shells
+          (cons eli-last-shell (remove eli-last-shell eli-last-shells)))))
+(add-hook 'shell-mode-hook
+          (lambda ()
+            (add-hook 'post-command-hook 'eli-track-last-shell nil t)))
 
 (defun eli-shell-command ()
   "Similar to `shell-command' but sets environment variables $f, $F, and $d
