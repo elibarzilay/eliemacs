@@ -659,6 +659,7 @@ that variable's value is a string."
 (put 'until                 'scheme-indent-function 1)
 (put 'parameterize          'scheme-indent-function 1)
 (put 'parameterize*         'scheme-indent-function 1)
+(put 'syntax-parameterize   'scheme-indent-function 1)
 (put 'with-handlers         'scheme-indent-function 1)
 (put 'with-handlers*        'scheme-indent-function 1)
 (put 'begin0                'scheme-indent-function 1)
@@ -689,6 +690,10 @@ that variable's value is a string."
 (put 'for*/list             'scheme-indent-function 1)
 (put 'for/fold              'scheme-indent-function 2)
 (put 'for*/fold             'scheme-indent-function 2)
+(put 'for/and               'scheme-indent-function 1)
+(put 'for*/and              'scheme-indent-function 1)
+(put 'for/or                'scheme-indent-function 1)
+(put 'for*/or               'scheme-indent-function 1)
 
 (put 'nest                  'scheme-indent-function 1)
 
