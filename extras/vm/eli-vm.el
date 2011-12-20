@@ -1,7 +1,7 @@
 (add-to-list 'load-path
-             (concat eli-extras-dir "vm/vm-8.1.93a/lisp"))
+             (concat eli-extras-dir "vm/vm-8.2.0a/lisp"))
 (add-to-list 'Info-default-directory-list
-             (concat eli-extras-dir "vm/vm-8.1.93a/info"))
+             (concat eli-extras-dir "vm/vm-8.2.0a/info"))
 
 (require 'vm)
 (eval-when-compile (require 'cl))
@@ -58,6 +58,9 @@
  vm-auto-displayed-mime-content-types
    '("text" "multipart" "message/rfc822") ; no images
  vm-auto-displayed-mime-content-type-exceptions '("image")
+ vm-mime-auto-displayed-content-types ; new names for the above two
+   '("text" "multipart" "message/rfc822") ; no images
+ vm-mime-auto-displayed-content-types-exceptions '("image")
  vm-mime-internal-content-types t
  vm-mime-internal-content-type-exceptions '("text/calendar")
  vm-mime-external-content-types-alist
@@ -109,8 +112,10 @@
  vm-mime-attachment-source-directory (expand-file-name "~/")
  ;; ?? vm-mime-all-attachments-directory nil
  vm-mime-yank-attachments t ; leave only buttons (it'd be nice to remove too)
+ vm-include-mime-attachments t ; new name for the above
  vm-infer-mime-types t
  vm-mime-attachment-infer-type-for-text-attachments nil
+ vm-infer-mime-types-for-text nil ; new name for the above
  vm-mime-avoid-folding-content-type t
  vm-mime-base64-decoder-program "base64-decode"
  vm-mime-base64-decoder-switches '()
