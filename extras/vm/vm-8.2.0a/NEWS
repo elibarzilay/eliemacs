@@ -1,0 +1,1122 @@
+Status
+
+  VM is currently being maintained by a 'VM development team' consisting of
+  Uday S Reddy, Ulrich Müller, Tim Cross and Arik Mitschang.  More
+  volunteers to help with the maintenance are quite welcome.
+
+  Bug reports should be sent by using M-x vm-submit-bug-report.  Enjoy
+  using VM!
+  
+VM 8.2.0a (2011-02-28)
+
+  CHANGES
+
+   * The configuration of headers-only messages, introduced in 8.1.90a, has
+     changed.  The variable `vm-load-headers-only' has been replaced by a
+     new variable `vm-enable-external-messages'.  For IMAP folders, enabling
+     external messages causes any messages larger than
+     `vm-imap-max-message-size' to be loaded in headers-only form.  Smaller
+     messages are loaded immediately.  You need to customie
+     `vm-imap-max-message-size' for enabling headers-only operation.
+
+   * If you download mail from IMAP spool files, the 8.1.x versions of
+     VM had a bug which allowed the the `X-VM-IMAP-Retrieved' headers
+     to grow unnecessarily.  This can slow down the saving of folders
+     into which you downloaded IMAP mail.  To solve the problem, run
+     the command `vm-prune-imap-retrieved-list' after installing
+     version 8.2.0.  (See the info manual under "IMAP Spool Files".)
+
+   * A set of inessential key bindings (a, b, e, i, w, L, M-l, !, <, >, *,
+     %) have been removed from the standard VM key bindings.  If you would
+     like to use them, add the line:
+              (vm-legacy-key-bindings)
+     to your vm-preferences-file (~/.vm.preferences).  To use the current
+     key bindings instead, use the line
+              (vm-current-key-bindings)
+     Or, you might bind these keys to some other operations of your choice.
+
+     However, `vm-edit-message' is available via a new key binding `C-c
+     C-e'. 
+
+   * The default settings of `vm-mime-deleteable-types' and
+     `vm-mime-saveable-types' do not include the types listed in
+     `vm-mime-external-content-types-alist'.  You might need to add them
+     explicitly in your vm-preferences-file.
+
+   * The variable name `vm-auto-displayed-mime-content-types' changed
+     to `vm-mime-auto-displayed-content-types' for consistency with
+     other variable names.  (The corresponding `-exceptions' variable
+     changed as well.)
+
+   * The variable name `vm-mime-attachment-infer-type-for-text-attachments'
+     changed to `vm-infer-mime-types-for-text'.
+
+   * Plain text forwarding has been extended to deal with MIME attachments.
+     The command `vm-forward-message-plain' (bound to `Z') uses this method.
+     (The normal `z' key forwards messages encapsulated using
+     `vm-forwarding-digest-type'.)  There are also associated variables
+     `vm-forwarded-headers-plain' and `vm-unforwarded-header-regexp-plain',
+     which determine the headers included in the forwards.
+
+   * The meaning of the variable `vm-included-mime-types-list' is
+     changed.  It need only mention MIME type/subtype pairs that are
+     not handled by default.  The types "text/plain", "text/enriched"
+     and "message/rfc822" are now handled by default.
+
+   * The attributes vector has been expanded to 16 elements for
+     compatibility with Mozilla Thunderbird.  The first time a folder
+     is written, this will cause extra time to be taken for "stuffing"
+     the attributes.  But this is only a one-time cost.
+
+   * New variable `vm-include-mime-attachments' allows the inclusion of
+     MIME attachments in replies.  This functionality was originally
+     part of vm-pine.el under the name `vm-mime-yank-attachments'.
+     That functionality is now obsolete.  Replace references to
+     `vm-mime-yank-attachments' in your customization by the new variable.
+     
+   * The command `vm-flag-message-read' (.) introduced in 8.1.93a is
+     renamed to `vm-mark-message-read' for consistency of terminology.
+
+  IMPROVEMENTS
+
+   * New option 'internal-only for `vm-mime-honor-content-disposition',
+     which means the content-disposition will be honored for only internally
+     displayable types.
+
+   * New variable `vm-mime-alternative-yank-method' controls the selection
+     of MIME alternatives during yanking of messages (as well including and
+     forwarding).
+
+   * Added a variable `vm-verbosity' to control the granularity of
+     informative messages displayed by VM.  Levels 5-8 are recommended, with
+     8 corresponding to the current level.
+
+   * New operations for manual control of thread indentation for
+     dealing with long (and deep) message threads.  See info under
+     "Threaded Summaries".
+
+   * A number of "point-to-point" attachment operations have been
+     added: 
+     - `vm-dired-attach-file' and `vm-dired-do-attach-files' from
+     dired buffers.
+     - `vm-attach-message-to-composition' and
+     `vm-reader-map-attach-to-composition' from VM folders.
+     - a drag-and-drop feature that can be used in the window system.
+
+   * New command `vm-switch-to-folder' defined to quickly return to a
+     previously buried folder.  (Originally in vm-rfaddons.)
+
+   * New custom command `vm-toggle-best-mime' in vm-rfaddons to toggle
+     between 'best and 'best-internal' MIME altrenatives.  (Thanks to
+     Alley Stoughton for this addition.)
+
+   * New variable `vm-include-text-basic' can be used to enable the
+     fallback method of quoting message text in replies.  It should
+     be normally left with the default value of nil.
+
+   * VM refrains from repeatedly checking for new mail once it has
+     found some new mail on the spool. Set `vm-mail-check-always' to
+     override this behavior.  
+
+   * When a predefined virtual folder is quit, all the component
+     folders that it depends on will also be quit automatically.
+
+   * When an interactive virtual folder is quit, the message pointer
+     in the virtual folder is transferred to the original folder.
+     This facility can be used to search for particular messages by
+     using virtual folders.
+
+   * Restored the [Emacs] and [Undo] menu buttons that were removed in
+     version 8.0.8.  For environments that do not support such buttons,
+     drop-down menus will be used instead.  The variable
+     `vm-use-menubar-buttons' can be used to use drop-down menus
+     always.  (Thanks to Tim Cross for the fixes.)
+
+   * Hooks `vm-arrived-message-hook' and `vm-arrived-messages-hook'
+     made to work correctly for IMAP folders.
+
+   * New variable `vm-thunderbird-folder-directory' and command
+     `vm-visit-thunderbird-folder' allow the handling of Thunderbird
+     folders without interference with VM's own folders.
+
+   * New variable `vm-sort-subthreads' allows the internal messages of
+     threads to be sorted into subthreads (the default) or via the
+     normal sorting criteria.
+
+   * Better support for message/external-body MIME type, with
+     external-bodies loaded on demand.  If you have
+     message/external-body as an element in
+     `vm-mime-auto-displayed-content-types', you should remove it to
+     access the new functionality.
+
+   * Newly documented commands: `[' (`vm-previous-button') and `]'
+     (`vm-next-button') allow navigation inside message
+     presentation buffers.
+
+   * New command: `!' (`vm-toggle-flag-message') allows you to flag a
+     message as being important.  This adds a "!" mark in the Summary
+     line for the message and highlights it with the high-priority face.
+
+   * New variable: `vm-summary-visible' specifies which messages
+     should remain visible in folded thread summaries.
+
+   * New feature: vm-mime-external-content-types-alist allows
+     emacs-lisp functions to be used for external viewing, e.g.,
+     you can use `browse-url-of-file' to view html . 
+
+VM 8.1.93a (2010-08-28)
+
+  CHANGES
+
+  ** New feature: Invoking vm-load-init-file with a prefix argument
+     loads the init-file (~/.vm) without loading the preferences-file
+     (~/.vm.preferences).  This is a good way to run VM with the
+     default settings, much like `emacs -Q'.  We are advising all
+     users to split their init-files to make use of this feature.  See
+     info section on "Starting Up".
+
+  ** New feature: vm-summary-enable-faces allows summary lists with
+     faces turned on.  (This was formerly an add-on contributed by
+     Robert Fenk under the name vm-summary-faces-mode. But there are
+     several changes.  In particular, the face names do not end in
+     "-face" following the Emacs naming conventions.)  See the info
+     section on "Summaries" for more information.  If you currently
+     use the u-vm-color package for colorizing the Summary buffers,
+     please remove the feature, i.e., delete a line like 
+      (add-hook 'vm-summary-mode-hook 'u-vm-color-summary-mode)
+     from your VM initialization file.
+
+  ** Commands renamed:
+     `vm-mime-save-all-attachments' => `vm-save-all-attachments'(C-c C-s)
+     `vm-mime-delete-all-attachments' => `vm-delete-all-attachments'(C-c C-d)
+
+  IMPROVEMENTS
+
+   * Sorting of messages extended to work with threads.  By default,
+     threads are sorted by "activity", i.e., the date of their most
+     recent activity.  But they can also be sorted by other sort keys.
+     (The variable `vm-sort-threads-by-youngest-date' is now defunct.)
+
+   * New feature: thread-folding in the Summary window allows message
+     threads to be collapsed into single line summaries.  The
+     following new variables control the behavior of thread folding.
+       `vm-summary-enable-thread-folding',
+       `vm-summary-show-thread-count' and
+       `vm-summary-thread-folding-on-motion' 
+     New commands:
+       `vm-toggle-thread' (T), `vm-expand-all-threads' (E) and 
+       `vm-collapse-all-threads' (C).
+     See the info file for details.  Thanks to Arik Mitschang for this
+     contribution. 
+
+   * New experimental feature: `vm-enable-thread-opeartions' enables
+     "thread operations", a method of invoking operations (such as
+     deleting or saving) on message threads.  See the info file for
+     details.  Thanks to Arik Mitschang for this contribution.
+
+   * New variables: `vm-summary-thread-indentation-by-references'
+     controls whether threads are indented by their original nesting
+     level or according to the nesting level within the folder.
+     `vm-summary-maximum-thread-indentation' specifies the maximum
+     depth of indentation to be displayed.
+
+   * New command: `vm-kill-thread-subtree' (K) allows a thread subtree
+     to be deleted.  This amounts to the same thing as
+     `vm-delete-message' invoked as a thread operation.
+
+   * The calculation of threads improved using Jamie Zawinski's
+     ideas.  Threads are correctly identified even if some of the
+     messages are missing.
+
+   * Added EasyPG storage of passwords for mail server accounts.  See
+     info index under "passwords".
+
+   * Virtual folder facility extended to work with POP and IMAP
+     folders.  But, there are still some outstanding problems with it.
+
+   * Resolved performance problems in summary generation.  It works
+     quite fast now.
+
+   * New variable: `vm-mime-parts-display-separator' allows you to
+     insert a string as a separator between MIME parts.
+
+   * New command: `vm-save-attachments' allows you to save all the
+     attachments of a message under your own file names instead of the
+     original file names given in the message.
+
+   * New command: `vm-flag-message-read' (.) allows you to mark an
+     unread or new message as read.
+
+  BUG FIXES
+
+   * Fixed various issues flagged by the Emacs 23 compiler warnings.
+
+VM 8.1.92a (2010-07-10)
+
+  IMPROVEMENTS
+
+   * Headers-only mode for IMAP folders is now completed.  It operates
+     by fetching messages into the Folder buffers, leading to a
+     more reliable operation.  (However, there is an important
+     outstanding bug.  See the file README.headers-only.)
+
+   * New command `vm-list-imap-folders' can be used to list the
+     folders on an IMAP server.
+
+   * In headers-only mode, a limited number of messages can be fetched
+     on demand for message preview.  New variable
+     `vm-fetched-message-max' specifies this number.  (Default is 10.)
+
+   * New variable `vm-imap-default-account' allows IMAP-FCC copies to
+     be routed there.
+
+   * New variable `vm-imap-server-timeout' allows timeout during a wait
+     for output from an IMAP server.
+
+   * New variable `vm-imap-ensure-active-sessions' asks VM to ensure
+     that an IMAP session is active before issuing commands.
+
+VM 8.1.90a  (2010-05-11)
+
+  IMPROVEMENTS:
+
+  ** This version contains an experimental feature of using IMAP
+     folders in "headers-only" mode, with body loaded only on demand.
+     This helps to keep the folder sizes small and VM to run faster.
+     However, this code is in a preliminary stage.  Please use it
+     with CAUTION.
+
+     variable: vm-load-headers-only
+
+     If set to t, all new messages will be loaded to the cache-folder
+     in headers-only mode.  The body is loaded on demand when a
+     message is displayed in the Presentation Buffer.  This is a
+     temporary load and is lost as soon as you move to another
+     message.  
+
+     Previewing of messages interferes with headers-only operation.
+     So, you should set `vm-preview-lines' to nil.
+
+     To load the message body into the Folder Buffer, use:
+
+     command: vm-load-message (bound to 'o')
+
+     This command discards the current body of the message, if any,
+     and refreshes it from the server copy. Some of the VM operations,
+     e.g., vm-save-message, can only be performed if the body is
+     loaded into the Folder Buffer. 
+
+     command : vm-unload-message (bound to 'O')
+
+     This command discards the current body of the message from the
+     Folder Buffer and leaves it empty.
+
+     FAILURE RECOVERY: If the cache folder gets corrupted for any
+     reason, just delete it from the file system.  A new cache folder
+     will be generated upon the next visit.
+
+   * New variable `vm-imap-refer-to-inbox-by-account-name' allows IMAP
+     folders named "INBOX" to be referred to by their account names
+     inside VM.
+
+   * The command `vm-fix-my-summary!!!' renamed to `vm-fix-my-summary'
+     to make it easier to type.
+
+   * The chatter of minibuffer messages during paging of mail is
+     reduced: messages about MIME decoding are emitted only if the new
+     variable `vm-emit-messages-for-mime-decoding' is non-nil, and
+     messages about end of messages are emitted only of
+     `vm-auto-next-message' is non-nil.
+
+   * IMAP session dialogue restructured using UID queries, which makes
+     VM more reliable in handling real-time changes on the server side.
+
+   * New variable `vm-imap-connection-mode' can be set to 'offline to
+     allow IMAP cache folders to be used offline.  After connecting to
+     the network, do `C-u M-x vm-imap-synchronize' to force full
+     synchronization. 
+
+   * Improved error messages arising in IMAP sessions wih the server.
+
+   * New variable `vm-do-fcc-before-mime-encode' (formerly in
+     vm-rfaddons) allows you to save fcc copies of messages before
+     mime-encoding them.
+
+   * The right-mouse-button context menu for URL's in messages updated
+     to eliminate obsolete web browsers.  Entries added for Firefox,
+     Mozilla and Opera.
+
+   * The function `vm-mouse-send-url-to-konqueror-new-browser' renamed
+     to `vm-mouse-send-url-to-konqueror-new-window', to be consistent
+     with other similar functions.
+
+  ** New variables `vm-expunge-before-quit' and `vm-expunge-before-save'
+     introduced to allow automatic expunge.  They are nil by default.  
+
+VM 8.1.2
+  
+    * VM made safe for use with Gnu Emacs 23, by removing a few calls
+      to the `next-line' function (which was redefined in this Emacs).
+
+    * Several critical problems with Thunderbird inter-operability
+      were corrected.  Manual section on Thunderbird folders added.
+
+    * Extended Org mode email links to work for virtual folders.
+    
+  CHANGES
+
+   ** The default values of `vm-pop-expunge-after-retrieving' and
+      `vm-imap-expunge-after-retrieving' changed to nil to help new
+      users.
+
+    * `vm-fill-long-lines-in-reply' initialized to the default value
+      of `fill-column'.
+
+    * All MIME messages are now decoded in the Presentation buffer,
+      unless they have US-ASCII as their charset.  In particular,
+      messages with 8bit charsets are treated this way.  Such messages
+      are not regarded "plain messages" any more.
+
+VM 8.1.1 (2010-04-26)
+
+   ** The variable vm-always-use-presentation-buffer is deprecated.
+      Please remove all settings for this variable in your init file.
+      The default behaviour will be to always use the presentation
+      buffer.  Report any problems that might arise as a result.
+
+    * Extended Org mode email links to handle POP and IMAP folders.
+      (Use org-vm.el in the VM contrib directory until the Org mode
+      distribution gets updated.)
+
+    * Added autoloads for easy inter-operation with the Org mode.
+
+    * Added a section on History and Administration in the info manual.
+
+    * Made the autoloads compatible with VM 7.19 instructions.
+
+    * Fixed the build process to treat version info better.
+
+    * Removed a few incompatibilites with XEmacs.
+
+    * Mode line format reverted to the original one in 7.19.  The new
+      mode line format is available in the variable
+      `vm-mode-line-format-robf'.  It can be installed by adding a
+      vm-mode-hook. 
+
+VM 8.1.0 (2010-03-21)
+
+  KNOWN PROBLEMS:
+
+    * Automatic filling is turned off for some plain text messages for
+      safety reasons.  Please help us by sending us sample messages
+      for which filling fails.
+
+    * IMAP folders occasionally give spurious connection errors.
+      Doing vm-get-new-mail ('g') resumes the connection.
+
+  MAJOR NEW FEATURES:
+
+    * Support for reading and replying to messages in HTML.
+
+    * Full support for IMAP servers.  (See "IMPROVEMENTS for
+      imap-folders" below.) 
+
+  CHANGES:
+
+   ** New boolean variable `vm-word-wrap-paragraphs' controls the word
+      wrapping of paragraphs in messages using the longlines library.
+      The variable is set to nil by default. When it is set to t,
+      paragraphs are word wrapped and the value of the variable
+      `vm-fill-paragraphs-containing-long-lines' is immaterial (as
+      long it is non-nil).  Set vm-word-wrap-paragraphs to nil to
+      enable the usual filling functionality.
+
+   ** vm-pgg is not loaded by default because it is a set up as an
+      add-on.  Users should load it from their .emacs file by using
+      the sequence
+           (require 'vm-autoloads)
+           (require 'vm-pgg)
+
+   ** The variable `vm-mime-show-alternatives' is deprecated.  Set
+      the variable `vm-mime-alternative-select-method' to 'all to
+      get the same effect.
+
+    * Moved Robert's user-defined summary functions to the core:
+     - S for human readable size
+     - P for indication of attachments
+     - p for indication of a postponed message
+
+  IMPROVEMENTS:
+
+    * Display number of drafts and postponed messages in the modeline
+      and use a more compact modeline.  To use this feature, include
+      this line in your .vm file:
+
+        (setq vm-mode-line-format vm-mode-line-format-robf)
+
+    * The variable `vm-paragraph-fill-column', previously removed in
+      earlier versions of this release, is brought back.
+
+   ** The commands `vm-mime-save-all-attachments' and
+      `vm-mime-delete-all-attachments' have been moved to the VM core
+      (from vm-rfaddons).  New variables:
+	 vm-mime-deletable-types 
+	    (formerly `vm-mime-delete-all-attachments-types')
+	 vm-mime-deletable-type-exceptions
+	    (formerly `vm-mime-delete-all-attachments-types-exceptions')
+	 vm-mime-savable-types
+	    (formerly `vm-mime-save-all-attachments-types')
+	 vm-mime-savable-type-exceptions
+	    (formerly `vm-mime-save-all-attachments-types-exceptions')         
+	 vm-mime-attachment-save-directory
+	 vm-mime-attachment-source-directory
+	 vm-mime-all-attachments-directory
+      See the info file section on MIME attachments for details.
+
+      The options for vm-rfaddons.el should not include
+      `save-all-attachments' and should be removed if it is currently
+      being used.  The option `take-action-on-attachments' is not
+      included by default.
+
+    * `vm-quit-no-change' offers to delete the auto-save file if there is
+      one.  (This wasn't getting done due to a bug in FSF Emacs.)
+
+    * `vm-delete-duplicate-messages' now works by comparing message ID's.
+      (from Noah Friedman's vm-addons).
+
+    * New boolean variable `vm-sort-threads-by-youngest-date' allows
+      threads to be sorted by their youngest date or oldest date.
+
+    * `vm-yank-message' function streamlined a bit.  New variable
+      `vm-include-text-from-presentation' can be used to extract the
+      included message text from the presentation buffer.
+
+   ** text/html handling controlled by a new variable
+      `vm-mime-text/html-handler' which is set to 'auto-select by
+      default.  It causes VM to locate the best library among
+      emacs-w3m, external w3m, w3 and lynx to display html
+      internally.  (This replaces the earlier variable
+      `vm-mime-use-w3-for-text/html'.)
+
+   ** vm-delete-duplicate-messages now works by comparing message ID's.
+      (from Noah Friedman's vm-addons).
+
+    * vm-yank-message function streamlined somewhat.  New variable
+      `vm-include-text-from-presentation' used to extract message text
+      from presentation buffer.  (This replaces the variable
+      `vm-reply-include-presentation' used in vm-rfaddons.)
+
+    * The variable `vm-mime-yank-attachments' is set to nil by default,
+      so that we are not surprised by unexpectedly large mail messages.
+
+    * The variable `vm-mime-require-mime-version-header' is set to nil
+      by default, so that we will be tolerant of bad MIME senders.
+
+    * Allow for sorting the headers of composition buffers by calling the
+      function `vm-reorder-message-headers' interactively.  You may configure
+      the order by the new variable `vm-mail-header-order'.  This can be
+      useful if some broken MUAs (e.g. Tobit) mess up the messages due to the
+      header order.
+
+    * Added hiding and protection of headers in composition buffers.  See the
+      new variable `vm-mail-mode-hidden-headers' for customization. (Thanks to
+      Eric Schulte for the initial code posted in gnu.emacs.vm.info)
+
+    * Added the function `vm-mime-list-part-structure' to list the mime part
+      structure of a message.
+
+    * Added function `vm-mime-nuke-alternative-text/html' which can be used to
+      get rid of alternative text/html parts.
+
+    * VMPC: Better action reader and a default profile which is used if no
+      email addresses could be found.  The meaning of the arguments for
+      `vmpc-prompt-for-profile' has been slightly simplified, see the doc
+      string for details.  
+
+    * Removed `vm-paragraph-fill-column', the value is now taken from
+      `vm-fill-paragraphs-containing-long-lines' thus allowing to fill to the
+      available window with.
+
+    * Replaced `vm-fill-paragraphs-containing-long-lines' by the faster and
+      more flexible version from vm-rfaddons.el.  Also cleaned up calls to the
+      fill function and removed code duplication.  The code using longline.el
+      remains in vm-rfaddons.el, but it must be used explicitly now in an
+      advice.
+
+    * Moved the variable `vm-fill-long-lines-in-reply-column' from
+      vm-rfaddons.el to VM core.  It is not necessary to hook the fill
+      function, just set the variable.
+
+    * Errors caused by `vm-retrieved-spooled-mail-hook' are reported and
+      assimilation of messages continues instead of aborting.
+
+    * Handle filenames also from the disposition fields "name", "filename*"
+      and "name*", where the latter two get decoded as they might contain 8bit
+      chars.
+
+    * Uncoupled searching of MIME images from source location.  The search
+      should be a bit smarter now allowing to place the images outside of the
+      source tree now.
+
+    * Added syncing of message status when visiting a mbox of Thunderbird.
+      Not all message flags are interchangeable and the message summary
+      file (.msf) of Thunderbird will get removed by VM in order to force
+      Thunderbird to rebuild it.  Also VMs folder index will be skipped if
+      it is older than the folder in order to update VMs message status flags.
+
+    * Improved text/html displaying by w3m.  Inline images are now extracted
+      correctly and they also display now.  Added a generic handler code to
+      support also other HTML handlers.
+
+    * Added variable `vm-restore-saved-summary-formats' to restore
+      each folder's summary format to what was saved previously.
+      (Uday S. Reddy)
+
+    * A prefix argument to `vm-fix-my-summary!!!' will kill a folders local
+      summary format which was restored by `vm-restore-saved-summary-formats'.
+
+    * The button for an image or PDF shows a thumbnail now when possible.
+      This requires ImageMagick.  (Thanks to Eric Schulte for the idea and
+      initial code.)
+
+    * Allow to reorder messages headers before sending by setting the new
+      variable `vm-mail-reorder-message-headers'.
+
+    * Allow UTF-8 encoded messages to be displayed on tty.  (Ulrich Müller)
+
+  BUG FIXES
+
+    * `vm-quit-no-change' made to honour the setting of the variable
+      `delete-auto-save-files'. (Uday S. Reddy)
+
+    * Allow the use of iso-8859-1 for outgoing mail under Emacs 23
+      (instead of spurious iso-2022-jp).  (Ulrich Müller)
+
+    * Coding system set to binary when reading and writing to allow
+      for 8-bit content.  (Julian Bradfield)
+
+  IMPROVEMENTS for pop-folders (Uday S. Reddy)
+
+    * Added the variable `vm-pop-debug' to keep trace buffers.
+
+    * New commands `vm-pop-start-bug-report' and `vm-pop-submit-bug-report'
+      which track POP session details.
+
+
+  IMPROVEMENTS for imap-folders (Uday S. Reddy)
+
+   ** New variable `vm-imap-account-alist' allows multiple IMAP
+      accounts to be handled uniformly.  The variable
+      `vm-imap-server-list' is now obsolete.  IMAP folders should be
+      specified in the minibuffer using the account:mailbox format.
+      See the info node on IMAP folders.
+
+    * New variable `vm-load-headers-only' to enable headers-only
+      downloading of IMAP folders.    (This is still experimental.)
+
+    * IMAP-FCC is extended to work for virtual folders, but only if
+      the real parent message is an IMAP message.
+
+    * Made server expunge more robust.  Added new variable
+      `vm-imap-expunge-retries' to force retries for sluggish servers.
+
+    * Allow message attributes as well as labels to be saved on server.
+
+    * Changed vm-imap-get-new-mail to do synchronization: reading and writing
+      message attributes & labels, expunge messages in the cache.  Added
+      variable `vm-imap-sync-on-get' to control this behavior.
+
+    * Added command `vm-imap-synchronize' to do full synchronization. 
+
+    * Trapping IMAP server errors uniformly.
+
+    * Added variable `vm-imap-tolerant-of-bad-imap' to allow minor
+      violations of the IMAP spec by IMAP servers.
+
+    * New commands `vm-imap-start-bug-report' and `vm-imap-submit-bug-report'
+      which track IMAP session details.
+
+VM 8.0.14    2009-12-16
+
+  BUGFIXES
+
+    * Removed an incompatibility of the mapvector procedure with XEmacs.
+
+VM 8.0.13    2009-11-29  
+
+  MANAGEMENT CHANGES:
+
+    * VM being maintained by "VM development team", vm@lists.launchpad.net,
+      consisting of Robert Fenk, Uday Reddy and Ulrich Müller.
+
+  BUGFIXES:
+
+    * VM-Cache entries were broken by encoding the pretty printed cache string
+      instead of the individual strings.  This bug was introduced in 8.0.10 by
+      the bug fix for correctly storing the cached multibyte summary entries.
+      It causes building of the summary to fail.  Broken cache entries are now
+      detected and removed while loading a folder.
+
+VM 8.0.12    2008-11-05
+
+  IMPROVEMENTS:
+
+    * Display version info when calling `vm-version' interactively.  (Thanks
+      to Ulrich Müller)
+
+    * Yanking of messages uses the same MIME decoding as the presentation
+      now.  See the new variable `vm-mime-yank-attachments' to configure if
+      attachments are also yanked.
+
+    * `u-vm-color.el' is bundled and maintained with VM now.  Ulf Jasper handed
+      it over to me as he switched to Gnus.
+
+  BUGFIXES:
+
+    * Detect w3 by using `locate-library' instead of checking for a bound
+      `w3-about'. (Thanks to Klaus Straubinger)
+
+    * vm.revno.el was not installed anymore b "make install".  (Thanks to
+      Ulrich Müller for reporting)
+
+    * Insert `emacs-version' instead of creating wrong version string for
+      XEmacs, i.e. the patch level was the major version. (Thanks to Stephen
+      Turnbull)
+
+    * Correctly locate the data directory for the pixmaps when running as a
+      XEmacs package.
+
+    * Check for some MIME character sets that may be available in recent
+      XEmacs.  (Thanks to Aidan Kehoe for the patch)
+
+    * Some documentation fixes. (Thanks to Michael Ernst for the patches)
+
+    * Fixed infinite loop in vm-mime-encode-words on XEmacs  21.5-b28.
+      (Thanks to Aidan Kehoe for the patch)
+
+    * Detect "score" (additionally to "hits") in "X-Spam-Status:" headers in
+      `vm-su-spam-score-aux'. (Patch from Michael Ernst)
+
+    * Typo fix in vm-pcrisis.texinfo. (Patch from Michael Ernst)
+
+    * Header encoding was BASE64 instead of QP by default and it was not
+      encoding whole words, but only the 8bit chars instead. (Thanks to Ulrich
+      Müller for reporting)
+
+    * MIME text parts interleaved by attachments are now correctly yanked,
+      e.g. when replying to a message.
+
+    * Limit the buffer-name length and sanitize the used characters. (Thanks
+      to Mark Diekhans for reporting)
+
+    * Do not fail on corrupted address headers.  (Reported by John Covici)
+
+    * Fixed GTK detection and toolbar handling for newer Emacs 22 versions.
+
+Public bug reported:
+ 
+VM 8.0.11    2008-08-11
+
+  BUGFIXES:
+
+    * Removed dependency of vm-revno.el to other lisp sources to avoid
+      building it in a release bundle.  (Thanks to Ralf Fassel)
+
+VM 8.0.10    2008-07-22
+
+  NOTES:
+
+    * This is the first version of VM 8.* to be also released as a XEmacs
+      package.
+
+  IMPROVEMENTS:
+
+    * Added missing documentation for `vm-user-agent', "?" binding and
+      'vm-delete-duplicate-messages'.  (Thanks to Alan Wehmann)
+
+    * `vm-message-history.el' now uses a buffer similar to the summary for
+      browsing the history.  The buffer replaces the summary buffer when
+      present.  Duplicate history entries will be removed.
+
+    * Define and use `vm-replace-in-string' which is `replace-in-string'
+      from XEmacs to avoid clashes with other GNU Emacs packages defining
+      it differently. Unfortunately, GNU Emacs still does not provide this
+      handy function. (Thanks to José Miguel Figueroa)
+
+    * MIME encoding of header will automatically happen now and has been moved
+      from `vm-rfaddons.el' to `vm-mime.el' and `vm-vars.el'.
+
+  BUGFIXES:
+
+    * Rewrote `vm-message-history.el' to also work for XEmacs.
+
+    * Leading lines of a yanked message were accidently taken as headers and
+      got removed if `vm-reply-include-presentation' was t.
+
+    * Fixed encoding of headers for trailing 8 bit characters.  (Thanks to
+      Lutz Euler for the patch)
+
+    * Decode (QP-)encoded clear text before decrypting it.
+
+    * Use nil as default for `vm-mime-8bit-composition-charset' and thus
+      enable proper detection of right charset.  (Thanks to Naoki Saito for
+      reporting and debugging)
+
+    * Fixed bug in `vm-mime-display-external-generic' for GNU Emacs 23 causing
+      corrupted content in the output file.  The old code has been replaced by
+      a call to `vm-mime-send-body-to-file' which avoids duplication and works.
+      There has been some special handling for `vm-fsfemacs-mule-p', but the
+      actual reason for this was unclear so it has been removed.
+
+    * Correctly handle `vm-enable-addons' being t.
+
+    * Correctly store UTF-8 strings in the X-VM-v5-Data header to avoid
+      corruption of summary lines. (Thanks to Yuning Feng for reporting)
+
+    * Correctly encode multibyte subjects. (Thanks to Yuning Feng for the
+      patch) 
+
+    * Use BASE64 for header encoding when there are special chars not quoted
+      by QP normally.  You may configure this by `vm-mime-encode-headers-type'.
+
+    * qp-decode program handles premature end of QP-encoded stream now
+      gracefully. (Thanks to Ralf Fassel for the bug report, fix and testing)
+
+    * Added missing newline after "Content-Type" when using the command
+      `vm-mime-attach-object-from-message'.  (Thanks to Dan Freed)
+
+VM 8.0.9    2008-02-20
+
+  BUGFIXES:
+
+    * Added documentation to `vm-mime-external-content-types-alist' that no
+      extra single quotes should be used around %f as the file name is already
+      quoted for the shell. (Thanks to Martin Schwenke)
+
+    * Fixed version number generation in release script.  It was broken for
+      8.0.8, i.e. it was showing 8.0.x-xemacs-542 instead.  Now also other
+      branch related information is stored in the file vm-revno.el.
+
+VM 8.0.8    2008-02-11
+
+  IMPROVEMENTS:
+
+    * Reactivated "Allow defadvice on function `vm' by recursing on session
+      start".  It should work correctly now.
+
+    * Added interactive `vm-pipe-message-to-command-discard-output' and
+      the non-interactive `vm-pipe-message-to-command-to-string' for using
+      it in own functions.
+
+    * Added `vm-pipe-messages-to-command*' for bulk piping messages to a
+      single command, i.e. like saving to a pipe.  This is substantially
+      faster than `vm-pipe-message-to-command*' which call the command on 
+      each message separately.  You may want to use it to feed spamassasin.
+
+    * Modified key bindings for piping messages, i.e. "|" is a prefix key
+      now. Type it twice to get the old pipe command, "|d" will call the 
+      discard the output, just display some infos in the mode line. "|s" 
+      will call `vm-pipe-messages-to-command' and "|n" will also call it 
+      but discard the output.
+
+    * Removed vm-easymenu.el and use easymenu.el instead.
+
+    * In `vm-save-message-preview', ask the user if the output file already
+      exists instead of silently overwriting it.
+
+  BUG FIXES:
+
+    * Moved [Undo] to Dispose menu and [Emacs] to Help menu as these do not
+      work in Emacs 22 anymore when on the menu bar.
+
+    * Fixed intermixing of signature and quoted text in reply if
+      `vm-reply-include-presentation' is t. (Thanks to Roland Winkler for
+      debugging and reporting)
+
+    * Fixed yanking of presentation from wrong folder when folder is virtual.
+      (Thanks to Roland Winkler for reporting)
+
+    * Redistributed flag not displayed in presentation buffer mode line. 
+      https://bugzilla.redhat.com/show_bug.cgi?id=428248 (Thanks to Jonathan
+      Underwood for the fix)
+
+    * `vm-submit-bug-report' gets the variables dynamically now and thus does
+      not miss new ones or references old ones anymore. 
+
+    * Correctly determine the real folder when postponing compositions started
+      from a virtual folder. (Thanks to Uday S. Reddy for reporting and 
+      debugging)
+
+    * Avoid crash when `vm-mouse-set-mouse-track-highlight' is not called
+      within a summary buffer or without a valid message pointer.
+
+    * Do not disable modes which do not exist. (Thanks to Uday S. Reddy for
+      reporting) 
+
+    * Set correct coding-system-for-read for the real messages of
+      virtual folders.  (Thanks to Julian Bradfield)
+
+VM 8.0.7    2008-01-05
+
+  BUG FIXES:
+
+    * Disable only those minor modes listed in the variable
+      `vm-disable-modes-before-encoding' before encoding a
+      composition. (Thanks to Alley for reporting and debugging)
+
+    * Removed recursion from function `vm' added by 8.0.6, as it 
+      causes startup troubles.
+
+    * Removed extra newline before attachment buttons. (Thanks to Alley for
+      reporting)
+
+    * Removed wrongly used calls to `interactive-p'. (Thanks to Alley for
+      reporting and debugging)
+
+VM 8.0.6    2008-01-02
+
+  IMPROVEMENTS:
+
+    * Rewrote INSTALL to be more consistent and more understandable.
+
+    * Allow defadvice on function `vm' by recursing on session start. (Thanks
+      to Blueman for the code)
+
+  BUG FIXES:
+
+    * Ignore empty reply-to in `vm-ignored-reply-to'.
+
+    * Quoted the variable `vm-summary-format' in a doc string.
+
+    * Fixed typos in the docstring of `vm-mail-send-and-exit'.
+
+    * Disable all minor modes before encoding a composition.  This results in
+      faster encoding when font-lock was enabled and avoids problems when
+      parts of a MIME object button get expanded due to an abbrev and thus the
+      extent/overlay gets split into two separate parts causing an encoding
+      error.
+
+    * Avoid duplicate mime buttons during decoding. (Thanks to Alley for
+      reporting)
+
+    * Mask 8 bit chars by 0xff in `vm-mime-qp-encode-region' to avoid crash
+      for those with all higher order bits set (negative ones?) (Thanks to
+      Blueman for the fix.)
+
+VM 8.0.5    2007-11-03
+
+  BUG FIXES:
+
+    * Fixed bug caused by fixing `vm-drop-buffer-name-chars' in 8.0.4.  There
+      is a 20-40% chance to create a new bug when fixing one.  Regression
+      tests would be nice, but we do not have any for VM ;-/
+
+VM 8.0.4    2007-11-02
+
+  IMPROVEMENTS:
+
+    * Require cl.el at compile-time only. (Thanks to John J. Foerch)
+
+    * Quiet compiler warning about old style backquotes. (Thanks to John
+      J. Foerch)
+
+  BUG FIXES:
+
+    * Correctly call custom-add-load. (Thanks to John J. Foerch and
+      Jonathan.underwood) 
+
+    * Fixed building of vm-cus-load.el for Emacs 21.
+
+    * Use the old default for `vm-primary-inbox', i.e. "~/INBOX".
+
+    * Honor a t in `vm-drop-buffer-name-chars' as documented.
+
+VM 8.0.3    2007-08-15
+
+  IMPROVEMENTS:
+
+    * Unified `vm-continue-what-message', i.e. first check for composition
+      buffers, if none exist then for saved drafts.  Also added new variable
+      `vm-zero-drafts-start-compose'.
+
+  BUG FIXES:
+
+    * Fixed building of autoloads for GNU Emacs.
+
+    * Docfixes for vm-pine.el (Thanks to Stephen Eglen).
+
+    * Resurrected `vm-add-reply-subject-prefix' which was lost by the commit
+      of revno 91.
+
+    * Search for BZR only if bzrdir exists and use locate-file only when
+      defined.
+
+    * Use  vm-mime-8bit-composition-charset as a fallback also for MULE Emacs.
+
+    * Fixed defcustom of vm-keep-crash-boxes and vm-spool-files.
+
+    * Fixed the section headers of the NEWS file.
+
+VM 8.0.2    2007-07-25
+
+  IMPROVEMENTS:
+
+    * Added --with-pixmapdir to configure the location of the pixmaps.
+
+    * DESTDIR-Patch (Ulrich Müller).
+
+  BUG FIXES:
+
+    * Avoid overflow of `buffer-undo-list' when inserting or encoding
+      big attachments.
+
+    * defcustom of `vm-mime-all-attachments-directory' should list nil.
+
+    * Honor pre VM 8.0.0 values of `vm-folder-directory' and
+      `vm-primary-inbox'. This should eliminate problems with users which
+      never changed the defaults. 
+
+    * Use "cygwin-mount" to fix paths when available.
+
+    * Activate summary faces only when requested by vm-enable-addons.
+
+    * Fixed defcustom of `vm-enable-addons' and added documentation.
+
+    * "make install" creates $(bindir) now.
+
+    * Separate paths (e.g. otherdirs) only by semicolons to avoid problems on
+      Win32.
+
+    * Handle paths with spaces correctly.
+
+    * Install also pixmaps for GTK enabled Emacs.
+
+    * Just use the first subject when replying/forwarding to a set of
+      messages.  This avoids long filenames for saved composition buffers.
+    
+    * Ensure we are compiling with an emacs version >= 21.
+
+    * Encode headers regexp and case-fold-search corrected. (Ulrich Müller)
+
+    * vm-summary-faces-mode does not leak extents anymore.
+
+VM 8.0.1    2007-06-29
+
+  NOTES:
+
+    In order to get more features from vm-rfaddons set the variable
+    `vm-enable-addons' in your ~/.vm.
+
+  BUG FIXES:
+
+    * A saner default for vm-shrunken-header-face.
+
+    * Added documentation on vm-shrunken-headers-face and
+      vm-shrunken-headers-keymap.
+
+    * Added a new custom group `vm-faces' for faces.
+
+    * Added autoload token for vm-user-agent.
+
+    * Use INSTALL_PROGRAM instead of INSTALL_DATA for programs.
+
+    * Do not set vm-folder-directory if there is ~/INBOX.  If VM does not get
+      mail after upgrading from 7.19 it is probably due to the new default for
+      vm-folder-directory, which was nil before.
+
+    * Revised the bindings and enabled features to a hopefully less
+      controversial setting. 
+
+VM 8.0.0    2007-05-31
+
+  NOTES:
+
+    VM is now in my hands and I will do my best to keep it alive! -- Robert
+
+    ,--------------------------------------------------------------------------
+    | From: Kyle Jones <kyle_jones@wonderworks.com>
+    | To: Robert Widhopf-Fenk <hack@robf.de>
+    | Date: Wed, 21 Feb 2007 13:11:32 -0800
+    | Subject: Handing over VM?
+    | 
+    | Robert Widhopf-Fenk writes:
+    |  > Hi Kyle,
+    |  > 
+    |  > I have been maintaining VM "unofficially" for the last few
+    |  > years and now I want to become the official maintainer of
+    |  > VM.
+    |  > 
+    |  > Do I get your OK?
+    | 
+    | Yes.  Obviously I've moved on, though I've been slow to admit it
+    | to myself.  Good luck.
+    `--------------------------------------------------------------------------
+	   
+    * My (robf) VM extensions are now activated by default, where it makes
+      sense to me.
+
+    * Releases are numbered now MAJOR.MINOR.PATCHLEVEL, where MAJOR is
+      increased when fundamental changes occur, MINOR for new features and
+      PATCHLEVEL for bugfix releases.
+
+    * New cleaner source tree layout.
+
+    * Better built system based on configure.  Autoloads are generated only
+      for those functions marked with the autoload token now, which are mainly
+      interactive function. Thus, loading occurs only on demand and startup
+      should be faster.
+      
+  BUG FIXES:
+
+    * All bugs reported to gnu.emacs.vm.bugs, gnu.emacs.vm.info and directly
+      to me are fixed either by the patches posted by others or me.
+
+    * If there are any missing autoloads, please report them and add a
+      (require 'vm-SOURCE) to your ~/.vm!
+
+    * Probably added numerous new bugs.
+
+
+  IMPROVEMENTS: compared to 7.19 (not vmrf)
+
+    * A new icon set based on vm-small-pixmaps.tgz which was floating around.
+      This one should fit by height to the one used in XEmacs and Emacs 22,
+      but it is slightly larger than those used in Emacs 21.  If you see the
+      old icons, the please set the variables `vm-image-directory' and
+      `vm-toolbar-pixmap-directory' to nil in your ~/.vm!
+
+    * vm-mime-type-converter-alist now also works when replying to messages,
+      i.e. for text/html one can use lynx or w3m for the conversion.
+      (setq vm-mime-type-converter-alist
+	'(("text/html" "text/plain" "lynx -force_html -dump /dev/stdin")))
+
+    * Postponing (draft handling) of compositions and continuing of drafts, in
+      fact any messages also those from other people. (Info node: Sending
+      Messages) 
+
+    * New mail header insertion functions for return-receipts, mail-priority
+      and FCC.
+
+    * More virtual folder selectors and replacements of other functions based
+      on selectors. (Info node: Virtual Folders)
+
+    * vm-serial.el provides message templates for composition and
+      personalizes mass emails. (Info node: TODO)
+    
+    * vm-biff.el for popups with a list of new messages.
+
+    * vm-rfaddons.el has various stuff, look at the source if you are curious
+      or miss some VM feature, as it might already be there!
+
+
+VMRF 7.19.187   2006-10-12
+
+VMRF  2006-09
+
+   Mentioned on gnu.emacs.vm.info as a fork.
+
+
+Local Variables:
+mode: text
+coding: utf-8
+End:
