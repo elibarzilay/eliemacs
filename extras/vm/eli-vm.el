@@ -52,7 +52,7 @@
  ;; ?? vm-mime-ignore-composite-type-opaque-transfer-encoding t
  ;; ?? vm-mime-ignore-missing-multipart-boundary t
  vm-send-using-mime t
- vm-honor-mime-content-disposition t ; and see below: no images
+ vm-honor-mime-content-disposition 'internal-only ; and see below: no images
  vm-auto-decode-mime-messages t
  vm-mime-decode-for-preview nil ; no preview lines anyway
  vm-auto-displayed-mime-content-types
@@ -62,9 +62,9 @@
    '("text" "multipart" "message/rfc822") ; no images
  vm-mime-auto-displayed-content-types-exceptions '("image")
  vm-mime-internal-content-types t
- vm-mime-internal-content-type-exceptions '("text/calendar")
+ vm-mime-internal-content-type-exceptions '("text/calendar" "application/pdf")
  vm-mime-external-content-types-alist
-   '(("text/html" "firefox") ("image" "qiv") ("video" "mplayer"))
+   '(("image" "qiv") ("video" "mplayer") ("application/pdf" "xpdf"))
  vm-mime-external-content-type-exceptions '()
  vm-mime-delete-viewer-processes t
  vm-mime-type-converter-alist
@@ -100,7 +100,7 @@
  ;; needed?-- vm-mime-8bit-composition-charset "utf-8" ; avoid 2022-jp encoding
  vm-mime-composition-armor-from-lines t ; nice to not have `>From's
  ;; vm-mime-encode-headers-type 'Q
- vm-mime-max-message-size (* 19 1000 1000) ; split bigger messages
+ vm-mime-max-message-size (* 20 1024 1024) ; split bigger messages
  vm-mime-attachment-save-directory      ; saved attachments to some temp
    (expand-file-name
     (findif

@@ -469,12 +469,12 @@
   (setq-default
    ;;
    w32-alt-is-meta t
-   w32-apps-modifier 'hyper
-   w32-lwindow-modifier 'hyper
-   w32-rwindow-modifier 'hyper
+   w32-apps-modifier 'super
+   w32-lwindow-modifier 'super
+   w32-rwindow-modifier 'super
    w32-pass-alt-to-system nil
    w32-pass-lwindow-to-system t ; they still work fine
-   w32-pass-rwindow-to-system t ;   as a hyper modifier
+   w32-pass-rwindow-to-system t ;   as a super modifier
    w32-capslock-is-shiftlock nil
    w32-enable-caps-lock t
    w32-enable-num-lock t

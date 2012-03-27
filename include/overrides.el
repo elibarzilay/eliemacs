@@ -173,7 +173,6 @@ THIS IS A MODIFIED VERSION THAT AUTOMATICALLY RELOADS THE FILE."
 ;;-----------------------------------------------------------------------------
 ;; Override from "files.el": don't ask about reverting a buffer, just say it
 
-
 (when eli-auto-revert-on-change
 
 ;; do it after loading, so the new definition isn't replaced by the original
@@ -256,8 +255,11 @@ the various files."
 			   (message "Reverting file %s...done" filename)))
                         ;;ELI:
                         (t
-                         (message "File %s changed on disk!"
-                                  (file-name-nondirectory filename))
+                         (message "File %s changed on disk!%s"
+                                  (file-name-nondirectory filename)
+                                  (if (buffer-modified-p buf)
+                                    " (note: local modifications)"
+                                    " (touch to revert)"))
                          (ding t))
 			((yes-or-no-p
 			  (if (string= (file-name-nondirectory filename)
@@ -359,6 +361,19 @@ Do you want to revisit the file normally now? ")
 	  ;; find-file-noselect-1 may use a different buffer.
 	  (find-file-noselect-1 buf filename nowarn
 				rawfile truename number))))))
+
+;;ELI: this is unchanged, but copied since before 23.2 it had only two
+;;     inputs, so copy it here and make it optional
+(defun abort-if-file-too-large (size op-type &optional filename)
+  "If file SIZE larger than `large-file-warning-threshold', allow user to abort.
+OP-TYPE specifies the file operation being performed (for message to user)."
+  (when (and large-file-warning-threshold size
+	   (> size large-file-warning-threshold)
+	   (not (y-or-n-p
+		 (format "File %s is large (%dMB), really %s? "
+			 (file-name-nondirectory filename)
+			 (/ size 1048576) op-type))))
+	  (error "Aborted")))
 
 )))
 

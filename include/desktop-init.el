@@ -39,21 +39,29 @@
                   "\\)\\)"))
   (desktop-save-mode 1))
 
+;; Decide whether to load the previous desktop or not
+;; (Do that now, not in the startup hook, since there it cannot change
+;; `command-line-args')
+(defconst is-fast-p
+  (and (member "--fast" command-line-args)
+       (progn (setq command-line-args (delete "--fast" command-line-args)) t)))
+(defvar fake-initial-key nil
+  "If this is set, it's used as the initial keypress result (and no
+logo-question will appear).")
 (add-hook 'emacs-startup-hook
   (lambda ()
-    ;; Decide whether to load the previous desktop or not
-    (if (member "--fast" command-line-args)
-      ;; not using desktop at all
-      (setq command-line-args (delete "--fast" command-line-args))
+    (unless is-fast-p ; fast => don't use the desktop
       ;; otherwise, the question is whether we load buffers or not (so desktop
       ;; is always used here)
       (let (;; ask about restoring desktop only if there are no command-line
             ;; arguments left (ignore the first -- it is the executable)
             (load-buffers (null (cdr command-line-args))))
         (when load-buffers
-          (let* ((key (eli-logo
+          (let* ((key
+                  (or fake-initial-key
+                      (eli-logo
                        (concat "Hit any key to continue, escape/right-click:"
-                               " don't load previous desktop.")))
+                               " don't load previous desktop."))))
                  (key (if (integerp key) key (event-basic-type key))))
             (when (memq key '(27 escape mouse-3))
               (setq load-buffers nil))))
