@@ -53,8 +53,8 @@
     (">"      #x232A)
     ("<<"     #x00AB)
     (">>"     #x00BB)
-    ("[["     #X27E6)
-    ("]]"     #X27E7)
+    ("[["     #x27E6)
+    ("]]"     #x27E7)
     ("=="     #x2261)
     ("=def"   #x225D)
     ("=?"     #x225F)
@@ -102,6 +102,7 @@
     ("TM"     #x2122)
     ("all"    #x2200)
     ("sqrt"   #x221A)
+    ("bot"    #x22A5)
     ;; additional subscripts and superscripts etc
     ("^0"     #x2070)
     ("^1"     #x00B9)

@@ -85,6 +85,7 @@
   "Maze is Life!"
   (interactive)
   (eli-logo-draw msg)
+  (win-init-apply-conf)
   (let ((buf (current-buffer)) (key nil))
     (unwind-protect
         (while (not key)

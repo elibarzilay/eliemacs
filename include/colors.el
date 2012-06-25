@@ -377,8 +377,8 @@ one added first), if negative removes all."
  `((default                      white/black            black/white)
    (fringe                       white/gray10           black/gray90)
    (scroll-bar                   white/gray10           black/gray90)
-   (mode-line                    yellow/red2-uninverse-scale50
-                                       red2/yellow-uninverse-scale50)
+   (mode-line                    yellow/red2-uninverse-scale75
+                                       red2/yellow-uninverse-scale75)
    (mode-line-inactive           orange2/red4-uninverse
                                        orange2/yellow4-uninverse)
    (mode-line-buffer-id bold)

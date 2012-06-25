@@ -201,6 +201,8 @@
  PC-first-char nil ; allways do smart completion
  PC-meta-flag t ; complete on TAB
  PC-word-delimiters "-_. :" ; same as `completion-pcm-word-delimiters'
+ ;; >> emacs/programming/languages/js
+ js-indent-level 2
  ;; >> emacs/programming/languages/lisp
  eval-expression-print-level 5
  eval-expression-print-length 20

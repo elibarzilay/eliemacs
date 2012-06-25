@@ -94,12 +94,12 @@ is not used.")
 (defun win-init-apply-conf (&rest frame)
   (interactive) ; make it easy to use manually
   (let* ((frame (or (car frame) (selected-frame)))
-         (conf (and (window-system) window-configurations
-                    (funcall window-configurations frame)))
+         (conf  (and (window-system) window-configurations
+                     (funcall window-configurations frame)))
          ;; chosen configuration
-         (w (car eli-size))
+         (w (car  eli-size))
          (h (cadr eli-size))
-         (x (car eli-window-pos))
+         (x (car  eli-window-pos))
          (y (cadr eli-window-pos))
          (fn eli-font))
     (when conf
@@ -121,7 +121,9 @@ is not used.")
             (w         (set-frame-width  frame w)   (redisplay t))
             (h         (set-frame-height frame w)   (redisplay t)))
       (when (or x y)
-        (set-frame-position frame (or x 0) (or y 0)) (redisplay t)))))
+        (modify-frame-parameters
+         frame `((left . (+ ,(or x 0))) (top . (+ ,(or y 0)))))
+        (redisplay t)))))
 
 (setq after-make-frame-functions
       (cons '(lambda (f)
