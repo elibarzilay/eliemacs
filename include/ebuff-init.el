@@ -33,9 +33,7 @@
 (add-hook
  'electric-buffer-menu-mode-hook
  (lambda ()
-   (make-local-hook 'mouse-leave-buffer-hook)
    (add-hook 'mouse-leave-buffer-hook 'Electric-buffer-menu-quit nil t)
-   (make-local-hook 'kill-buffer-hook)
    (add-hook 'kill-buffer-hook
              '(lambda ()
                 (condition-case nil (Electric-buffer-menu-quit)
