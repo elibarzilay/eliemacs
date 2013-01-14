@@ -386,7 +386,7 @@ See `run-hooks'."
                "map" "syntax-rules" "syntax" "syntax-id-rules"
                ;; New MzScheme stuff
                "syntax/loc" "quote-syntax" "quasisyntax" "quasisyntax/loc"
-               "syntax-case" "syntax-case*" "with-syntax"
+               "syntax-case" "syntax-case*" "with-syntax" "syntax-parse"
                "module" "provide" "require"
                ;; Some more
                "when" "unless" "begin0"
@@ -675,6 +675,7 @@ that variable's value is a string."
 (put 'with-syntax           'scheme-indent-function 1)
 (put 'syntax-case           'scheme-indent-function 2)
 (put 'syntax-case*          'scheme-indent-function 3)
+(put 'syntax-parse          'scheme-indent-function 1)
 (put 'module                'scheme-indent-function 2)
 
 (put 'syntax                'scheme-indent-function 0)
