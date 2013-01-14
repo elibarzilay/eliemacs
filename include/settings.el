@@ -240,6 +240,7 @@
  ;; >> emacs/applications/mail
  read-mail-command 'rmail ; change to vm?
  mail-user-agent 'sendmail-user-agent ; maybe use feedmail
+ send-mail-function 'sendmail-send-it
  ;;     or use this (as feedmail says): send-mail-function 'feedmail-send-it
  ;; >> emacs/applications/ispell
  ispell-highlight-p 'block
