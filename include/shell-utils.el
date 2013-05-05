@@ -121,15 +121,23 @@ must be sent as well)."
       (beginning-of-visual-line arg)
       (beginning-of-line arg))))
 (put 'eli-comint-beginning-of-line 'CUA 'move)
-;; otherwise, ignore fields by default
-(add-hook 'shell-mode-hook
-          (lambda () (set (make-local-variable 'inhibit-field-text-motion) t)))
+(defun eli-comint-end-of-line (&optional arg)
+  "Like `end-of-line'."
+  (interactive "^p")
+  (unless arg (setq arg 1))
+  (let ((inhibit-field-text-motion
+         (save-excursion (end-of-line) (not (eobp)))))
+    (if line-move-visual
+      (end-of-visual-line arg)
+      (end-of-line arg))))
+(put 'eli-comint-end-of-line 'CUA 'move)
 
 (eval-after-load "comint"
   '(define-keys comint-mode-map
      '([(meta q)]       comint-quoted-send)
      '([(control up)]   comint-previous-matching-input-from-input-or-scroll)
      '([(control down)] comint-next-matching-input-from-input-or-scroll)
-     '([(home)]         eli-comint-beginning-of-line)))
+     '([(home)]         eli-comint-beginning-of-line)
+     '([(end)]          eli-comint-end-of-line)))
 
 ;;; shell-utils.el ends here
