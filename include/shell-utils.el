@@ -110,10 +110,26 @@ must be sent as well)."
            (comint-next-matching-input-from-input n))
     (scroll-up-1-stay n)))
 
+;; the field-restricted motion is useful only on the current prompt line
+(defun eli-comint-beginning-of-line (&optional arg)
+  "Like `beginning-of-line'."
+  (interactive "^p")
+  (unless arg (setq arg 1))
+  (let ((inhibit-field-text-motion
+         (save-excursion (end-of-line) (not (eobp)))))
+    (if line-move-visual
+      (beginning-of-visual-line arg)
+      (beginning-of-line arg))))
+(put 'eli-comint-beginning-of-line 'CUA 'move)
+;; otherwise, ignore fields by default
+(add-hook 'shell-mode-hook
+          (lambda () (set (make-local-variable 'inhibit-field-text-motion) t)))
+
 (eval-after-load "comint"
   '(define-keys comint-mode-map
-     '([(meta q)] 'comint-quoted-send)
+     '([(meta q)]       comint-quoted-send)
      '([(control up)]   comint-previous-matching-input-from-input-or-scroll)
-     '([(control down)] comint-next-matching-input-from-input-or-scroll)))
+     '([(control down)] comint-next-matching-input-from-input-or-scroll)
+     '([(home)]         eli-comint-beginning-of-line)))
 
 ;;; shell-utils.el ends here
