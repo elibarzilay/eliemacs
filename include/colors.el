@@ -379,15 +379,16 @@ one added first), if negative removes all."
    (scroll-bar                   white/gray10           black/gray90)
    (mode-line                    yellow/red2-uninverse-scale75
                                        red2/yellow-uninverse-scale75)
-   (mode-line-inactive           orange2/red4-uninverse
-                                       orange2/yellow4-uninverse)
+   (mode-line-inactive           orange4/red4-uninverse-scale65
+                                       orange4/yellow4-uninverse-scale65)
    (mode-line-buffer-id bold)
    ;; (mode-line-highlight */green) ???
    (header-line                  yellow/green4-bold     green4/yellow-bold)
    (tooltip                      black/gray75-bold-small10)
    ;; Using just bold makes it a bit higher, so going to the minibuffer makes
-   ;; the modeline jump up.  Scale it down to compensate.
-   (minibuffer-prompt yellow/*-bold-scale82 black/*-bold-scale82)
+   ;; the modeline jump up.  Scale it down to compensate. --> No longer true,
+   ;; and using a scale messes up `comint-highlight-prompt' too.
+   (minibuffer-prompt yellow/*-bold black/*-bold)
    ;;
    (region                       yellow/blue2           blue4/yellow)
    (secondary-selection          yellow/cyan4           cyan4/yellow)
