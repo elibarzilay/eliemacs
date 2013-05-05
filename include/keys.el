@@ -155,8 +155,8 @@
   '([(control ?x) (left)]       shrink-window-horizontally)
   '([(control ?x) (right)]      enlarge-window-horizontally)
   ;; these are still as the default
-  '([(control ?x) (control left)]   previous-buffer)
-  '([(control ?x) (control rightt)] next-buffer)
+  '([(control ?x) (control left)]  unbury-buffer)
+  '([(control ?x) (control right)] bury-buffer)
 
   ;; pairs
   'global
