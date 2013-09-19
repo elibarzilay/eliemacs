@@ -546,21 +546,46 @@
   (vm-expunge-folder)
   (vm-quit))
 
+(defvar vm-subject-tag-history nil)
+(defun vm-create-virtual-folder-subject-tag ()
+  (interactive)
+  (vm-follow-summary-cursor)
+  (vm-select-folder-buffer-and-validate 1 (interactive-p))
+  (let* ((subject (vm-su-subject (car vm-message-pointer)))
+         (tag (save-match-data (and (string-match "\\[\\([^][]+\\)\\]" subject)
+                                    (match-string 1 subject))))
+         (tag (and tag (regexp-quote tag)))
+         (tag (if tag
+                (progn (setq vm-subject-tag-history
+                             (cons tag (remove tag vm-subject-tag-history)))
+                       tag)
+                (read-from-minibuffer "Subject tag: " tag nil nil
+                                      'vm-subject-tag-history)))
+         (bookmark (if (vm-virtual-message-p (car vm-message-pointer))
+		       (vm-real-message-of (car vm-message-pointer))
+		     (car vm-message-pointer))))
+    (vm-create-virtual-folder
+     'sortable-subject (concat "\\[" tag "\\]") nil
+     (format "%s %s [%s]" (buffer-name) 'subject-tag tag) bookmark)))
+
 (define-keys
   vm-mode-map
   '("#"  vm-expunge-folder)
   '("Q"  vm-expunge-and-quit)
   '("X"  vm-quit-no-change)
   '("x"  vm-expunge-folder)
+  '("VT" vm-create-virtual-folder-subject-tag)
   '("\t" vm-move-to-next-button)
   '([(? )]       vm-scroll-forward)
   '([(shift ? )] vm-scroll-backward)
   '([(control ?j)] vm-scroll-forward-one-line)
   '([(control ?m)] vm-scroll-forward-one-line)
   '([(return)]     vm-scroll-forward-one-line)
+  '([(kp-enter)]   vm-scroll-forward-one-line)
   '([(control shift ?j)] vm-scroll-backward-one-line)
   '([(control shift ?m)] vm-scroll-backward-one-line)
   '([(shift return)]     vm-scroll-backward-one-line)
+  '([(shift kp-enter)]   vm-scroll-backward-one-line)
   '("\\" vm-toggle-thread)
   '("/"  vm-toggle-thread)
   '(save-buffer vm-save-folder)
