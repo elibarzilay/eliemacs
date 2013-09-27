@@ -3,15 +3,19 @@
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
 ;;-----------------------------------------------------------------------------
-;; Override from "simple.el": always show the "helpful" octal/hexadecimal if it
-;; doesn't go into the buffer
+;; Override from "simple.el": avoid the "helpful" octal/hexadecimal if it goes
+;; into the buffer
 
 (defun eval-expression-print-format (value)
   "Format VALUE as a result of evaluated expression.
 Return a formatted string which is displayed in the echo area
 in addition to the value printed by prin1 in functions which
 display the result of expression evaluation."
-  (if (and (integerp value) (not (bufferp standard-output)))
+  (if (and (integerp value)
+           (not (bufferp standard-output)) ;ELI
+           (or (not (memq this-command '(eval-last-sexp eval-print-last-sexp)))
+               (eq this-command last-command)
+               (if (boundp 'edebug-active) edebug-active)))
       (let ((char-string
              (if (or (if (boundp 'edebug-active) edebug-active)
 		     (memq this-command '(eval-last-sexp eval-print-last-sexp)))
@@ -25,22 +29,59 @@ display the result of expression evaluation."
 ;; (Works better than ehelp.)
 
 ;; Don't show a message, only set return-method.
-(defun print-help-return-message (&optional function)
-  "Redefined: no message is shown, only set `help-return-method'."
-  ;; Reset `help-window' here to avoid confusing `help-mode-finish'.
-  (setq help-window nil)
-  (unless (get-buffer-window standard-output)
-    (setq help-return-method
-          (cons (selected-window)
-                (cond ((or pop-up-frames
-                           (special-display-p (buffer-name standard-output)))
-                       t)
-                      (display-buffer-reuse-frames
-                       'quit-window)
-                      ((not (one-window-p t)) 'quit-window)
-                      (pop-up-windows t)
-                      (t (list (window-buffer) (window-start)
-                               (window-point))))))))
+(defun help-print-return-message (&optional function)
+  "Display or return message saying how to restore windows after help command.
+This function assumes that `standard-output' is the help buffer.
+It computes a message, and applies the optional argument FUNCTION to it.
+If FUNCTION is nil, it applies `message', thus displaying the message.
+In addition, this function sets up `help-return-method', which see, that
+specifies what to do when the user exits the help buffer."
+  (and (not (get-buffer-window standard-output))
+       (let ((first-message
+	      (cond ((or
+		      pop-up-frames
+		      (special-display-p (buffer-name standard-output)))
+		     (setq help-return-method (cons (selected-window) t))
+		     ;; If the help output buffer is a special display buffer,
+		     ;; don't say anything about how to get rid of it.
+		     ;; First of all, the user will do that with the window
+		     ;; manager, not with Emacs.
+		     ;; Secondly, the buffer has not been displayed yet,
+		     ;; so we don't know whether its frame will be selected.
+		     nil)
+		    (display-buffer-reuse-frames
+		     (setq help-return-method (cons (selected-window)
+						    'quit-window))
+		     nil)
+		    ((not (one-window-p t))
+		     (setq help-return-method
+			   (cons (selected-window) 'quit-window))
+		     "Type \\[display-buffer] RET to restore the other window.")
+		    (pop-up-windows
+		     (setq help-return-method (cons (selected-window) t))
+		     "Type \\[delete-other-windows] to remove help window.")
+		    (t
+		     (setq help-return-method
+			   (list (selected-window) (window-buffer)
+				 (window-start) (window-point)))
+		     "Type \\[switch-to-buffer] RET to remove help window."))))
+	 (funcall (or function 'identity) ;ELI
+		  (concat
+		   (if first-message
+		       (substitute-command-keys first-message))
+		   (if first-message "  ")
+		   ;; If the help buffer will go in a separate frame,
+		   ;; it's no use mentioning a command to scroll, so don't.
+		   (if (or pop-up-windows
+			   (special-display-p (buffer-name standard-output)))
+		       nil
+		     (if (same-window-p (buffer-name standard-output))
+			 ;; Say how to scroll this window.
+			 (substitute-command-keys
+			  "\\[scroll-up] to scroll the help.")
+		       ;; Say how to scroll some other window.
+		       (substitute-command-keys
+			"\\[scroll-other-window] to scroll the help."))))))))
 
 (defvar eli-popup-exit-conf nil
   "Window configuration to restore after quitting viewing a temp buffer.")
@@ -368,12 +409,11 @@ Do you want to revisit the file normally now? ")
   "If file SIZE larger than `large-file-warning-threshold', allow user to abort.
 OP-TYPE specifies the file operation being performed (for message to user)."
   (when (and large-file-warning-threshold size
-	   (> size large-file-warning-threshold)
-	   (not (y-or-n-p
-		 (format "File %s is large (%dMB), really %s? "
-			 (file-name-nondirectory filename)
-			 (/ size 1048576) op-type))))
-	  (error "Aborted")))
+	     (> size large-file-warning-threshold)
+	     (not (y-or-n-p (format "File %s is large (%dMB), really %s? "
+				    (file-name-nondirectory filename)
+				    (/ size 1048576) op-type))))
+    (error "Aborted")))
 
 )))
 
@@ -397,14 +437,18 @@ default directory.  However, if FULL is non-nil, they are absolute."
 	   ;; A list of all dirs that DIRPART specifies.
 	   ;; This can be more than one dir
 	   ;; if DIRPART contains wildcards.
-	   (dirs (if (and dirpart (string-match "[[*?]" dirpart))
+	   (dirs (if (and dirpart
+			  (string-match "[[*?]"
+					(or (file-remote-p dirpart 'localname)
+					    dirpart)))
 		     (mapcar 'file-name-as-directory
 			     (file-expand-wildcards (directory-file-name dirpart)))
 		   (list dirpart)))
 	   contents)
       (while dirs
 	(when (or (null (car dirs))	; Possible if DIRPART is not wild.
-		  (file-directory-p (directory-file-name (car dirs))))
+		  (and (file-directory-p (directory-file-name (car dirs)))
+		       (file-readable-p (car dirs))))
 	  (let ((this-dir-contents
 		 ;; Filter out "." and ".."
 		 (delq nil
@@ -417,7 +461,8 @@ default directory.  However, if FULL is non-nil, they are absolute."
                                           (string-match (wildcard-to-regexp nondir)
                                                         n)
                                           name)))
-			       (directory-files (or (car dirs) ".") full)))))
+			       (directory-files (or (car dirs) ".") full
+						(wildcard-to-regexp nondir))))))
 	    (setq contents
 		  (nconc
 		   (if (and (car dirs) (not full))
@@ -435,9 +480,9 @@ default directory.  However, if FULL is non-nil, they are absolute."
 (eval-after-load "comint" '(progn
 
 (defun comint-dynamic-list-completions (completions &optional common-substring)
-  "List in help buffer sorted COMPLETIONS.
+  "Display a list of sorted COMPLETIONS.
 The meaning of COMMON-SUBSTRING is the same as in `display-completion-list'.
-Typing SPC flushes the help buffer."
+Typing any key flushes the completions buffer."
   (let ((window (get-buffer-window "*Completions*" 0)))
     (setq completions (sort completions 'string-lessp))
     (if (and (eq last-command this-command)
@@ -470,7 +515,7 @@ Typing SPC flushes the help buffer."
       (with-output-to-temp-buffer "*Completions*"
 	(display-completion-list completions common-substring))
       (if (window-minibuffer-p (selected-window))
-	  (minibuffer-message " [Type space to flush; repeat completion command to scroll]")
+	  (minibuffer-message "Type anything to flush; repeat completion command to scroll")
 	(message "Type space to flush; repeat completion command to scroll")))
 
     ;; Read the next key, to process SPC.
@@ -487,7 +532,7 @@ Typing SPC flushes the help buffer."
 	  ;; If the user does mouse-choose-completion with the mouse,
 	  ;; execute the command, then delete the completion window.
 	  (progn
-	    (mouse-choose-completion first)
+	    (choose-completion first)
 	    (set-window-configuration comint-dynamic-list-completions-config))
         ;; ELI: replacing this code
 	;; (if (eq first ?\s)
@@ -504,6 +549,7 @@ Typing SPC flushes the help buffer."
 ;; characters could be entered (eg, with "select-window", it should leave the
 ;; cursor between the "t-").
 
+' ;; looks like this is the default now
 (defun minibuffer-complete ()
   "Complete the minibuffer contents as far as possible.
 Return nil if there is no valid completion, else t.
@@ -513,7 +559,9 @@ scroll the window of possible completions."
   (interactive)
   ;; If the previous command was not this,
   ;; mark the completion buffer obsolete.
-  (unless (eq this-command last-command)
+  (setq this-command 'completion-at-point)
+  (unless (eq 'completion-at-point last-command)
+    (completion--flush-all-sorted-completions)
     (setq minibuffer-scroll-window nil))
 
   (let ((window minibuffer-scroll-window))
@@ -1006,12 +1054,12 @@ GOTO-END is non-nil, however, it instead replaces up to END."
 ;; leave isearch if the point goes out of the screen.
 
 (defun isearch-reread-key-sequence-naturally (keylist)
-  "Reread key sequence KEYLIST with Isearch mode's keymap deactivated.
+  "Reread key sequence KEYLIST with an inactive Isearch-mode keymap.
 Return the key sequence as a string/vector."
   (isearch-unread-key-sequence keylist)
   (let (overriding-terminal-local-map)
     ;; This will go through function-key-map, if nec.
-    (read-key-sequence nil nil t)))
+    (read-key-sequence nil nil t))) ;ELI: Add the t
 
 (defun isearch-other-meta-char (&optional arg)
   "Process a miscellaneous key sequence in Isearch mode.
@@ -1050,6 +1098,7 @@ Isearch mode."
 	   (if (lookup-key global-map key)
 	       (progn
 		 (isearch-done)
+		 (setq prefix-arg arg)
 		 (apply 'isearch-unread keylist))
 	     (setq keylist
 		   (listify-key-sequence (lookup-key local-function-key-map key)))
@@ -1065,6 +1114,7 @@ Isearch mode."
 		     (setq keylist (cdr keylist)))
 		 ;; As the remaining keys in KEYLIST can't be handled
 		 ;; here, we must reread them.
+		 (setq prefix-arg arg)
 		 (apply 'isearch-unread keylist)
 		 (setq keylist nil)))))
 	  (
@@ -1087,8 +1137,10 @@ Isearch mode."
 			       isearch-other-control-char)))))
 	   (setcar keylist (- main-event (- ?\C-\S-a ?\C-a)))
 	   (cancel-kbd-macro-events)
+	   (setq prefix-arg arg)
 	   (apply 'isearch-unread keylist))
 	  ((eq search-exit-option 'edit)
+	   (setq prefix-arg arg)
 	   (apply 'isearch-unread keylist)
 	   (isearch-edit-string))
           ;; ELI: The following branch is moved here for convenience
@@ -1136,6 +1188,7 @@ Isearch mode."
                (isearch-update)))) ; ELI: moved inside here
 	  (search-exit-option
 	   (let (window)
+	     (setq prefix-arg arg)
              (isearch-unread-key-sequence keylist)
              (setq main-event (car unread-command-events))
 
