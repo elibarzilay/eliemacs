@@ -36,6 +36,12 @@
  longlines-auto-wrap t
  longlines-show-hard-newlines t
  longlines-show-effect (propertize "<@>\n" 'face 'escape-glyph)
+ ;; >> emacs/editing/electricity
+ electric-indent-mode t
+ electric-pair-skip-self t
+ electric-pair-mode t
+ electric-layout-mode t
+ 
  ;; >> emacs/editing/view
  view-read-only nil
  view-scroll-auto-exit nil

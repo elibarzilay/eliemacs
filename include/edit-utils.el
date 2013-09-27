@@ -9,6 +9,10 @@
 (transient-mark-mode 1)
 (setq shift-select-mode t)
 
+(electric-indent-mode 1)
+(electric-pair-mode 1)
+(electric-layout-mode 1)
+
 ;;-----------------------------------------------------------------------------
 ;; Some generic utilities
 
