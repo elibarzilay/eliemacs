@@ -54,7 +54,7 @@
       (progn
         (cond
           ((save-excursion (beginning-of-line) (looking-at "FCC: "))
-           (comint-dynamic-complete))
+           (completion-at-point))
           ((looking-at "[ \t]*\n") (expand-abbrev)))
         (funcall set-headers-end)
         (goto-char (if (re-search-forward headers-regexp headers-end t)

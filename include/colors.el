@@ -295,7 +295,7 @@ Examples:
                                           (region-beginning) (region-end))))
                       nil nil 'regexp-history)
                      (read-face-name "Face")))
-  (when (interactive-p)
+  (when (called-interactively-p 'any)
     (setq override (cond ((not current-prefix-arg) 'prepend)
                          ((>= (prefix-numeric-value current-prefix-arg) 0) t)
                          (t nil))
@@ -354,7 +354,8 @@ one added first), if negative removes all."
 
 (setq font-lock-global-modes       t
       font-lock-maximum-decoration t
-      font-lock-maximum-size       (* 1024 1024))
+      ;; font-lock-maximum-size (* 1024 1024) ; jit-lock-mode is on by default
+      )
 
 (setq jit-lock-stealth-verbose  nil
       jit-lock-stealth-time     3

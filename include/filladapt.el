@@ -958,7 +958,7 @@ See filladapt-adapt."
 	     (let ((ei-list filladapt-debug-indentation-extents)
 		   (ep filladapt-debug-paragraph-extent)
 		   (face filladapt-debug-indentation-face-1)
-		   fill-prefix token-list)
+		   fill-prefix token-list e)
 	       (if (null (filladapt-adapt t t))
 		   (progn
 		     (filladapt-set-extent-endpoints ep 1 1)

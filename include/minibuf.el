@@ -148,7 +148,7 @@
                      minibuffer-local-must-match-map
                      minibuffer-local-ns-map
                      minibuffer-local-filename-completion-map
-                     minibuffer-local-filename-must-match-map
+                     ;; minibuffer-local-filename-must-match-map ; gone
                      minibuffer-local-isearch-map
                      minibuffer-local-shell-command-map
                      read-expression-map)))
