@@ -382,7 +382,8 @@
  hscroll-step 4
  hscroll-margin 1 ; this works better, it seems
  ;; >> emacs/data/whitespace
- whitespace-style '(tabs ;newline spaces  ; only tabs
+ whitespace-style '(face                  ; use faces (=> customizable)
+                    tabs ;newline spaces  ; only tabs
                     trailing              ; trailing blanks
                     ;; lines              ; long lines (whole line)
                     lines-tail            ; long lines (only the tail)

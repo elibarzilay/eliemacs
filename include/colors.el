@@ -370,6 +370,8 @@ one added first), if negative removes all."
 (mapc 'frame-set-background-mode (frame-list))
 (set-cursor-color "purple")
 
+(require 'whitespace) ; otherwise it will modify the faces set below
+
 (mapc
  (if (eq 'dark eli-color-style)
    (lambda (x) (simple-make-face (nth 1 x) (car x)))
