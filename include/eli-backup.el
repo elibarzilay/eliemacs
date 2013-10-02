@@ -63,16 +63,17 @@ buffer-local setting.  See also `eli-max-backup-size'."
 
 ;; Safe saving
 (when (eq eli-backup-method 'safe)
-  (setq eli-max-backup-size           t) ; no size limit
-  (setq-default make-backup-files     t  ; make backups
-                version-control       t  ; different file versions
-                vc-make-backup-files  t) ; keep numbered versions
-  (setq kept-old-versions             2  ; too many: keep oldest 2
-        kept-new-versions             4  ;           and 4 newest
-        delete-old-versions           t  ; delete olds, don't ask
-        dired-kept-versions           2  ; spare 2 newest with dired's '.'
+  (setq eli-max-backup-size           t)  ; no size limit
+  (setq-default make-backup-files     t   ; make backups
+                version-control       t   ; different file versions
+                vc-make-backup-files  t)  ; keep numbered versions
+  (setq kept-old-versions             2   ; too many: keep oldest 2
+        kept-new-versions             4   ;           and 4 newest
+        delete-old-versions           t   ; delete olds, don't ask
+        dired-kept-versions           2   ; spare 2 newest with dired's '.'
         backup-by-copying             nil ; backup by renaming, no copy
-        backup-by-copying-when-linked t) ; backup by copy if links exist
-  )
+        backup-by-copying-when-linked t   ; backup by copy if links exist
+        backup-by-copying-when-mismatch t ; backup by copy if different owner
+        ))
 
 ;;; eli-backup.el ends here

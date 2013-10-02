@@ -10,7 +10,8 @@
 (setq shift-select-mode t)
 
 (electric-indent-mode 1)
-(electric-pair-mode 1)
+;; (electric-pair-mode 1) ; would be nice, but doesn't play well with delsel
+                          ; eg, type "(" when there's an active region
 (electric-layout-mode 1)
 
 ;;-----------------------------------------------------------------------------
@@ -177,6 +178,14 @@ With a prefix argument go back to the default."
   (unless arg (setq arg 1))
   (if line-move-visual (beginning-of-visual-line arg) (beginning-of-line arg)))
 (put 'eli-beginning-of-line 'CUA 'move)
+
+(eval-after-load "dired"
+  '(progn (define-key dired-mode-map
+            [remap eli-next-line] 'dired-next-line)
+          (define-key dired-mode-map
+            [remap eli-previous-line] 'dired-previous-line)
+          (put 'dired-next-line 'CUA 'move)
+          (put 'dired-previous-line 'CUA 'move)))
 
 ;;-----------------------------------------------------------------------------
 ;; More utilities.
@@ -518,7 +527,7 @@ the last indentation level."
             (backward-delete-char-untabify 1)
             (setq delnum (1- delnum)))
           (backward-delete-char-untabify arg killp))))))
-(put 'eli-backward-delete-char-unindent 'delete-selection t)
+(put 'eli-backward-delete-char-unindent 'delete-selection 'supersede)
 
 ;;-----------------------------------------------------------------------------
 ;; Change the default font size

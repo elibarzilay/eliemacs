@@ -216,7 +216,10 @@
   ;; fix backspace & delete to behave the same in isearch mode
   '([(?\C-?)]                   isearch-delete-char)
   '([(delete)]                  isearch-delete-char)
-  '([(shift backspace)]             isearch-del-char)
+  '([(shift backspace)]         isearch-del-char)
+  ;; and fix f1 too
+  '([(f1)]
+    (lambda () (interactive) (isearch-done) (call-interactively 'find-file)))
 
   ;; key binding/unbinding
   'global

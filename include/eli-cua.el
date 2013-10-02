@@ -15,6 +15,9 @@
       cua-auto-mark-last-change nil ; maybe this is useful as t?
       cua-enable-register-prefix 'not-ctrl-u
       cua-delete-copy-to-register-0 t
+      ;; cua-enable-region-auto-help nil
+      ;; cua-enable-modeline-indications nil
+      ;; cua-check-pending-input t
       cua-paste-pop-rotate-temporarily t
       cua-virtual-rectangle-edges t
       cua-auto-tabify-rectangles nil
@@ -62,13 +65,15 @@
 (cua-mode 1)
 
 ;; HACK: redefine `cua-set-rectangle-mark' so it can do something else
+;; also avoid it in the minibuffer
 (defvar eli-override-cua-set-rectangle-mark 'cua-set-rectangle-mark)
 (make-variable-buffer-local 'eli-override-cua-set-rectangle-mark)
 (defun eli-cua-set-rectangle-mark ()
   "Calls `eli-override-cua-set-rectangle-mark' which normally holds
 `cua-set-rectangle-mark'.  The indirection is so it can be overridden."
   (interactive)
-  (call-interactively eli-override-cua-set-rectangle-mark))
+  (call-interactively
+   (if (minibufferp) (key-binding "\r") eli-override-cua-set-rectangle-mark)))
 (define-key cua-global-keymap '[(shift return)] 'eli-cua-set-rectangle-mark)
 
 ;;; eli-cua.el ends here
