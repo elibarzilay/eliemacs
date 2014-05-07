@@ -18,6 +18,7 @@
   '(next-buffer                 Electric-buffer-menu-quit)
   '(other-window                Electric-buffer-menu-quit)
   '(eli-other-window            Electric-buffer-menu-quit)
+  '(eli-next-buffer-acyclic     Electric-buffer-menu-quit)
   ;; '(burry-buffers                Electric-buffer-menu-quit)
   '(list-buffers                Electric-buffer-menu-quit)
   '(electric-buffer-list        Electric-buffer-menu-quit)

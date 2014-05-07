@@ -9,7 +9,8 @@
 (transient-mark-mode 1)
 (setq shift-select-mode t)
 
-(electric-indent-mode 1)
+;; (electric-indent-mode 1) ; would be nice, but indents the existing line too
+                            ; also affects C-o in the same way
 ;; (electric-pair-mode 1) ; would be nice, but doesn't play well with delsel
                           ; eg, type "(" when there's an active region
 (electric-layout-mode 1)
@@ -44,8 +45,9 @@ A prefix argument ARG reverses this behavior."
   (interactive "P")
   (let ((del kill-save-buffer-delete-windows))
     (when arg (setq del (not del)))
-    (when (and (buffer-file-name) (not (file-directory-p (buffer-file-name))))
-      (save-buffer))
+    (let ((fname (buffer-file-name)))
+      (when (and (buffer-modified-p) fname (not (file-directory-p fname)))
+        (save-buffer)))
     (let ((buf (current-buffer)))
       (when del (delete-windows-on buf))
       (kill-buffer buf))))
@@ -225,24 +227,37 @@ A prefix argument determines how many buffers to skip (default is 1), if
 negative, count from the end."
   (interactive "p")
   (unless (equal n 0)
-    (let ((buffers (let ((bs (buffer-list)))
-                     (if (and n (< n 0)) (nreverse bs) bs)))
-          (n       (1- (abs (or n 1))))
-          (curbuf  (current-buffer))
-          (pred    (frame-parameter nil 'buffer-predicate))
-          (found   nil))
+    ;; similar to the scan that `switch-to-prev-buffer' does
+    (let* ((buffers (append (window-prev-buffers)
+                            (buffer-list)
+                            (window-next-buffers)))
+           (buffers (if (and n (< n 0)) (reverse buffers) buffers))
+           (n       (1- (abs (or n 1))))
+           (curbuf  (current-buffer))
+           (pred    (frame-parameter nil 'buffer-predicate))
+           (found   nil))
       ;; This code is similar to the code in `get-next-valid-buffer',
       ;; specifically, the test for good buffers.
       (while (and (not found) buffers)
-        (let* ((buf  (car buffers))
+        (let* ((buf* (car buffers))
+               (buf  (if (consp buf*) (car buf*) buf*))
                (good (and (not (eq curbuf buf))
                           (buffer-live-p buf)
                           (or (null pred) (funcall pred buf))
                           (not (eq (aref (buffer-name buf) 0) ?\s))
-                          (null (get-buffer-window buf 'visible)))))
-          (when good (if (zerop n) (setq found buf) (setq n (1- n))))
+                          (or (and (consp buf*)
+                                   switch-to-visible-buffer)
+                              (null (get-buffer-window buf))))))
+          (when good (if (zerop n) (setq found buf*) (setq n (1- n))))
           (setq buffers (cdr buffers))))
-      (if found (switch-to-buffer found) (error "Not enough buffers")))))
+      (if found
+        (if (consp found)
+          (progn (switch-to-buffer (nth 0 found))
+                 ;; do the above to get the buffer to the top of the list
+                 (set-window-buffer-start-and-point
+                  nil (nth 0 found) (nth 1 found) (nth 2 found)))
+          (switch-to-buffer found))
+        (error "Not enough buffers")))))
 
 (defun eli-write-or-move-file (new)
   "Like `write-file', but with a prefix argument delete the original file."

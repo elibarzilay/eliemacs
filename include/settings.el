@@ -7,11 +7,12 @@
 (require 'uniquify)
 
 (setq-default
+ ;; >> editing
  ;; >> editing/killing
  delete-active-region t
  kill-ring-max 100
  save-interprogram-paste-before-kill t
- ;; kill-do-not-save-duplicates nil ?? use t?
+ kill-do-not-save-duplicates nil ; <- t is bad for macros!
  yank-pop-change-selection nil
  kill-read-only-ok nil
  backward-delete-char-untabify-method 'untabify
@@ -19,6 +20,7 @@
  x-select-enable-clipboard t
  x-select-enable-primary t
  select-active-regions nil
+ x-select-enable-clipboard-manager t
  ;; >> editing/indent
  standard-indent 2
  tab-always-indent t
@@ -35,24 +37,30 @@
  ;; >> editing/fill/comment
  comment-fill-column nil
  comment-style 'indent
+ ;; >> editing/fill/filladapt [uninteresting]
+ ;; >> editing/fill/align [uninteresting]
  ;; >> editing/fill/longlines
  longlines-auto-wrap t
  longlines-show-hard-newlines t
  longlines-show-effect (propertize "<@>\n" 'face 'escape-glyph)
+ ;; >> editing/fill/refill [uninteresting]
  ;; >> editing/electricity
- electric-indent-mode t
- electric-pair-skip-self nil ; would be nice, but doesn't play well with delsel
- electric-pair-mode nil      ; eg, type "(" when there's an active region
+ electric-indent-mode nil    ; see comment at the top of "edit-utils.el"
+ electric-pair-skip-self nil ; --""--
+ electric-pair-mode nil      ; --""--
  electric-layout-mode t
  ;; >> editing/matching
  case-replace t
- case-fold-search t
+ ;; replace-lax-whitespace t        ; maybe use t here, or leave this to
+ ;; replace-regexp-lax-whitespace t ; "smart" searches, when really wanted
  ;; query-replace-from-history-variable 'query-replace-history-from
  ;; query-replace-to-history-variable 'query-replace-history-to
- ;; query-replace-skip-read-only nil
+ ;; query-replace-skip-read-only t ; ?
  query-replace-show-replacement t
  query-replace-highlight t
  query-replace-lazy-highlight t
+ case-fold-search t
+ ;; >> editing/matching/paren-matching
  ;; >> editing/matching/paren-matching/paren-blinking
  blink-matching-paren nil ; use `show-paren-mode'
  blink-matching-paren-distance 200000
@@ -60,6 +68,7 @@
  ;; >> editing/matching/paren-matching/paren-showing ;;??? dead?
  show-paren-style 'parenthesis
  show-paren-delay 0.125
+ ;; >> editing/matching/paren-matching/mic-paren-matching [in mic-paren]
  ;; >> editing/matching/isearch
  search-exit-option t
  search-upper-case 'not-yanks
@@ -72,6 +81,8 @@
  search-highlight t
  isearch-lazy-highlight t
  isearch-allow-scroll t
+ ;; isearch-lax-whitespace t          ; (not custom options)
+ ;; isearch-regexp-lax-whitespace nil ; these are the defaults
  ;; >> editing/matching/isearch/lazy-highlight
  lazy-highlight-cleanup t
  lazy-highlight-initial-delay 0.25
@@ -81,6 +92,7 @@
  ;; >> editing/matching/isearch/multi-isearch
  multi-isearch-search t ; ?
  multi-isearch-pause t  ; ?
+ ;; >> editing/matching/bookmark [uninteresting]
  ;; >> editing/matching/completion
  completion-show-help t
  enable-completion t
@@ -88,8 +100,16 @@
  save-completions-retention-time (* 24 7 4)
  completions-file-versions-kept 1
  completion-search-distance 150000
- ;; >> editing/emulation/cua
- ;; Done in "eli-cua.el"
+ ;; >> editing/matching/completion/iswitchb [uninteresting]
+ ;; >> editing/matching/ffap [uninteresting]
+ ;; >> editing/matching/imenu [uninteresting]
+ ;; >> editing/emulations
+ ;; >> editing/emulations/cua [in "eli-cua.el"]
+ ;; >> editing/emulations/crisp [uninteresting]
+ ;; >> editing/emulations/edt [uninteresting]
+ ;; >> editing/emulations/tpu [uninteresting]
+ ;; >> editing/emulations/vip [uninteresting]
+ ;; >> editing/emulations/viper [uninteresting]
  ;; >> editing/mouse
  mouse-yank-at-point nil
  mouse-drag-copy-region t ; questionable
@@ -111,8 +131,24 @@
  tooltip-x-offset 5
  tooltip-y-offset 20
  tooltip-use-echo-area nil
+ ;; >> editing/mouse/artist [uninteresting]
+ ;; >> editing/mouse/avoid [uninteresting]
+ ;; >> editing/mouse/goto-address [uninteresting]
+ ;; >> editing/mouse/msb [uninteresting]
+ ;; >> editing/mouse/strokes [uninteresting]
+ ;; >> editing/i18n
+ ;; >> editing/i18n/mule
+ input-method-verbose-flag t
+ input-method-highlight-flag t
+ input-method-use-echo-area t
+ ;; >> editing/i18n/mule/leim [uninteresting]
+ ;; >> editing/i18n/ccl [uninteresting]
+ ;; >> editing/i18n/double [uninteresting]
+ ;; >> editing/i18n/iso-ascii [uninteresting]
+ ;; >> editing/i18n/latin1-display [uninteresting]
+ ;; >> editing/i18n/ogonek [uninteresting]
  ;; >> editing/undo
- undo-limit 200000
+ undo-limit 200000 ; larger values
  undo-strong-limit 300000
  undo-outer-limit 30000000
  ;; >> editing/editing-basics
@@ -122,11 +158,11 @@
  change-major-mode-with-file-name t
  use-empty-active-region nil ; t could be cute, but inconsistent for macros
  shift-select-mode t
- transient-mark-mode t
  next-line-add-newlines nil
  track-eol nil ; I have an end-of-line function that does this better
  line-move-ignore-invisible t
  line-move-visual nil ; can turn on with C-S-f12
+ transient-mark-mode t
  mark-even-if-inactive t
  parse-sexp-ignore-comments t
  ;; words-include-escapes nil ??
@@ -138,6 +174,7 @@
  confirm-kill-emacs nil
  ;; >> convenience/visual-line
  visual-line-fringe-indicators '(up-arrow down-arrow)
+ ;; >> convenience/register [uninteresting]
  ;; >> convenience/Buffer-menu
  Buffer-menu-use-header-line t
  Buffer-menu-buffer+size-width 25
@@ -159,10 +196,9 @@
  whitespace-line-column 79
  whitespace-global-modes t ; maybe only in scheme mode and turn on global mode?
  ;; whitespace-action '(report-on-bogus) ; too extreme
- ;; >> convenience/partial-completion
- PC-first-char nil ; allways do smart completion
- PC-meta-flag t ; complete on TAB
- PC-word-delimiters "-_./:| " ; same as `completion-pcm-word-delimiters'
+ ;; >> convenience/abbrev [uninteresting]
+ ;; >> convenience/auto-insert [uninteresting]
+ ;; >> convenience/auto-revert [uninteresting]
  ;; >> convenience/bs
  bs-must-always-show-regexp "[*]shell"
  bs-default-configuration "all"
@@ -188,17 +224,35 @@
  bs-string-current-marked "#"
  bs-string-marked "*"
  bs-string-show-normally " "
+ ;; >> convenience/emacs-lock [uninteresting]
+ ;; >> convenience/file-cache [uninteresting]
+ ;; >> convenience/filesets [uninteresting]
+ ;; >> convenience/follow [uninteresting]
+ ;; >> convenience/hl-line [uninteresting]
+ ;; >> convenience/ibuffer [uninteresting]
+ ;; >> convenience/ido [uninteresting]
+ ;; >> convenience/kmacro [uninteresting]
  ;; >> convenience/linum
  linum-format 'dynamic
  linum-eager t
  linum-delay 0.5
+ ;; >> convenience/master [uninteresting]
+ ;; >> convenience/org-protocol [uninteresting]
+ ;; >> convenience/reveal [uninteresting]
+ ;; >> convenience/ruler-mode [uninteresting]
+ ;; >> convenience/speedbar [uninteresting]
+ ;; >> convenience/vcursor [uninteresting]
+ ;; >> convenience/windmove [uninteresting]
+ ;; >> convenience/partial-completion
+ PC-first-char nil ; allways do smart completion
+ PC-meta-flag t ; complete on TAB
+ PC-word-delimiters "-_./:| " ; same as `completion-pcm-word-delimiters'
  ;; >> files
  find-file-wildcards t
  find-file-suppress-same-file-warnings nil ; tell me when already visited
  large-file-warning-threshold 50000000
  auto-mode-case-fold t
- ;; >> files/backup
- ;; done in "eli-backup.el"
+ ;; >> files/backup [in "eli-backup.el"]
  ;; >> files/find-file
  find-file-existing-other-name t
  find-file-visit-truename t
@@ -207,12 +261,15 @@
  enable-local-variables t ; ask if there are unsafe vars
  enable-local-eval 'maybe
  confirm-nonexistent-file-or-buffer 'after-completion ; nice feature!
+ ;; >> files/find-file/ff [uninteresting]
  ;; >> files/uniquify
  uniquify-buffer-name-style 'post-forward
  uniquify-after-kill-buffer-p t
  uniquify-ask-about-buffer-names-p nil
  uniquify-min-dir-content 0
  uniquify-strip-common-suffix t
+ ;; >> files/auto-save [in "eli-backup.el"]
+ ;; >> files/ange-ftp [uninteresting]
  ;; >> files/dired
  list-directory-brief-switches "-CF"
  list-directory-verbose-switches "-laFh"
@@ -231,6 +288,9 @@
  dired-recursive-copies 'top
  completion-ignored-extensions `(".bak" "~" "#" ".obj"
                                  ,@completion-ignored-extensions)
+ ;; >> files/dired/dired-mark [uninteresting]
+ ;; >> files/dired/dired-faces [uninteresting]
+ ;; >> files/dired/dired-x [uninteresting]
  ;; >> files/dired/find-dired
  find-dired-find-program "find"
  find-exec-terminator "+"
@@ -242,11 +302,52 @@
  wdired-use-dired-vertical-movement nil
  wdired-allow-to-redirect-links t
  wdired-allow-to-change-permissions t
- ;; >> files/auto-save
- ;; done in "eli-backup.el"
+ ;; >> files/plstore [uninteresting]
+ ;; >> files/recentf [uninteresting]
+ ;; >> files/shadow [uninteresting]
+ ;; >> files/tramp [uninteresting]
+ ;; >> wp
+ ;; >> wp/outlines [uninteresting]
+ ;; >> wp/tex [uninteresting]
+ ;; >> wp/picture [uninteresting]
+ ;; >> wp/bib [uninteresting]
+ ;; >> wp/columns [uninteresting]
+ ;; >> wp/ebnf2ps [uninteresting]
+ ;; >> wp/enriched [uninteresting]
+ ;; >> wp/nroff [uninteresting]
+ ;; >> wp/printing [uninteresting]
+ ;; >> wp/refbib [uninteresting]
+ ;; >> wp/refer [uninteresting]
+ ;; >> wp/relax-ng [uninteresting]
+ ;; >> wp/rst [uninteresting]
+ ;; >> wp/table [uninteresting]
+ ;; >> wp/tildify [uninteresting]
  ;; >> wp/view
  view-read-only nil
  view-scroll-auto-exit nil
+ ;; >> data
+ ;; >> data/compression [uninteresting]
+ ;; >> data/epg [uninteresting]
+ ;; >> data/archive [uninteresting]
+ ;; >> data/conf [uninteresting]
+ ;; >> data/dns-mode [uninteresting]
+ ;; >> data/doc-view [uninteresting]
+ ;; >> data/forms [uninteresting]
+ ;; >> data/generic-x [uninteresting]
+ ;; >> data/hexl [uninteresting]
+ ;; >> data/remember [uninteresting]
+ ;; >> data/save-place [uninteresting]
+ ;; >> data/snmp [uninteresting]
+ ;; >> data/sort [uninteresting]
+ ;; >> data/tar [uninteresting]
+ ;; >> data/time-stamp [uninteresting]
+ ;; >> data/timeclock [uninteresting]
+ ;; >> external
+ ;; >> external/processes
+ ;; >> external/processes/execute
+ ;; >> external/processes/processes-basics
+ ;; >> external/processes/ansi-colors
+ ansi-color-for-comint-mode t
  ;; >> external/processes/comint
  comint-prompt-read-only nil
  comint-input-autoexpand nil
@@ -263,8 +364,9 @@
  comint-use-prompt-regexp nil
  ;; >> external/processes/comint/comint-completion
  comint-completion-addsuffix t
- ;; >> external/processes/shell
- shell-input-autoexpand nil ; let the shell do that
+ ;; >> external/processes/comint/comint-source [uninteresting]
+ ;; >> external/processes/gud [uninteresting]
+ ;; >> external/processes/pcomplete [uninteresting]
  ;; >> external/processes/compilation
  compilation-window-height 10
  compilation-ask-about-save t
@@ -276,59 +378,182 @@
  ;; >> external/processes/compilation/next-error
  next-error-highlight t
  next-error-highlight-no-select t
+ ;; >> external/processes/shell
+ shell-input-autoexpand nil ; let the shell do that
+ ;; >> external/processes/shell/shell-directories [uninteresting]
+ ;; >> external/processes/shell/shell-faces [uninteresting]
+ ;; >> external/processes/shell/dirtrack [uninteresting]
+ ;; >> external/processes/SQL [uninteresting]
+ ;; >> external/processes/executable [uninteresting]
+ ;; >> external/processes/flyspell [uninteresting]
  ;; >> external/processes/grep
  grep-window-height 10
  grep-highlight-matches 'auto
  grep-scroll-output nil ; unlike compile
+ ;; >> external/processes/metamail [uninteresting]
+ ;; >> external/processes/proced [uninteresting]
+ ;; >> external/processes/remote-compile [uninteresting]
+ ;; >> external/processes/rlogin [uninteresting]
+ ;; >> external/processes/socks [uninteresting]
  ;; >> external/processes/term
  term-input-autoexpand nil
  term-input-ignoredups t
  term-scroll-to-bottom-on-output 'others
  term-scroll-show-maximum-output nil
  term-buffer-maximum-size 4096
- ;; >> programming/languages/sh/sh-script
- sh-indentation 2
- sh-basic-offset 2 ; also needed
+ ;; >> external/man [uninteresting]
+ ;; >> external/browse-url [uninteresting]
+ ;; >> external/postscript [uninteresting]
+ ;; >> external/locate [uninteresting]
+ ;; >> external/server [uninteresting]
+ ;; >> comm
+ ;; >> comm/netrc [uninteresting]
+ ;; >> comm/url [uninteresting]
+ ;; >> comm/tls [uninteresting]
+ ;; >> comm/bug-reference [uninteresting]
+ ;; >> comm/dig [uninteresting]
+ ;; >> comm/eudc [uninteresting]
+ ;; >> comm/gravatar [uninteresting]
+ ;; >> comm/ldap [uninteresting]
+ ;; >> comm/net-utils [uninteresting]
+ ;; >> comm/xesam [uninteresting]
+ ;; >> programming
+ ;; >> programming/languages
+ ;; >> programming/languages/lisp
+ eval-expression-print-level 5
+ eval-expression-print-length 20
+ eval-expression-debug-on-error t
+ parens-require-spaces t
+ ;; >> programming/languages/lisp/advice [uninteresting]
+ ;; >> programming/languages/lisp/pp [uninteresting]
+ ;; >> programming/languages/lisp/bytecomp [uninteresting]
+ ;; >> programming/languages/lisp/find-function [uninteresting]
+ ;; >> programming/languages/lisp/warnings [uninteresting]
+ ;; >> programming/languages/lisp/eldoc [uninteresting]
+ ;; >> programming/languages/lisp/gmm [uninteresting]
+ ;; >> programming/languages/lisp/checkdoc [uninteresting]
+ ;; >> programming/languages/lisp/edebug [uninteresting]
+ ;; >> programming/languages/lisp/elp [uninteresting]
+ ;; >> programming/languages/lisp/ert [uninteresting]
+ ;; >> programming/languages/lisp/ielm [uninteresting]
+ ;; >> programming/languages/lisp/inferior-lisp [uninteresting]
+ ;; >> programming/languages/lisp/lisp-indent [uninteresting]
+ ;; >> programming/languages/lisp/lisp-shadow [uninteresting]
+ ;; >> programming/languages/lisp/profiler [uninteresting]
+ ;; >> programming/languages/lisp/re-builder [uninteresting]
+ ;; >> programming/languages/lisp/scheme
+ scheme-mit-dialect nil
+ scheme-program-name "racket"
+ ;; >> programming/languages/lisp/scheme/cmuscheme [uninteresting]
+ ;; >> programming/languages/lisp/testcover [uninteresting]
+ ;; >> programming/languages/lisp/trace [uninteresting]
+ ;; >> programming/languages/lisp/xscheme [uninteresting]
+ ;; >> programming/languages/c
+ ;; c-basic-offset 2 <--?
+ ;; >> programming/languages/c/c-macro [uninteresting]
+ ;; >> programming/languages/c/cpp [uninteresting]
+ ;; >> programming/languages/c/hide-ifdef [uninteresting]
+ ;; >> programming/languages/vhdl [uninteresting]
+ ;; >> programming/languages/nxml [uninteresting]
+ ;; >> programming/languages/PostScript [uninteresting]
+ ;; >> programming/languages/ada [uninteresting]
+ ;; >> programming/languages/antlr [uninteresting]
+ ;; >> programming/languages/asm [uninteresting]
+ ;; >> programming/languages/cfengine [uninteresting]
+ ;; >> programming/languages/cperl [uninteresting]
+ ;; >> programming/languages/css
+ css-indent-offset 2
+ ;; >> programming/languages/dcl [uninteresting]
+ ;; >> programming/languages/delphi [uninteresting]
+ ;; >> programming/languages/f90 [uninteresting]
+ ;; >> programming/languages/fortran [uninteresting]
+ ;; >> programming/languages/icon [uninteresting]
+ ;; >> programming/languages/idlwave [uninteresting]
+ ;; >> programming/languages/info-lookup [uninteresting]
+ ;; >> programming/languages/js
+ js-indent-level 2
+ ;; >> programming/languages/ld-script [uninteresting]
+ ;; >> programming/languages/m4 [uninteresting]
+ ;; >> programming/languages/meta-font [uninteresting]
+ ;; >> programming/languages/smie [uninteresting]
+ ;; >> programming/languages/modula2 [uninteresting]
+ ;; >> programming/languages/octave [uninteresting]
+ ;; >> programming/languages/pascal
+ pascal-indent-level 2
+ ;; >> programming/languages/perl
+ perl-indent-level 2
+ ;; >> programming/languages/prolog
+ ;; >> programming/languages/python
  ;; >> programming/languages/ruby
  ruby-indent-tabs-mode nil
  ruby-indent-level 2
  ruby-comment-column 32
  ruby-insert-encoding-magic-comment t
  ruby-use-encoding-map t
- ;; >> programming/languages/lisp
- eval-expression-print-level 5
- eval-expression-print-length 20
- eval-expression-debug-on-error t
- parens-require-spaces t
- ;; >> programming/languages/lisp/scheme
- scheme-mit-dialect nil
- scheme-program-name "racket"
- ;; >> programming/languages/c
- ;; c-basic-offset 2 <--?
- ;; >> programming/languages/js
- js-indent-level 2
- ;; >> programming/languages/pascal
- pascal-indent-level 2
- ;; >> programming/languages/perl
- perl-indent-level 2
+ ;; >> programming/languages/sgml [uninteresting]
+ ;; >> programming/languages/sh
+ ;; >> programming/languages/sh/sh-script
+ sh-indentation 2
+ sh-basic-offset 2 ; also needed
+ ;; >> programming/languages/sieve [uninteresting]
+ ;; >> programming/languages/simula [uninteresting]
  ;; >> programming/languages/tcl
  tcl-indent-level 2
+ ;; >> programming/languages/vera [uninteresting]
+ ;; >> programming/languages/verilog-mode [uninteresting]
+ ;; >> programming/tools
+ ;; >> programming/tools/tempo [uninteresting]
+ ;; >> programming/tools/gdb [uninteresting]
+ ;; >> programming/tools/which-func [uninteresting]
+ ;; >> programming/tools/diff [uninteresting]
  ;; >> programming/tools/calculator
  calculator-electric-mode t
  calculator-bind-escape t
+ ;; >> programming/tools/change-log [uninteresting]
  ;; >> programming/tools/compare-windows
  ;; compare-windows-sync nil ; no syncing, but might be useful to use something
  compare-windows-sync 'compare-windows-sync-default-function
  compare-windows-sync-string-size 24
  compare-windows-highlight t
+ ;; >> programming/tools/copyright [uninteresting]
+ ;; >> programming/tools/ebrowse [uninteresting]
+ ;; >> programming/tools/ede [uninteresting]
+ ;; >> programming/tools/ediff [uninteresting]
+ ;; >> programming/tools/elide-head [uninteresting]
+ ;; >> programming/tools/emerge [uninteresting]
+ ;; >> programming/tools/etags [uninteresting]
+ ;; >> programming/tools/flymake [uninteresting]
+ ;; >> programming/tools/glasses [uninteresting]
+ ;; >> programming/tools/makefile [uninteresting]
+ ;; >> programming/tools/pcl-cvs [uninteresting]
+ ;; >> programming/tools/semantic [uninteresting]
+ ;; >> programming/tools/smerge [uninteresting]
+ ;; >> programming/tools/soap-client [uninteresting]
+ ;; >> programming/tools/srecode [uninteresting]
  ;; >> programming/tools/vc
  vc-follow-symlinks 'ask ; shouldn't matter with `find-file-visit-truename'
  vc-display-status t
  vc-suppress-confirm nil
+ ;; >> programming/tools/vc/vc-arch [uninteresting]
+ ;; >> programming/tools/vc/vc-bzr [uninteresting]
+ ;; >> programming/tools/vc/vc-cvs [uninteresting]
  ;; >> programming/tools/vc/vc-git
  vc-git-diff-switches t ; might be useful to add stuff like `-x -w'
+ ;; >> programming/tools/vc/vc-hg [uninteresting]
+ ;; >> programming/tools/vc/vc-mtn [uninteresting]
+ ;; >> programming/tools/vc/vc-rcs [uninteresting]
+ ;; >> programming/tools/vc/vc-sccs [uninteresting]
  ;; >> programming/tools/vc/vc-svn
  vc-svn-diff-switches t ; might be useful to add stuff like `-x -w'
+ ;; >> applications
+ ;; >> applications/calendar [done below]
+ ;; >> applications/mail [mostly elsewhere]
+ read-mail-command 'rmail ; change to vm?
+ mail-user-agent 'sendmail-user-agent ; maybe use feedmail
+ send-mail-function 'sendmail-send-it
+ ;;     or use this (as feedmail says): send-mail-function 'feedmail-send-it
+ ;; >> applications/news [elsewhere]
+ ;; >> applications/games [uninteresting]
  ;; >> applications/ispell
  ispell-highlight-p 'block
  ;; ispell-highlight-face 'isearch <-- use default (flyspell changes it)
@@ -339,17 +564,27 @@
  ispell-quietly nil
  ispell-format-word-function (lambda (s) (concat "\"" s "\""))
  ispell-use-framepop-p nil
- ;; >> applications/calendar
- ;; done below
- ;; >> applications/mail
- read-mail-command 'rmail ; change to vm?
- mail-user-agent 'sendmail-user-agent ; maybe use feedmail
- send-mail-function 'sendmail-send-it
- ;;     or use this (as feedmail says): send-mail-function 'feedmail-send-it
+ ;; >> applications/calc [uninteresting]
+ ;; >> applications/erc [uninteresting]
+ ;; >> applications/eshell [uninteresting]
+ ;; >> applications/htmlfontify [uninteresting]
+ ;; >> applications/mpc [uninteresting]
+ ;; >> applications/newsticker [uninteresting]
+ ;; >> applications/package [uninteresting]
+ ;; >> applications/rcirc [uninteresting]
+ ;; >> applications/ses [uninteresting]
+ ;; >> development
+ ;; >> development/docs
  ;; >> development/docs/info
  Info-fontify-visited-nodes t
  Info-use-header-line t
  Info-additional-directory-list '()
+ ;; >> development/docs/makeinfo [uninteresting]
+ ;; >> development/docs/texinfo [uninteresting]
+ ;; >> development/extensions [uninteresting]
+ ;; >> development/extensions/widgets [uninteresting]
+ ;; >> development/extensions/data-debug [uninteresting]
+ ;; >> development/extensions/pages [uninteresting]
  ;; >> development/internal
  major-mode 'indented-text-mode
  ;; >> development/internal/alloc
@@ -357,10 +592,15 @@
  ;; >> development/internal/limits
  max-specpdl-size 10000
  max-lisp-eval-depth 2000
+ ;; >> development/maint
+ ;; >> development/maint/elint [uninteresting]
+ ;; >> development/maint/gulp [uninteresting]
+ ;; >> development/maint/lisp-mnt [uninteresting]
  ;; >> development/debug
  debug-on-error nil
  debug-on-quit nil
  message-log-max 400
+ ;; >> development/debug/debugger [uninteresting]
  ;; >> environment
  remote-shell-program "ssh"
  ;; >> environment/initialization
@@ -371,6 +611,7 @@
  inhibit-startup-buffer-menu t ; no need for this silly thing on startup
  initial-major-mode 'indented-text-mode
  initial-scratch-message nil ; v23: no scratch text
+ ;; >> environment/initialization/fancy-splash-screen [uninteresting]
  ;; >> environment/minibuffer
  completion-auto-help t
  ;; completion-styles '(basic partial-completion emacs22) ; what's this??
@@ -380,47 +621,47 @@
  completion-styles '(partial-completion)
  completion-cycle-threshold nil
  completions-format 'vertical ; easier to find things
- insert-default-directory t
- completion-ignore-case t
  read-file-name-completion-ignore-case t
- read-buffer-completion-ignore-case t
+ insert-default-directory t
  completion-pcm-word-delimiters "-_./:| " ; same as `PC-word-delimiters'
  completion-pcm-complete-word-inserts-delimiters nil
+ ;; file-name-shadow-properties '(face file-name-shadow field shadow)
+ ;; file-name-shadow-tty-properties '(before-string "{" after-string "} " field shadow)
+ ;; file-name-shadow-mode t ; doesn't really matter if we do the electric thing
  echo-keystrokes 1
  enable-recursive-minibuffers nil
  history-length 500
  history-delete-duplicates t
- minibuffer-auto-raise nil
+ read-buffer-completion-ignore-case t
  ;; minibuffer-prompt-properties '(read-only t face minibuffer-prompt point-entered minibuffer-avoid-prompt)
- ;; file-name-shadow-mode t ; doesn't really matter if we do the electric thing
- ;; file-name-shadow-properties '(face file-name-shadow field shadow)
- ;; file-name-shadow-tty-properties '(before-string "{" after-string "} " field shadow)
- ;; >> environment/terminals/terminal
- terminal-escape-char 30
- terminal-redisplay-interval 3000 ; not used heavily anyway
- ;; >> environment/frames
- ;; some stuff in win-init.el
- ;; >> environment/frames/scrolling
- scroll-error-top-bottom t ; doesn't matter anyway
- auto-hscroll-mode t
+ minibuffer-auto-raise nil
+ completion-ignore-case t
+ ;; >> environment/minibuffer/icomplete [uninteresting]
+ ;; >> environment/minibuffer/savehist [uninteresting]
+ ;; >> environment/hardware [uninteresting]
+ ;; >> environment/terminals
+ ;; >> environment/terminals/terminal [uninteresting]
+ ;; >> environment/unix [uninteresting]
+ ;; >> environment/x [uninteresting]
+ ;; >> environment/frames [some in "win-init.el"]
  ;; >> environment/frames/cursor
+ cursor-in-non-selected-windows '(hbar . 4)
  display-hourglass t
  cursor-type t ; not a custom
- cursor-in-non-selected-windows '(hbar . 4)
  ;; >> environment/frames/fringe
  fringe-mode 2
  indicate-empty-lines t
  indicate-buffer-boundaries 'left
  overflow-newline-into-fringe t
- ;; >> environment/frames/desktop
- ;; done in "desktop-init.el"
- ;; >> environment/mode-line
- ;; done in "modeline.el"
+ ;; >> environment/frames/desktop [in "desktop-init.el"]
+ ;; >> environment/frames/two-column [uninteresting]
+ ;; >> environment/mode-line [in "modeline.el"]
  ;; >> environment/display
  idle-update-delay 0.5
  ctl-arrow t
  truncate-lines nil
  word-wrap nil
+ selective-display-ellipses t
  visible-bell nil
  truncate-partial-width-windows 40
  line-number-display-limit 5000000
@@ -430,11 +671,14 @@
  ;; scalable-fonts-allowed t ; '("") allows all?  I don't see how to use this.
  x-stretch-cursor t
  text-scale-mode-step 1.2
+ auto-hscroll-mode t ; not a custom
+ ;; >> environment/installation [uninteresting]
  ;; >> environment/keyboard
- help-event-list '(help f1) ; maybe remove f1?
  suggest-key-bindings 1
+ help-event-list '(help f1) ; maybe remove f1?
  ;; >> environment/keyboard/chistory
  list-command-history-max 320
+ ;; >> environment/keyboard/type-break [uninteresting]
  ;; >> environment/menu
  yank-menu-length 40
  buffers-menu-max-size 40
@@ -446,28 +690,39 @@
  menu-prompting t
  ;; >> environment/menu/tmm
  tmm-mid-prompt "=>"
+ ;; >> environment/dnd [uninteresting]
  ;; >> environment/windows
  window-min-height 2
  window-min-width 4
+ switch-to-visible-buffer t ; also affects `eli-next-buffer-acyclic'
  split-window-keep-point t
  pop-up-frames nil
  display-buffer-reuse-frames nil
  pop-up-windows t ; maybe not?
  even-window-heights nil
  recenter-positions '(middle top bottom)
- scroll-up-aggressively 0.2   ; Try hard to get plain 1-line scrolling
- scroll-down-aggressively 0.2 ; (0.0 should do it, but it doesn't)
+ scroll-error-top-bottom t    ; doesn't matter anyway
+ scroll-up-aggressively 0.1   ; Make large scrolls have little context
+ scroll-down-aggressively 0.1 ; (0.0 doesn't work; restart to try it)
  next-screen-context-lines 2
  scroll-preserve-screen-position 'in-place ; use my scroll-in-place feature
  window-combination-resize t ; try to see if this is useful
  scroll-step 0
- scroll-conservatively 10
+ scroll-conservatively 0 ; doesn't look like values <=100 work as intended
+                         ; use 0 with scroll-*-aggresively as above
  scroll-margin 0 ; maybe use 1? (forces a line, even at bottom or on C-0 C-L)
  hscroll-margin 1 ; this works better, it seems
  hscroll-step 4
+ make-cursor-line-fully-visible t
+ ;; >> environment/windows/winner [uninteresting]
+ ;; >> environment/dos-fns [uninteresting]
+ ;; >> environment/w32 [below]
+ ;; >> faces [elsewhere]
  ;; >> help
  ;; help-window-select 'other    what does this do?
  help-downcase-arguments t
+ ;; >> help/customize
+ ;; >> help/customize/custom-browse [uninteresting]
  ;; >> help/customize/custom-buffer
  custom-unlispify-remove-prefixes nil
  custom-unlispify-tag-names nil
@@ -477,10 +732,16 @@
  custom-buffer-done-kill t
  custom-buffer-indent 3
  custom-magic-show-button t
+ ;; >> help/customize/custom-menu [uninteresting]
+ ;; >> help/electric-help [uninteresting]
+ ;; >> help/woman [uninteresting]
  ;; >> help/apropos
  apropos-do-all t
  apropos-sort-by-scores t
  apropos-documentation-sort-by-scores t ; (this is on by default)
+ ;; >> help/help-at-pt [uninteresting]
+ ;; >> multimedia [uninteresting]
+ ;; >> local [uninteresting]
  ;; >> misc (non-custom)
  minibuffer-allow-text-properties nil
  resize-mini-windows t        ; exactly as needed
@@ -638,8 +899,8 @@
 ;; (add-hook 'nongregorian-diary-marking-hook 'mark-hebrew-diary-entries)
 ;; ;; (add-hook 'nongregorian-diary-marking-hook 'mark-islamic-diary-entries)
 
-'
-(progn ; Code for inserting all custom-declared variables
+' ; Code for inserting all custom-declared variables (second run is better)
+(progn
   (require 'custom)
   (require 'cus-edit)
   (defun my-show-list (x)
@@ -687,12 +948,13 @@
           ((consp x) (my-show-list x))
           ((vectorp x) (my-show-vector x))
           ((stringp x) (my-show-string x))
-          ((or (subrp x) (byte-code-function-p x)) (insert "#<procedure>"))
+          ((or (subrp x) (byte-code-function-p x)) (insert "#<proc>"))
           (t (insert (format "%S" x)))))
   (defun my-show-custom-variable (name)
     (setq customs-seen (cons name customs-seen))
     (custom-load-symbol name)
-    (insert (format "(setq %S " name))
+    ;; (insert (format "(setq %S " name))
+    (insert (format " %S " name))
     (let ((x (symbol-value name))
           (boolp (eq 'boolean (get name 'custom-type))))
       (when (or (and (symbolp x)
@@ -701,15 +963,16 @@
                 (consp x))
         (insert "'"))
       (my-show-value x boolp))
-    (insert ")\n"))
+    ;; (insert ")\n")
+    (insert "\n"))
   (defun my-show-custom-group (name nums names)
     (setq customs-seen (cons name customs-seen))
     (custom-load-symbol name)
-    (insert (format "(progn ; %s%s`%S':\n;; >> %s\n"
-                    (mapconcat 'number-to-string nums ".")
-                    (if (null nums) "" ". ")
-                    name
-                    names))
+    ;; (insert (format "(progn ; %s%s`%S':\n"
+    ;;                 (mapconcat 'number-to-string nums ".")
+    ;;                 (if (null nums) "" ". ")
+    ;;                 name))
+    (insert (format " ;; >> %s\n" names))
     (let ((subnum 0))
       (mapc (lambda (item)
               (if (and (listp item)
@@ -731,7 +994,8 @@
                     (t (error "don't know about this type: %S" (cadr item)))))
                 (error "bad item: %S" item)))
             (custom-sort-items (get name 'custom-group) nil 'last)))
-    (insert ")\n"))
+    ;; (insert ")\n")
+    )
   (defun my-show-customs ()
     (let ((customs-seen '()))
       (buffer-disable-undo)

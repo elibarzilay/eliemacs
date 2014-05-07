@@ -136,10 +136,11 @@ POSN is in the format of `SIP-get-scroll-posn'."
   "Go to the column suggested by the `SIP-scroll-column'."
   (when SIP-scroll-column (vertical-motion (cons SIP-scroll-column 0))))
 
-(defun SIP-do-scroll-internal (arg isdown group orig)
+(defun SIP-do-scroll-internal (arg isdown group keep orig)
   ;; This is the body of `SIP-do-scroll', which is dealing with the question of
   ;; whether to do an in-place scrolling or not, based on
   ;; `scroll-preserve-screen-position'.
+  (setq this-command orig) ; try this to deal with the C-down C-pgdn problem
   (let* ((repeated
           ;; this makes it possible for things to work fine even when called
           ;; through some other command (and no need for plist on function
@@ -186,14 +187,16 @@ POSN is in the format of `SIP-get-scroll-posn'."
       ((or (pos-visible-in-window-p
             (if (eq direction 'up) (point-min) (point-max)))
            (condition-case nil
-               (progn
+               (let ((p (and keep (point))))
                  (funcall orig arg)
                  (SIP-goto-visual-column)
-                 ;; if we went down and now we see the bottom (and it we know
-                 ;; it wasn't visible before), then make it be the bottom
-                 (when (and (eq direction 'down)
-                            (pos-visible-in-window-p (point-max)))
-                   (save-excursion (goto-char (point-max)) (recenter -1)))
+                 (cond
+                   ((and p (pos-visible-in-window-p p)) (goto-char p))
+                   ;; if we went down and now we see the bottom (and it we know
+                   ;; it wasn't visible before), then make it be the bottom
+                   ((and (eq direction 'down)
+                         (pos-visible-in-window-p (point-max)))
+                    (save-excursion (goto-char (point-max)) (recenter -1))))
                  nil)
              ((beginning-of-buffer end-of-buffer) t)))
        ;; ...but if the edge is visible (or scrolling failed), move instead
@@ -216,7 +219,7 @@ The main way for controlling `scroll-in-place' is via
 `scroll-preserve-screen-position', but this variable is also used for older
 packages that expect to disable changing scrolling when it is nil.")
 
-(defun SIP-do-scroll (arg isdown group)
+(defun SIP-do-scroll (arg isdown group keep)
   "Scroll, endeavouring to keep the cursor in the same place on the screen.
 
 Keeps the cursor position only if `scroll-preserve-screen-position' is bound
@@ -230,10 +233,14 @@ cancel each other out."
   (let ((orig (if isdown 'SIP-orig-scroll-down 'SIP-orig-scroll-up)))
     (if (and (eq scroll-preserve-screen-position 'in-place)
              scroll-in-place)
-      (SIP-do-scroll-internal arg isdown group orig)
-      ;; forcibly break any sequence of scrolling commands
-      (progn (setq SIP-last-scroll-command+group nil)
-             (funcall orig arg)))))
+      (SIP-do-scroll-internal arg isdown group keep orig)
+      (let ((p (and keep (point))))
+        ;; forcibly break any sequence of scrolling commands
+        (setq SIP-last-scroll-command+group nil)
+        (funcall orig arg)
+        ;; go back if possible
+        (when (and p (pos-visible-in-window-p p))
+          (goto-char p))))))
 
 (defmacro defun-SIP-up/down (name-pat inter keep other docstr)
   "A macro to generate up/down scrolling commands.
@@ -249,14 +256,7 @@ DOCSTR is the function's docstring, with `XX' replaced appropriately."
                      (name   (intern (replace-regexp-in-string
                                       "XX" u/d (symbol-name name-pat) t)))
                      (docstr (replace-regexp-in-string "XX" u/d docstr t))
-                     (doit `(SIP-do-scroll arg ',downp ',name-pat))
-                     (doit (if keep
-                             `(let ((p (point)))
-                                ,doit
-                                ;; go back if possible
-                                (when (pos-visible-in-window-p p)
-                                  (goto-char p)))
-                             doit))
+                     (doit `(SIP-do-scroll arg ',downp ',name-pat ',keep))
                      (doit (if other
                              `(save-selected-window
                                 (select-window (other-window-for-scrolling))
@@ -278,7 +278,7 @@ Also:
 
 (defun-SIP-up/down SIP-scroll-other-window-XX "^P" nil t
   "Like `scroll-XX', but for the other window.
-(See `other-window-for-scrolling' for details.)")
+\(See `other-window-for-scrolling' for details.)")
 
 (defun-SIP-up/down scroll-XX-1 "^p" nil nil
   "Like `scroll-XX' with a default of one line.")

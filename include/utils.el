@@ -91,6 +91,8 @@ The KEYS/FUNCS-OR-MAPS arguments are a list of:
          (substitute-key-definition
           (car x) (cadr x) keymap
           (if (eq t (nth 2 x)) keymap (current-global-map))))
-        ((listp x) (apply 'define-key keymap x))))))
+        ((listp x)
+         (apply 'define-key keymap
+                (if (stringp (car x)) (cons (kbd (car x)) (cdr x)) x)))))))
 
 ;;; utils.el ends here

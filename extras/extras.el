@@ -68,9 +68,10 @@
 (autoload 'compile-eliemacs "compile-eliemacs" "Compile EliEmacs." t)
 (defun eli-elisp-compile ()
   "Hack around elisp-compile so my environment gets compiled properly."
-  (if (and (< (length eli-include-dir) (length buffer-file-name))
-           (equal (substring buffer-file-name 0 (length eli-include-dir))
-                  eli-include-dir))
+  (if (or (equal (concat eli-dir "eliemacs.el") buffer-file-name)
+          (and (< (length eli-include-dir) (length buffer-file-name))
+               (equal (substring buffer-file-name 0 (length eli-include-dir))
+                      eli-include-dir)))
     (load (concat eli-dir "make.el"))
     (elisp-compile)))
 (defun run-scheme-like-compile ()

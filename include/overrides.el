@@ -25,6 +25,50 @@ display the result of expression evaluation."
           (format " (#o%o, #x%x)" value value)))))
 
 ;;-----------------------------------------------------------------------------
+;; Overrides from "window.el"
+
+;; Messes up the count when the window is not shown yet (example: breaks
+;; resizing of the electric-bubber-list), so add a redisplay.  Actually,
+;; it's unclear when this happens, so disable it for now.
+'(defun count-screen-lines (&optional beg end count-final-newline window)
+  "Return the number of screen lines in the region.
+The number of screen lines may be different from the number of actual lines,
+due to line breaking, display table, etc.
+
+Optional arguments BEG and END default to `point-min' and `point-max'
+respectively.
+
+If region ends with a newline, ignore it unless optional third argument
+COUNT-FINAL-NEWLINE is non-nil.
+
+The optional fourth argument WINDOW specifies the window used for obtaining
+parameters such as width, horizontal scrolling, and so on.  The default is
+to use the selected window's parameters.
+
+Like `vertical-motion', `count-screen-lines' always uses the current buffer,
+regardless of which buffer is displayed in WINDOW.  This makes possible to use
+`count-screen-lines' in any buffer, whether or not it is currently displayed
+in some window."
+  (unless beg
+    (setq beg (point-min)))
+  (unless end
+    (setq end (point-max)))
+  (if (= beg end)
+      0
+    (save-excursion
+      (save-restriction
+        (widen)
+        (narrow-to-region (min beg end)
+                          (if (and (not count-final-newline)
+                                   (= ?\n (char-before (max beg end))))
+                              (1- (max beg end))
+                            (max beg end)))
+        (goto-char (point-min))
+        ;; (redisplay) ; ELI
+        ;; (save-excursion (vertical-motion (buffer-size) window)) ; ELI
+        (1+ (vertical-motion (buffer-size) window))))))
+
+;;-----------------------------------------------------------------------------
 ;; Overrides from "help.el", and showing temporary buffers
 ;; (Works better than ehelp.)
 
@@ -48,10 +92,6 @@ specifies what to do when the user exits the help buffer."
 		     ;; manager, not with Emacs.
 		     ;; Secondly, the buffer has not been displayed yet,
 		     ;; so we don't know whether its frame will be selected.
-		     nil)
-		    (display-buffer-reuse-frames
-		     (setq help-return-method (cons (selected-window)
-						    'quit-window))
 		     nil)
 		    ((not (one-window-p t))
 		     (setq help-return-method
@@ -108,31 +148,18 @@ specifies what to do when the user exits the help buffer."
     (setq view-exit-action
           (lambda (buf) (buffer-op-and-restore-winconf buf 'bury-buffer)))))
 
-;; Use my own hook that avoids a bug in 22.1
-;; otherwise I could use `(temp-buffer-resize-mode 1)'
-;; --> actually it looks like it works, leave the code below in case I
-;;     find a bug, still
 (temp-buffer-resize-mode 1)
-;; (defun eli-resize-temp-buffer-window ()
-;;   "Fixed version of `resize-temp-buffer-window'."
-;;   (unless (or (one-window-p 'nomini)
-;;               (not (pos-visible-in-window-p (point-min)))
-;;               ;; (/=  (frame-width) (window-width))
-;;               )
-;;     (fit-window-to-buffer
-;;      (selected-window)
-;;      (if (functionp temp-buffer-max-height)
-;;        (funcall temp-buffer-max-height (current-buffer))
-;;        temp-buffer-max-height))))
-;; (add-hook 'temp-buffer-show-hook 'eli-resize-temp-buffer-window 'append)
 
 ;; Stay in temp buffers (for navigation)
-(defun eli-temp-buffer-show-function (buf)
+(defun eli-temp-buffer-show-function (buf &optional alist)
   ;; A rough Lisp version of the code in temp_output_buffer_show, which leaves
-  ;; us in the new window unless it is a completions window
+  ;; us in the new window unless it is a completions window; also take an
+  ;; optional alist argument and return t so it can be used with
+  ;; `display-buffer-alist'.
   (let* ((origbuf (current-buffer))
          (origwin (get-buffer-window origbuf))
          (temp-buffer-show-function nil)
+         (display-buffer-alist nil)
          (conf (current-window-configuration))
          (win (display-buffer buf)))
     (unless (eq (selected-frame) (window-frame win))
@@ -149,26 +176,12 @@ specifies what to do when the user exits the help buffer."
         (setq eli-popup-exit-conf conf))
       (run-hooks 'temp-buffer-show-hook)
       (select-window win)
-      (view-mode 1))))
+      (view-mode 1)))
+  t)
 (setq temp-buffer-show-function 'eli-temp-buffer-show-function)
 
-(defun eli-popup-view (buf &optional exit-action)
-  "Show BUF in a window, make it in `view-mode'."
-  (let* ((special-display-buffer-names nil) ; no looping
-         (win (get-buffer-window buf)))
-    (unless win
-      (eli-temp-buffer-show-function buf)
-      (setq win (get-buffer-window buf)))
-    (select-window win)
-    (set-buffer buf)
-    (view-mode 1)
-    (setq view-exit-action
-          (lambda (buf) (buffer-op-and-restore-winconf buf 'bury-buffer)))))
-
-;; Use this for popping shell results.
-(setq special-display-buffer-names
-      (cons '("*Shell Command Output*" eli-popup-view)
-            special-display-buffer-names))
+(setq display-buffer-alist
+      '(("^[*]Shell Command Output[*]$" eli-temp-buffer-show-function)))
 
 ;;-----------------------------------------------------------------------------
 ;; Override from "userlock.el": make a changed file automatically reload
@@ -403,18 +416,6 @@ Do you want to revisit the file normally now? ")
 	  (find-file-noselect-1 buf filename nowarn
 				rawfile truename number))))))
 
-;;ELI: this is unchanged, but copied since before 23.2 it had only two
-;;     inputs, so copy it here and make it optional
-(defun abort-if-file-too-large (size op-type &optional filename)
-  "If file SIZE larger than `large-file-warning-threshold', allow user to abort.
-OP-TYPE specifies the file operation being performed (for message to user)."
-  (when (and large-file-warning-threshold size
-	     (> size large-file-warning-threshold)
-	     (not (y-or-n-p (format "File %s is large (%dMB), really %s? "
-				    (file-name-nondirectory filename)
-				    (/ size 1048576) op-type))))
-    (error "Aborted")))
-
 )))
 
 ;;-----------------------------------------------------------------------------
@@ -545,513 +546,11 @@ Typing any key flushes the completions buffer."
 ))
 
 ;;-----------------------------------------------------------------------------
-;; Override from "minibuffer.el": leave cursor at the point where possible new
-;; characters could be entered (eg, with "select-window", it should leave the
-;; cursor between the "t-").
-
-' ;; looks like this is the default now
-(defun minibuffer-complete ()
-  "Complete the minibuffer contents as far as possible.
-Return nil if there is no valid completion, else t.
-If no characters can be completed, display a list of possible completions.
-If you repeat this command after it displayed such a list,
-scroll the window of possible completions."
-  (interactive)
-  ;; If the previous command was not this,
-  ;; mark the completion buffer obsolete.
-  (setq this-command 'completion-at-point)
-  (unless (eq 'completion-at-point last-command)
-    (completion--flush-all-sorted-completions)
-    (setq minibuffer-scroll-window nil))
-
-  (let ((window minibuffer-scroll-window))
-    ;; If there's a fresh completion window with a live buffer,
-    ;; and this command is repeated, scroll that window.
-    (if (window-live-p window)
-        (with-current-buffer (window-buffer window)
-          (if (pos-visible-in-window-p (point-max) window)
-	      ;; If end is in view, scroll up to the beginning.
-	      (set-window-start window (point-min) nil)
-	    ;; Else scroll down one screen.
-	    (scroll-other-window))
-	  nil)
-
-      (case (completion--do-completion)
-        (#b000 nil)
-        (#b001 (goto-char (field-end))
-               (minibuffer-message "Sole completion")
-               t)
-        (#b011 ;; (goto-char (field-end)) ; ELI: no idea why this was done
-               (minibuffer-message "Complete, but not unique")
-               t)
-        (t     t)))))
-
-;;-----------------------------------------------------------------------------
-;; Overrides from "complete.el": short messages, a little saner treatment for
-;; case-insensitive
-
-' ;; looks like this is all the default now -- ?
-(eval-after-load "complete" '(progn
-
-(defun PC-temp-minibuffer-message (message)
-  "A Lisp version of `temp_minibuffer_message' from minibuf.c."
-  (let ((delay (if (string-match "Complete.*not unique" message) 0.15 0.5)))
-    (cond (PC-not-minibuffer
-           (message message)
-           (sit-for delay)
-           (message ""))
-          ((fboundp 'temp-minibuffer-message)
-           (temp-minibuffer-message message))
-          (t (let ((point-max (point-max)))
-               (save-excursion (goto-char point-max)
-                               (insert message))
-               (let ((inhibit-quit t))
-                 (sit-for delay)
-                 (delete-region point-max (point-max))
-                 (when quit-flag
-                   (setq quit-flag nil
-                         unread-command-events '(7)))))))))
-
-(defun PC-do-completion (&optional mode beg end goto-end)
-  "Internal function to do the work of partial completion.
-Text to be completed lies between BEG and END.  Normally when
-replacing text in the minibuffer, this function replaces up to
-point-max (as is appropriate for completing a file name).  If
-GOTO-END is non-nil, however, it instead replaces up to END."
-  (or beg (setq beg (minibuffer-prompt-end)))
-  (or end (setq end (point-max)))
-  (let* ((table minibuffer-completion-table)
-	 (pred minibuffer-completion-predicate)
-	 (filename (funcall PC-completion-as-file-name-predicate))
-	 (dirname nil) ; non-nil only if a filename is being completed
-	 ;; The following used to be "(dirlength 0)" which caused the erasure of
-	 ;; the entire buffer text before `point' when inserting a completion
-	 ;; into a buffer.
-	 dirlength
-	 (str (buffer-substring beg end))
-	 (incname (and filename (string-match "<\\([^\"<>]*\\)>?$" str)))
-	 (ambig nil)
-	 basestr origstr
-	 env-on
-	 regex
-	 p offset
-	 (poss nil)
-	 helpposs
-	 (case-fold-search completion-ignore-case))
-
-    ;; Check if buffer contents can already be considered complete
-    (if (and (eq mode 'exit)
-	     (test-completion str table pred))
-	(progn
-	  ;; If completion-ignore-case is non-nil, insert the
-	  ;; completion string since that may have a different case.
-	  (when completion-ignore-case
-	    (setq str (PC-try-completion str table pred))
-	    (delete-region beg end)
-	    (insert str))
-	  'complete)
-
-      ;; Do substitutions in directory names
-      (and filename
-           (setq basestr (or (file-name-directory str) ""))
-           (setq dirlength (length basestr))
-	   ;; Do substitutions in directory names
-           (setq p (substitute-in-file-name basestr))
-           (not (string-equal basestr p))
-           (setq str (concat p (file-name-nondirectory str)))
-           (progn
-	     (delete-region beg end)
-	     (insert str)
-	     (setq end (+ beg (length str)))))
-
-      ;; Prepare various delimiter strings
-      (or (equal PC-word-delimiters PC-delims)
-	  (setq PC-delims PC-word-delimiters
-		PC-delim-regex (concat "[" PC-delims "]")
-		PC-ndelims-regex (concat "[^" PC-delims "]*")
-		PC-delims-list (append PC-delims nil)))
-
-      ;; Add wildcards if necessary
-      (and filename
-           (let ((dir (file-name-directory str))
-                 (file (file-name-nondirectory str))
-		 ;; The base dir for file-completion is passed in `predicate'.
-		 (default-directory (expand-file-name pred)))
-             (while (and (stringp dir) (not (file-directory-p dir)))
-               (setq dir (directory-file-name dir))
-               (setq file (concat (replace-regexp-in-string
-                                   PC-delim-regex "*\\&"
-                                   (file-name-nondirectory dir))
-                                  "*/" file))
-               (setq dir (file-name-directory dir)))
-             (setq origstr str str (concat dir file))))
-
-      ;; Look for wildcard expansions in directory name
-      (and filename
-	   (string-match "\\*.*/" str)
-	   (let ((pat str)
-		 ;; The base dir for file-completion is passed in `predicate'.
-		 (default-directory (expand-file-name pred))
-		 files)
-	     (setq p (1+ (string-match "/[^/]*\\'" pat)))
-	     (while (setq p (string-match PC-delim-regex pat p))
-	       (setq pat (concat (substring pat 0 p)
-				 "*"
-				 (substring pat p))
-		     p (+ p 2)))
-	     (setq files (file-expand-wildcards (concat pat "*"))) ;ELI
-	     (if files
-		 (let ((dir (file-name-directory (car files)))
-		       (p files))
-		   (while (and (setq p (cdr p))
-			       (equal dir (file-name-directory (car p)))))
-		   (if p
-		       (setq filename nil table nil pred nil
-			     ambig t)
-		     (delete-region beg end)
-		     (setq str (concat dir (file-name-nondirectory str)))
-		     (insert str)
-		     (setq end (+ beg (length str)))))
-	       (if origstr
-                   ;; If the wildcards were introduced by us, it's possible
-                   ;; that read-file-name-internal (especially our
-                   ;; PC-include-file advice) can still find matches for the
-                   ;; original string even if we couldn't, so remove the
-                   ;; added wildcards.
-                   (setq str origstr)
-		 (setq filename nil table nil pred nil)))))
-
-      ;; Strip directory name if appropriate
-      (if filename
-	  (if incname
-	      (setq basestr (substring str incname)
-		    dirname (substring str 0 incname))
-	    (setq basestr (file-name-nondirectory str)
-		  dirname (file-name-directory str))
-	    ;; Make sure str is consistent with its directory and basename
-	    ;; parts.  This is important on DOZe'NT systems when str only
-	    ;; includes a drive letter, like in "d:".
-	    (setq str (concat dirname basestr)))
-	(setq basestr str))
-
-      ;; Convert search pattern to a standard regular expression
-      (setq regex (regexp-quote basestr)
-	    offset (if (and (> (length regex) 0)
-			    (not (eq (aref basestr 0) ?\*))
-			    (or (eq PC-first-char t)
-				(and PC-first-char filename))) 1 0)
-	    p offset)
-      (while (setq p (string-match PC-delim-regex regex p))
-	(if (eq (aref regex p) ? )
-	    (setq regex (concat (substring regex 0 p)
-				PC-ndelims-regex
-				PC-delim-regex
-				(substring regex (1+ p)))
-		  p (+ p (length PC-ndelims-regex) (length PC-delim-regex)))
-	  (let ((bump (if (memq (aref regex p)
-				'(?$ ?^ ?\. ?* ?+ ?? ?[ ?] ?\\))
-			  -1 0)))
-	    (setq regex (concat (substring regex 0 (+ p bump))
-				PC-ndelims-regex
-				(substring regex (+ p bump)))
-		  p (+ p (length PC-ndelims-regex) 1)))))
-      (setq p 0)
-      (if filename
-	  (while (setq p (string-match "\\\\\\*" regex p))
-	    (setq regex (concat (substring regex 0 p)
-				"[^/]*"
-				(substring regex (+ p 2))))))
-      ;;(setq the-regex regex)
-      (setq regex (concat "\\`" regex))
-
-      (and (> (length basestr) 0)
-           (= (aref basestr 0) ?$)
-           (setq env-on t
-                 table PC-env-vars-alist
-                 pred nil))
-
-      ;; Find an initial list of possible completions
-      (if (not (setq p (string-match (concat PC-delim-regex
-					     (if filename "\\|\\*" ""))
-				     str
-				     (+ (length dirname) offset))))
-
-	  ;; Minibuffer contains no hyphens -- simple case!
-	  (setq poss (all-completions (if env-on
-					  basestr str)
-				      table
-				      pred))
-
-	;; Use all-completions to do an initial cull.  This is a big win,
-	;; since all-completions is written in C!
-	(let ((compl (all-completions (if env-on
-					  (file-name-nondirectory (substring str 0 p))
-					(substring str 0 p))
-                                      table
-                                      pred)))
-	  (setq p compl)
-	  (while p
-	    (and (string-match regex (car p))
-		 (progn
-		   (set-text-properties 0 (length (car p)) '() (car p))
-		   (setq poss (cons (car p) poss))))
-	    (setq p (cdr p)))))
-
-      ;; ELI: hack -- if no options, and the string is ~something, use passwd
-      (when (and filename (null poss) (equal ?~ (elt str 0)))
-        (setq poss (let* ((sofar (substring str 1))
-                          (len   (length sofar)))
-                     (mapcar (lambda (x) (concat "~" (car x) "/"))
-                             (filter (lambda (u-h)
-                                       (let ((user (car u-h)))
-                                         (and (<= len (length user))
-                                              (equal sofar
-                                                     (substring user 0 len)))))
-                                     eli-user-homedirs)))))
-
-
-      ;; If table had duplicates, they can be here.
-      (delete-dups poss)
-
-      ;; Handle completion-ignored-extensions
-      (and filename
-           (not (eq mode 'help))
-           (let ((p2 poss))
-
-             ;; Build a regular expression representing the extensions list
-             (or (equal completion-ignored-extensions PC-ignored-extensions)
-                 (setq PC-ignored-regexp
-                       (concat "\\("
-                               (mapconcat
-                                'regexp-quote
-                                (setq PC-ignored-extensions
-                                      completion-ignored-extensions)
-                                "\\|")
-                               "\\)\\'")))
-
-             ;; Check if there are any without an ignored extension.
-             ;; Also ignore `.' and `..'.
-             (setq p nil)
-             (while p2
-               (or (string-match PC-ignored-regexp (car p2))
-                   (string-match "\\(\\`\\|/\\)[.][.]?/?\\'" (car p2))
-                   (setq p (cons (car p2) p)))
-               (setq p2 (cdr p2)))
-
-             ;; If there are "good" names, use them
-             (and p (setq poss p))))
-
-      ;; Now we have a list of possible completions
-      (cond
-
-       ;; No valid completions found
-       ((null poss)
-	(if (and (eq mode 'word)
-		 (not PC-word-failed-flag))
-	    (let ((PC-word-failed-flag t))
-	      (delete-backward-char 1)
-	      (PC-do-completion 'word))
-	  (beep)
-	  (PC-temp-minibuffer-message (if ambig
-					  " [Ambiguous dir name]"
-					(if (eq mode 'help)
-					    " [No completions]"
-					  " [No match]")))
-	  nil))
-
-       ;; More than one valid completion found
-       ((or (cdr (setq helpposs poss))
-	    (memq mode '(help word)))
-
-	;; Is the actual string one of the possible completions?
-	(setq p (and (not (eq mode 'help)) poss))
-	(while (and p
-		    (not (string-equal (car p) basestr)))
-	  (setq p (cdr p)))
-	(and p (null mode)
-	     (PC-temp-minibuffer-message " [Complete, but not unique]"))
-	(if (and p
-		 (not (and (null mode)
-			   (eq this-command last-command))))
-	    t
-
-	  ;; If ambiguous, try for a partial completion
-	  (let ((improved nil)
-		prefix
-		(pt nil)
-		(skip "\\`"))
-
-	    ;; Check if next few letters are the same in all cases
-	    (if (and (not (eq mode 'help))
-		     (setq prefix (PC-try-completion
-				   (PC-chunk-after basestr skip) poss)))
-		(let ((first t) i)
-                  ;;ELI: If there are possibility prefixes that match the
-                  ;; basestr exactly then replace the basestr part of prefix by
-                  ;; the apropriate one.
-                  (when completion-ignore-case
-                    (let* ((completion-ignore-case nil)
-                           (poss (all-completions basestr (mapcar 'list poss)))
-                           (case-prefix
-                            (try-completion "" (mapcar 'list poss))))
-                      (when case-prefix
-                        (when (> (length case-prefix) (length prefix))
-                          (setq case-prefix
-                                (substring case-prefix 0 (length prefix))))
-                        (setq prefix
-                              (concat
-                               case-prefix
-                               (substring prefix (length case-prefix)))))))
-		  ;; Retain capitalization of user input even if
-		  ;; completion-ignore-case is set.
-                  ;; ELI: tweak this in a horrible-ununderstood way, basically
-                  ;; using older code that does not try to be smart in a broken
-                  ;; way
-		  (if (eq mode 'word)
-		      (setq prefix (PC-chop-word prefix basestr)))
-		  (goto-char (+ beg (length dirname)))
-                  (while (and (progn
-				(setq i 0) ; index into prefix string
-				(while (< i (length prefix))
-				  (if (and (< (point) end)
-					   (eq (aref prefix i) ; ELI: done above
-					       (following-char)))
-				      ;; same char (modulo case); no action
-				      (forward-char 1)
-				    (if (and (< (point) end)
-					     (or (and (looking-at " ")
-						      (memq (aref prefix i)
-							    PC-delims-list))
-						 (eq (downcase (aref prefix i))
-						     (downcase
-						      (following-char)))))
-					;; replace " " by the actual delimiter
-					(progn
-					  (delete-char 1)
-					  (setq end (1- end)))
-				      ;; insert a new character
-				      (progn
-                                        (and filename (looking-at "\\*")
-                                             (progn
-                                               (delete-char 1)
-                                               (setq end (1- end))))
-					(setq improved t)))
-                                    (insert (substring prefix i (1+ i)))
-                                    (setq end (1+ end)))
-				  (setq i (1+ i)))
-				(or pt (setq pt (point)))
-				(looking-at PC-delim-regex))
-			      (setq skip (concat skip
-						 (regexp-quote prefix)
-						 PC-ndelims-regex)
-				    prefix (PC-try-completion
-					    (PC-chunk-after
-					     ;; not basestr, because that does
-					     ;; not reflect insertions
-					     (buffer-substring
-					      (+ beg (length dirname)) end)
-					     skip)
-					    (mapcar
-                                             (lambda (x)
-                                               (when (string-match skip x)
-                                                 (substring x (match-end 0))))
-					     poss)))
-			      (or (> i 0) (> (length prefix) 0))
-			      (or (not (eq mode 'word))
-				  (and first (> (length prefix) 0)
-				       (setq first nil
-					     prefix (substring prefix 0 1))))))
-		  (goto-char (if (eq mode 'word) end
-			       (or pt beg)))))
-
-	    (if (and (eq mode 'word)
-		     (not PC-word-failed-flag))
-
-		(if improved
-
-		    ;; We changed it... would it be complete without the space?
-		    (if (test-completion (buffer-substring 1 (1- end))
-                                         table pred)
-			(delete-region (1- end) end)))
-
-	      (if improved
-
-		  ;; We changed it... enough to be complete?
-		  (and (eq mode 'exit)
-		       (test-completion-ignore-case (field-string) table pred))
-
-		;; If totally ambiguous, display a list of completions
-		(if (or (eq completion-auto-help t)
-			(and completion-auto-help
-			     (eq last-command this-command))
-			(eq mode 'help))
-                    (let ((prompt-end (minibuffer-prompt-end)))
-                      (with-output-to-temp-buffer "*Completions*"
-                        (display-completion-list (sort helpposs 'string-lessp))
-                        (setq PC-do-completion-end end
-                              PC-goto-end goto-end)
-                        (with-current-buffer standard-output
-                          ;; Record which part of the buffer we are completing
-                          ;; so that choosing a completion from the list
-                          ;; knows how much old text to replace.
-                          ;; This was briefly nil in the non-dirname case.
-                          ;; However, if one calls PC-lisp-complete-symbol
-                          ;; on "(ne-f" with point on the hyphen, PC offers
-                          ;; all completions starting with "(ne", some of
-                          ;; which do not match the "-f" part (maybe it
-                          ;; should not, but it does). In such cases,
-                          ;; completion gets confused trying to figure out
-                          ;; how much to replace, so we tell it explicitly
-                          ;; (ie, the number of chars in the buffer before beg).
-                          ;;
-                          ;; Note that choose-completion-string-functions
-                          ;; plays around with point.
-                          (setq completion-base-size (if dirname
-                                                         dirlength
-                                                       (- beg prompt-end))))))
-		  (PC-temp-minibuffer-message " [Next char not unique]"))
-		nil)))))
-
-       ;; Only one possible completion
-       (t
-	(if (and (equal basestr (car poss))
-		 (not (and env-on filename)))
-	    (if (null mode)
-		(PC-temp-minibuffer-message " [Sole completion]"))
-	  (delete-region beg end)
-	  (insert (format "%s"
-			  (if filename
-			      (substitute-in-file-name (concat dirname (car poss)))
-			    (car poss)))))
-	t)))))
-
-))
-
-;; Since PC-complete is still bad, easier to just do the hack in the above
-;; ;; Match on usernames -- done similarly to include files in "complete.el")
-;; ;; using an advice (no need for a hook on `find-file-not-found-functions' since
-;; ;; these paths do exist).  (All of this is barely-documented stuff.)
-;; (defadvice read-file-name-internal (around PC-eli-usernames activate compile)
-;;   (if (string-match "~\\([^/]*\\)\\'" (ad-get-arg 0))
-;;     (let* ((string (ad-get-arg 0))
-;;            ;; (dir (ad-get-arg 1)) <-- not needed
-;;            (action (ad-get-arg 2))
-;;            (name (match-string 1 string))
-;;            (str2 (substring string (match-beginning 0)))
-;;            (completion-table (mapcar (lambda (x) (concat "~" (car x) "/"))
-;;                                      eli-user-homedirs)))
-;;       (setq ad-return-value
-;;             (cond
-;;               ((not completion-table) nil)
-;;               ((eq action 'lambda) (test-completion str2 completion-table nil))
-;;               ((eq action nil) (PC-try-completion str2 completion-table nil))
-;;               ((eq action t) (all-completions str2 completion-table nil)))))
-;;     ad-do-it))
-
-;;-----------------------------------------------------------------------------
 ;; Overrides from "isearch.el": make `isearch-allow-scroll' not remove shift
-;; modifiers, so it plays nicely with cua-mode.  Also, make scroll keys simply
-;; leave isearch if the point goes out of the screen.
+;; modifiers, so it plays nicely with cua-mode (have an active region, then do
+;; a search, then do a movement with shift: the region should not be lost).
+;; Also, make scroll keys simply leave isearch if the point goes out of the
+;; screen.
 
 (defun isearch-reread-key-sequence-naturally (keylist)
   "Reread key sequence KEYLIST with an inactive Isearch-mode keymap.
@@ -1101,7 +600,8 @@ Isearch mode."
 		 (setq prefix-arg arg)
 		 (apply 'isearch-unread keylist))
 	     (setq keylist
-		   (listify-key-sequence (lookup-key local-function-key-map key)))
+		   (listify-key-sequence
+		    (lookup-key local-function-key-map key)))
 	     (while keylist
 	       (setq key (car keylist))
 	       ;; If KEY is a printing char, we handle it here
@@ -1110,6 +610,9 @@ Isearch mode."
 	       (if (and (integerp key)
 			(>= key ?\s) (/= key 127) (< key 256))
 		   (progn
+		     ;; Ensure that the processed char is recorded in
+		     ;; the keyboard macro, if any (Bug#4894)
+		     (store-kbd-macro-event key)
 		     (isearch-process-search-char key)
 		     (setq keylist (cdr keylist)))
 		 ;; As the remaining keys in KEYLIST can't be handled
@@ -1170,6 +673,7 @@ Isearch mode."
                  ;; This is an exact copy of the next case, except for the
                  ;; keyboard stuff
                  (let (window)
+                   ;; (setq prefix-arg arg)
                    ;; (isearch-unread-key-sequence keylist)
                    ;; (setq main-event (car unread-command-events))
                    (if (and (not isearch-mode)
