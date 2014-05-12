@@ -42,30 +42,26 @@
 ;; Decide whether to load the previous desktop or not
 ;; (Do that now, not in the startup hook, since there it cannot change
 ;; `command-line-args')
-(defconst is-fast-p
-  (and (member "--fast" command-line-args)
-       (progn (setq command-line-args (delete "--fast" command-line-args)) t)))
+(defvar is-fast-p nil)
+(setq is-fast-p
+      (and (member "--fast" command-line-args)
+           (progn (setq command-line-args (delete "--fast" command-line-args))
+                  t)))
 (defvar fake-initial-key nil
   "If this is set, it's used as the initial keypress result (and no
 logo-question will appear).")
 (add-hook 'emacs-startup-hook
   (lambda ()
-    (unless is-fast-p ; fast => don't use the desktop
-      ;; otherwise, the question is whether we load buffers or not (so desktop
-      ;; is always used here)
-      (let (;; ask about restoring desktop only if there are no command-line
-            ;; arguments left (ignore the first -- it is the executable)
-            (load-buffers (null (cdr command-line-args))))
-        (when load-buffers
-          (let* ((key
-                  (or fake-initial-key
+    ;; don't use the desktop if we have `--fast' or some other command-line
+    ;; argument
+    (unless (or is-fast-p (cdr command-line-args))
+      (let* ((key (or fake-initial-key
                       (eli-logo
                        (concat "Hit any key to continue, escape/right-click:"
                                " don't load previous desktop."))))
-                 (key (if (integerp key) key (event-basic-type key))))
-            (when (memq key '(27 escape mouse-3))
-              (setq load-buffers nil))))
-        (eli-use-desktop load-buffers)
+             (key (if (integerp key) key (event-basic-type key))))
+        (unless (memq key '(27 escape mouse-3))
+          (eli-use-desktop t))
         (desktop-read) ; do this because we're running after `after-init-hook'
         (message nil)))))
 

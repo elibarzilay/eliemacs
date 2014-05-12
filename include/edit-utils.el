@@ -302,10 +302,11 @@ negative, count from the end."
   (interactive "P")
   (let (w1 w2 b1 b2 p)
     (save-window-excursion
+      (delete-other-windows)
       (split-window-vertically)
-      (setq w1 (selected-window)
-            w2 (next-window (selected-window))
-            b1 (current-buffer))
+      (setq b1 (current-buffer)
+            w1 (selected-window)
+            w2 (next-window (selected-window)))
       (select-window w2)
       (setq b2 (switch-to-buffer nil))
       (select-window w1)
@@ -313,8 +314,10 @@ negative, count from the end."
       (select-window w2)
       (setq p (point))
       (select-window w1))
-    (set-buffer b2)
-    (goto-char p)))
+    ;; why doesn't this work? --> (with-current-buffer b2 (goto-char p))
+    (switch-to-buffer b2)
+    (goto-char p)
+    (switch-to-buffer b1)))
 
 (defun eli-term ()
   "Like `term', but runs a shell immediately (prefix arg: ask like `term')."
