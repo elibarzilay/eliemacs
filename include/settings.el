@@ -282,6 +282,8 @@
  ;; dired-chmod-program "chmod"
  ;; dired-touch-program "touch"
  dired-copy-preserve-time t
+ dired-dnd-protocol-alist nil ; disable file copying on d&d to a dired buffer
+                              ; so d&d always does the same thing
  dired-auto-revert-buffer t
  dired-recursive-deletes 'top
  dired-no-confirm '() ; might be useful to add stuff here
@@ -747,6 +749,7 @@
  resize-mini-windows t        ; exactly as needed
  max-mini-window-height 0.25  ; up to 1/4 screen height
  redisplay-dont-pause t       ; faster display response
+ gnutls-min-prime-bits nil    ; mainly avoid a warning, also default = better(?)
  )
 
 ;; Racket files

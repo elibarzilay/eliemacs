@@ -81,21 +81,21 @@
 
 (defun eli-previous-history-element (n)
   (interactive "p")
-  (no-errors-beep (previous-history-element n))
+  (ignore-errors-beep (previous-history-element n))
   (goto-char (point-max)))
 
 (defun eli-next-history-element (n)
   (interactive "p")
-  (no-errors-beep (next-history-element n))
+  (ignore-errors-beep (next-history-element n))
   (goto-char (point-max)))
 
 (defun eli-next-complete-history-element (n)
   (interactive "p")
-  (no-errors-beep (next-complete-history-element n)))
+  (ignore-errors-beep (next-complete-history-element n)))
 
 (defun eli-previous-complete-history-element (n)
   (interactive "p")
-  (no-errors-beep (previous-complete-history-element n)))
+  (ignore-errors-beep (previous-complete-history-element n)))
 
 (defvar eli-last-minibuf-string ".")
 
@@ -123,7 +123,7 @@
                     "[^/]*$")) ; hack: search only in file names
            (t eli-last-minibuf-string))))
     (setq eli-last-minibuf-string search-str)
-    (no-errors-beep (next-matching-history-element search-str n))
+    (ignore-errors-beep (next-matching-history-element search-str n))
     (goto-char (point-max))))
 
 (defun eli-previous-history-contains (n)
@@ -206,7 +206,7 @@
                                  (concat str "/." dots)))) ; cont with expansn
                             ((string-match "\\`\\$" path)
                              ;; expand an environment variable
-                             (let ((str (no-errors
+                             (let ((str (ignore-errors
                                          (substitute-in-file-name path))))
                                (if str
                                  (concat str "/." dots) ; cont with expansion

@@ -69,7 +69,7 @@ existing faces)."
                    ((eq a 'inverse)     '(:inverse t))
                    ((eq a 'uninverse)   '(:inverse nil))
                    (t (simple-face-parse-compound-attr attr)))))
-    (no-errors (apply 'set-face-attribute face nil as))))
+    (ignore-errors (apply 'set-face-attribute face nil as))))
 
 (defun simple-face-parse-compound-attr (attr)
   (cond

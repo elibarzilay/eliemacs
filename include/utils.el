@@ -2,11 +2,7 @@
 ;;-----------------------------------------------------------------------------
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
-;; from v23 there is `ignore-errors'.
-(defmacro no-errors (&rest body)
-  "Ignore errors in BODY."
-  `(condition-case nil (progn ,@body) (error nil)))
-(defmacro no-errors-beep (&rest body)
+(defmacro ignore-errors-beep (&rest body)
   "Ignore errors in BODY, but beep if there were."
   `(condition-case nil (progn ,@body) (error (beep))))
 
