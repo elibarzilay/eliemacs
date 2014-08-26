@@ -60,8 +60,7 @@ logo-question will appear).")
                        (concat "Hit any key to continue, escape/right-click:"
                                " don't load previous desktop."))))
              (key (if (integerp key) key (event-basic-type key))))
-        (unless (memq key '(27 escape mouse-3))
-          (eli-use-desktop t))
+        (eli-use-desktop (not (memq key '(27 escape mouse-3))))
         (desktop-read) ; do this because we're running after `after-init-hook'
         (message nil)))))
 

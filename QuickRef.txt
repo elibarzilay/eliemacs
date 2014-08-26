@@ -14,7 +14,7 @@ Arrow Keys etc:
 
 Function Keys:
         | [normal]       | [ctrl]        | [shift]         | [shft+ctrl]
-  <f1>  | open a file    | buffer-list   | open raw file   | speedbar
+  <f1>  | open a file    | buffer-list   | open raw file   | find-dired
   <f2>  | save buffer    | save all bfrs | save-as/move    | quit emacs
   <f3>  | insert file    | insert buffer | insert raw file |
   <f4>  | shell command  | shell         | shell-on-region | terminal emulator

@@ -440,8 +440,8 @@ one added first), if negative removes all."
 (setq mode-line-in-non-selected-windows t)
 (setq display-time-mail-face (simple-make-face 'yellow/orange4-bold))
 (unless window-system
-  (set-face-inverse-video-p 'modeline nil)
-  (set-face-inverse-video-p 'modeline-inactive nil))
+  (set-face-inverse-video-p 'mode-line nil)
+  (set-face-inverse-video-p 'mode-line-inactive nil))
 
 ;;-----------------------------------------------------------------------------
 ;; Paren coloring using "mic-paren"

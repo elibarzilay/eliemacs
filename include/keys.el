@@ -79,7 +79,9 @@
   '("<f1>"            find-file)
   '("<C-f1>"          electric-buffer-list)
   '("<S-f1>"          find-file-literally)
-  '("<C-S-f1>"        speedbar-get-focus)
+  '("<C-S-f1>"        find-dired)
+  '("ESC <M-f1>"      speedbar-get-focus)
+  '("ESC ESC <f1>"    speedbar-get-focus)
   ;; F2 - writing files
   '("<f2>"            save-buffer)
   '("<C-f2>"          save-some-buffers)
