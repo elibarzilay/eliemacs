@@ -8,13 +8,13 @@ finally got to rewrite the whole thing in a more reasonable way, and
 also make it work with XEmacs too, but support for Emacs 19 is gone.
 Then came Emacs 22, and another major overhaul was done.  This time,
 only v22 was supported -- easier to just keep the previous environment
-as-is to be used with older versions.  Emacs 23 is now the current
-version, meaning less things to do still.
+as-is to be used with older versions.  the current version is now Emacs
+24, meaning less things to do still.
 
 The version that you use is displayed after Emacs finishes initializing.
 The latest version can be found at
 
-  http://barzilay.org/misc/EliEmacs.tgz
+  https://github.com/elibarzilay/eliemacs
 
 To use this environment, simply load the eliemacs.elc file in your
 .emacs, for example, my .emacs file has:
@@ -33,7 +33,7 @@ Installing:
 -----------
 
 The whole thing works on any platform, as long as you have GNU Emacs
-version 23.  Here is what you need to do:
+version 24.  Here is what you need to do:
 
 1. Open EliEmacs.tgz in an appropriate place (using tar+gunzip, or
    winzip).
