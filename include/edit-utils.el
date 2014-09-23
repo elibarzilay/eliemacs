@@ -187,7 +187,8 @@ With a prefix argument go back to the default."
           (define-key dired-mode-map
             [remap eli-previous-line] 'dired-previous-line)
           (put 'dired-next-line 'CUA 'move)
-          (put 'dired-previous-line 'CUA 'move)))
+          (put 'dired-previous-line 'CUA 'move)
+          (add-hook 'dired-mode-hook (lambda () (setq truncate-lines t)))))
 
 ;;-----------------------------------------------------------------------------
 ;; More utilities.

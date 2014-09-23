@@ -7,25 +7,7 @@
 ;; (NTEmacs), and useful to have different settings for different displays in a
 ;; single process (eg, one frame in vnc, one on the console).
 
-(defvar window-configurations
-  ;;((* (OR linux gnu/linux) 640 400)
-  ;; 81 28 "-*-courier-medium-r-normal-*-13-*-*-*-*-*-*-*")
-  ;;((* (OR linux gnu/linux) 800 600)
-  ;; 81 30 "-*-courier-medium-r-normal-*-15-*-*-*-*-*-*-*")
-  ;;((* (OR linux gnu/linux) 1024 768)
-  ;; 81 32 "-*-courier-medium-r-normal-*-19-*-*-*-*-*-*-*")
-  ;; ((x * * *))
-  ;; ((w32 * 640 *)
-  ;;  81 28 "-*-Courier New-normal-r-*-*-13-*-*-*-*-*-*-*")
-  ;; ((w32 * 800 600)
-  ;;  81 30 "-*-Courier New-normal-r-*-*-15-*-*-*-*-*-*-*")
-  ;; ((w32 * 1024 768)
-  ;;  81 32 "-*-Courier New-normal-r-*-*-19-*-*-*-*-*-*-*")
-  ;; ((w32 * 1152 864)
-  ;;  81 32 "-*-Courier New-normal-r-*-*-21-*-*-*-*-*-*-*")
-  ;; ((w32 * 1440 900)
-  ;;  80 24 "Consolas 23")
-  nil
+(defvar window-configurations nil
   "*A function to determine window configurations.
 
 This function is called whenever a new frame is made (and on the initial
