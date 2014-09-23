@@ -91,8 +91,9 @@
 
 ;; remember the last command and its group, so we can identify repeated uses
 ;; of groups even when this is invoked from other commands
-(defvar SIP-last-scroll-command+group nil
-  "The last command used to scroll, and the group of commands it was in.")
+(defvar SIP-last-scroll-command+group+tick nil
+  "The last command used to scroll, the group of commands it was in,
+and buffer state counter.")
 
 (defvar SIP-scroll-posns nil
   "A (buffer-local) list of remembered positions.
@@ -141,14 +142,14 @@ POSN is in the format of `SIP-get-scroll-posn'."
   ;; whether to do an in-place scrolling or not, based on
   ;; `scroll-preserve-screen-position'.
   (setq this-command orig) ; try this to deal with the C-down C-pgdn problem
-  (let* ((repeated
+  (let* ((last SIP-last-scroll-command+group+tick)
+         (new (list last-command group (buffer-chars-modified-tick)))
+         (repeated
           ;; this makes it possible for things to work fine even when called
           ;; through some other command (and no need for plist on function
           ;; names)
-          (prog1 (and (eq (car SIP-last-scroll-command+group) last-command)
-                      (eq (cdr SIP-last-scroll-command+group) group)
-                      (memq current-prefix-arg '(nil -)))
-            (setq SIP-last-scroll-command+group (cons this-command group))))
+          (prog1 (and (equal last new) (memq current-prefix-arg '(nil -)))
+            (setq SIP-last-scroll-command+group+tick new)))
          (arg (if repeated
                 SIP-last-scroll-arg
                 (progn (SIP-set-visual-column)
@@ -236,7 +237,7 @@ cancel each other out."
       (SIP-do-scroll-internal arg isdown group keep orig)
       (let ((p (and keep (point))))
         ;; forcibly break any sequence of scrolling commands
-        (setq SIP-last-scroll-command+group nil)
+        (setq SIP-last-scroll-command+group+tick nil)
         (funcall orig arg)
         ;; go back if possible
         (when (and p (pos-visible-in-window-p p))
