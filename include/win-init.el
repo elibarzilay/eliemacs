@@ -109,13 +109,11 @@ is not used.")
          frame `((left . (+ ,(or x 0))) (top . (+ ,(or y 0)))))
         (redisplay t)))))
 
-(setq after-make-frame-functions
-      (cons '(lambda (f)
-               ;; changing the font doesn't work immediately for some
-               ;; reason
-               (run-with-idle-timer 0.2 nil
-                 `(lambda () (win-init-apply-conf ,f))))
-            after-make-frame-functions))
+(push (lambda (f)
+        ;; changing the font doesn't work immediately for some
+        ;; reason
+        (run-with-idle-timer 0.2 nil `(lambda () (win-init-apply-conf ,f))))
+      after-make-frame-functions)
 
 ;; the font might not be available right now, so use a hook
 (ignore-errors (win-init-apply-conf))

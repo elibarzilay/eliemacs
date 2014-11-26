@@ -608,6 +608,7 @@ that variable's value is a string."
 (put 'case                  'scheme-indent-function 1)
 (put 'cond                  'scheme-indent-function 0)
 (put 'delay                 'scheme-indent-function 0)
+(put 'lazy                  'scheme-indent-function 0)
 (put 'do                    'scheme-indent-function 2)
 (put 'lambda                'scheme-indent-function 1)
 (put 'λ                     'scheme-indent-function 1)

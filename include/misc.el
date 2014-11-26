@@ -18,7 +18,7 @@
 ;; Replace the true home directory name by the HOME environment value, this is
 ;; necessary for automounters that map some name to another
 ;; (automount-dir-prefix doesn't help much).
-(unless (or (eq 'w32 window-system)
+(unless (or (eq 'windows-nt system-type)
             (equal (file-truename (getenv "HOME")) (getenv "HOME")))
   (add-to-list 'directory-abbrev-alist
                (cons (concat "^" (file-truename (getenv "HOME")))

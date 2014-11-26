@@ -383,7 +383,7 @@ negative, count from the end."
         (if (nth 2 pair)
           (setq open (nth 1 pair) close (nth 2 pair))
           (setq open (nth 0 pair) close (nth 1 pair)))
-        (setq open ch close ch))))
+        (setq open (or open ch) close (or close ch)))))
   (let (beg end (arg (if arg (prefix-numeric-value arg) 0)))
     (cond ((and (eq last-command this-command) eli-insert-pair-last-position)
            (setq beg (car eli-insert-pair-last-position)
