@@ -115,22 +115,51 @@ must be sent as well)."
   "Like `beginning-of-line'."
   (interactive "^p")
   (unless arg (setq arg 1))
-  (let ((inhibit-field-text-motion
-         (save-excursion (end-of-line) (not (eobp)))))
+  (let* ((p (get-buffer-process (current-buffer)))
+         (p (and p (process-mark p)))
+         (inhibit-field-text-motion
+          (not (and p (>= (point) (marker-position p))))))
     (if line-move-visual
       (beginning-of-visual-line arg)
       (beginning-of-line arg))))
 (put 'eli-comint-beginning-of-line 'CUA 'move)
 (defun eli-comint-end-of-line (&optional arg)
   "Like `end-of-line'."
-  (interactive "^p")
+  (interactive)
+  (call-interactively 'eli-end-of-line)
   (unless arg (setq arg 1))
-  (let ((inhibit-field-text-motion
-         (save-excursion (end-of-line) (not (eobp)))))
+  (let* ((p (get-buffer-process (current-buffer)))
+         (p (and p (process-mark p)))
+         (inhibit-field-text-motion
+          (not (and p (>= (point) (marker-position p))))))
     (if line-move-visual
       (end-of-visual-line arg)
       (end-of-line arg))))
 (put 'eli-comint-end-of-line 'CUA 'move)
+
+(defun eli-comint-clear-except-command ()
+  "Erase buffer, leaving the current command-line"
+  (interactive)
+  (let* ((is-output (lambda (p)
+                      (memq (get-text-property p 'field) '(output boundary))))
+         (p (get-buffer-process (current-buffer)))
+         (p (and p (process-mark p))))
+    (when (and p (< (point) (marker-position p)))
+      (if (and (funcall is-output (point)) (funcall is-output (1- (point))))
+        (goto-char (point-max))
+        (comint-copy-old-input)))
+    (let ((inhibit-modification-hooks t))
+      (delete-region
+       (point-min)
+       (save-excursion
+         (let ((p (point)))
+           (when (and (> p (point-min))
+                      (not (funcall is-output p))
+                      (not (funcall is-output (1- p))))
+             (setq p (previous-single-property-change (point) 'field))
+             (when p (goto-char p))))
+         (let ((inhibit-field-text-motion t))
+           (beginning-of-line) (point)))))))
 
 (eval-after-load "comint"
   '(define-keys comint-mode-map
@@ -138,6 +167,7 @@ must be sent as well)."
      '([(control up)]   comint-previous-matching-input-from-input-or-scroll)
      '([(control down)] comint-next-matching-input-from-input-or-scroll)
      '([(home)]         eli-comint-beginning-of-line)
-     '([(end)]          eli-comint-end-of-line)))
+     '([(end)]          eli-comint-end-of-line)
+     '([(shift backspace)] eli-comint-clear-except-command)))
 
 ;;; shell-utils.el ends here
