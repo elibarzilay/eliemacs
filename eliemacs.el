@@ -56,8 +56,6 @@
 (load/include "eli-marker")
 (load/include "eli-cua")
 (load/include "scroll-in-place")
-(load/include "filladapt")
-(setq-default filladapt-mode t filladapt-mode-line-string nil)
 (load/include "keys")
 (when (file-accessible-directory-p (concat eli-dir "extras"))
   (load (concat eli-dir "extras/extras") t t))

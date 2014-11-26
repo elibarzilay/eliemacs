@@ -30,6 +30,12 @@
 (autoload 'bigfont-scroll-big-string "bigfont" nil t)
 
 ;; ----------------------------------------------------------------------------
+;; filladapt (protected against multiple loads)
+
+(unless (featurep 'filladapt) (load/include "filladapt"))
+(setq-default filladapt-mode t filladapt-mode-line-string nil)
+
+;; ----------------------------------------------------------------------------
 ;; convenient input of unicode characters
 
 (autoload 'eli-input-method/single "special-chars" nil t)
