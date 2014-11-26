@@ -83,9 +83,11 @@
 
 (defface git-blame-prefix-face
   '((((background dark)) (:foreground "gray"
-                          :background "black"))
+                          :background "black"
+                          :inherit default))
     (((background light)) (:foreground "gray"
-                           :background "white"))
+                           :background "white"
+                           :inherit default))
     (t (:weight bold)))
   "The face used for the hash prefix."
   :group 'git-blame)
@@ -102,7 +104,7 @@
   :group 'git-blame)
 
 (defcustom git-blame-prefix-format
-  "%h %20A:"
+  "%h %A:"
   "The format of the prefix added to each line in `git-blame'
 mode. The format is passed to `format-spec' with the following format keys:
 
@@ -117,9 +119,9 @@ mode. The format is passed to `format-spec' with the following format keys:
   :group 'git-blame)
 
 (defcustom git-blame-mouseover-format
-  "%h %a %A: %s"
-  "The format of the description shown when pointing at a line in
-`git-blame' mode. The format string is passed to `format-spec'
+  "%h %a %A:\n%s"
+  "The format of the description shown when pointing at a prefix of a
+line in `git-blame' mode. The format string is passed to `format-spec'
 with the following format keys:
 
   %h - the abbreviated hash
@@ -158,7 +160,7 @@ selected element from l."
      e))
 
 (defvar git-blame-log-oneline-format
-  "format:[%cr] %cn: %s"
+  "format:[%cr] %cN %cE: %s\n\n%b"
   "*Formatting option used for describing current line in the minibuffer.
 
 This option is used to pass to git log --pretty= command-line option,
@@ -193,6 +195,10 @@ minor mode.")
 (defvar git-blame-overlays nil
   "The git-blame overlays used in the current buffer.")
 (make-variable-buffer-local 'git-blame-overlays)
+
+(defvar git-blame-longest-prefix 0
+  "The longest line-prefix for all `git-blame-overlays' in the current buffer.")
+(make-variable-buffer-local 'git-blame-longest-prefix)
 
 (defvar git-blame-cache nil
   "A cache of git-blame information for the current buffer")
@@ -254,7 +260,7 @@ See also function `git-blame-mode'."
 
 See also function `git-blame-mode'."
   (git-blame-cleanup)
-  (if git-blame-idle-timer (cancel-timer git-blame-idle-timer))
+  (when git-blame-idle-timer (cancel-timer git-blame-idle-timer))
   (setq git-blame-mode nil))
 
 ;;;###autoload
@@ -275,16 +281,11 @@ See also function `git-blame-mode'."
           (blame-buf (get-buffer-create
                       (concat " git blame for " (buffer-name))))
           (args '("--incremental" "--contents" "-")))
-      (if startline
-          (setq args (append args
-                             (list "-L" (format "%d,%d" startline endline)))))
-      (setq args (append args
-                         (list (file-name-nondirectory buffer-file-name))))
+      (when startline
+        (setq args `(,@args "-L" ,(format "%d,%d" startline endline))))
+      (setq args `(,@args ,(file-name-nondirectory buffer-file-name)))
       (setq git-blame-proc
-            (apply 'start-process
-                   "git-blame" blame-buf
-                   "git" "blame"
-                   args))
+            (apply 'start-process "git-blame" blame-buf "git" "blame" args))
       (with-current-buffer blame-buf
         (erase-buffer)
         (make-local-variable 'git-blame-file)
@@ -305,7 +306,8 @@ See also function `git-blame-mode'."
 (defun git-blame-cleanup ()
   "Remove all blame properties"
     (mapc 'delete-overlay git-blame-overlays)
-    (setq git-blame-overlays nil)
+    (setq git-blame-overlays nil
+          git-blame-longest-prefix 0)
     (remove-git-blame-text-properties (point-min) (point-max)))
 
 (defun git-blame-update-region (start end)
@@ -313,10 +315,10 @@ See also function `git-blame-mode'."
   (let ((overlays (overlays-in start end)))
     (while overlays
       (let ((overlay (pop overlays)))
-        (if (< (overlay-start overlay) start)
-            (setq start (overlay-start overlay)))
-        (if (> (overlay-end overlay) end)
-            (setq end (overlay-end overlay)))
+        (when (< (overlay-start overlay) start)
+          (setq start (overlay-start overlay)))
+        (when (> (overlay-end overlay) end)
+          (setq end (overlay-end overlay)))
         (setq git-blame-overlays (delete overlay git-blame-overlays))
         (delete-overlay overlay))))
   (remove-git-blame-text-properties start end)
@@ -328,8 +330,7 @@ See also function `git-blame-mode'."
   (with-current-buffer (process-buffer proc)
     (with-current-buffer git-blame-file
       (setq git-blame-proc nil)
-      (if git-blame-update-queue
-          (git-blame-delayed-update))))
+      (when git-blame-update-queue (git-blame-delayed-update))))
   ;;(kill-buffer (process-buffer proc))
   ;;(message "git blame finished")
   )
@@ -392,26 +393,39 @@ See also function `git-blame-mode'."
         (goto-char (point-min))
         (forward-line (1- start-line))
         (let* ((start (point))
-               (end (progn (forward-line num-lines) (point)))
-               (ovl (make-overlay start end))
-               (hash (car info))
-               (spec `((?h . ,(substring hash 0 6))
-                       (?H . ,hash)
-                       (?a . ,(git-blame-get-info info 'author))
-                       (?A . ,(git-blame-get-info info 'author-mail))
-                       (?c . ,(git-blame-get-info info 'committer))
-                       (?C . ,(git-blame-get-info info 'committer-mail))
-                       (?s . ,(git-blame-get-info info 'summary)))))
+               (end   (progn (forward-line num-lines) (point)))
+               (ovl   (make-overlay start end))
+               (hash  (car info))
+               (spec  `((?h . ,(substring hash 0 6))
+                        (?H . ,hash)
+                        (?a . ,(git-blame-get-info info 'author))
+                        (?A . ,(git-blame-get-info info 'author-mail))
+                        (?c . ,(git-blame-get-info info 'committer))
+                        (?C . ,(git-blame-get-info info 'committer-mail))
+                        (?s . ,(git-blame-get-info info 'summary))))
+               (hover  (format-spec git-blame-mouseover-format spec))
+               (prefix (format-spec git-blame-prefix-format spec))
+               (spaces (- git-blame-longest-prefix (length prefix)))
+               (prefix (if (<= spaces 0) prefix
+                           (concat prefix (make-string spaces ? ))))
+               (prefix (propertize prefix 'face 'git-blame-prefix-face
+                                          'help-echo hover)))
+          (when (< spaces 0)
+            (let ((ovls git-blame-overlays)
+                  (spaces (propertize (make-string (- spaces) ? )
+                                      'face 'git-blame-prefix-face)))
+              (while ovls
+                (let ((o (pop ovls)))
+                  (overlay-put o 'line-prefix
+                               (concat (overlay-get o 'line-prefix)
+                                       spaces)))))
+            (setq git-blame-longest-prefix (- git-blame-longest-prefix spaces)))
           (push ovl git-blame-overlays)
           (overlay-put ovl 'git-blame info)
-          (overlay-put ovl 'help-echo
-                       (format-spec git-blame-mouseover-format spec))
-          (if git-blame-use-colors
-              (overlay-put ovl 'face (list :background
-                                           (cdr (assq 'color (cdr info))))))
-          (overlay-put ovl 'line-prefix
-                       (propertize (format-spec git-blame-prefix-format spec)
-                                   'face 'git-blame-prefix-face)))))))
+          (overlay-put ovl 'line-prefix prefix)
+          (when git-blame-use-colors
+            (overlay-put ovl 'face
+                         (list :background (cdr (assq 'color (cdr info)))))))))))
 
 (defun git-blame-add-info (info key value)
   (nconc info (list (cons (intern key) value))))
@@ -419,20 +433,32 @@ See also function `git-blame-mode'."
 (defun git-blame-get-info (info key)
   (cdr (assq key (cdr info))))
 
+;;ELI: This is probably junk as well as the property
 (defun git-blame-current-commit ()
   (let ((info (get-char-property (point) 'git-blame)))
     (if info
         (car info)
       (error "No commit info"))))
 
-(defun git-describe-commit (hash)
-  (with-temp-buffer
-    (call-process "git" nil t nil
-                  "log" "-1"
-		  (concat "--pretty=" git-blame-log-oneline-format)
-                  hash)
-    (buffer-substring (point-min) (point-max))))
+;;ELI: This should be bound to a key
+(defun git-describe-commit (&optional hash)
+  (interactive)
+  (let ((hash (or hash (git-blame-current-commit)))
+        (buf (get-buffer-create "*Commit Description*")))
+    (with-current-buffer buf
+      (buffer-disable-undo)
+      (let ((buffer-read-only nil))
+        (erase-buffer)
+        (call-process "git" nil t nil
+                      "log" "-1"
+                      (concat "--pretty=" git-blame-log-oneline-format)
+                      hash))
+      (set-buffer-modified-p nil)
+      (setq buffer-read-only t)
+      (goto-char (point-min)))
+    (view-buffer buf)))
 
+;;ELI: This is probably junk (look in the logs?)
 (defvar git-blame-last-identification nil)
 (make-variable-buffer-local 'git-blame-last-identification)
 (defun git-blame-identify (&optional hash)
@@ -474,10 +500,10 @@ See also function `git-blame-mode'."
 
 (defun git-blame-delayed-update ()
   (setq git-blame-idle-timer nil)
-  (if git-blame-update-queue
-      (let ((first (pop git-blame-update-queue))
-            (inhibit-point-motion-hooks t))
-        (git-blame-update-region (car first) (cdr first)))))
+  (when git-blame-update-queue
+    (let ((first (pop git-blame-update-queue))
+          (inhibit-point-motion-hooks t))
+      (git-blame-update-region (car first) (cdr first)))))
 
 (provide 'git-blame)
 
