@@ -260,6 +260,29 @@ negative, count from the end."
           (switch-to-buffer found))
         (error "Not enough buffers")))))
 
+(defun eli-resize-window (n)
+  ;; stealing from `text-scale-adjust'
+  (interactive "p")
+  (let* ((echo-keystrokes nil)
+         (key last-command-event)
+         (key (if (>= n 0) key
+                  (let ((flip '((up . down) (left . right))))
+                    (or (cdr (assq key flip)) (car (rassq key flip))))))
+         (n (abs n))
+         (keys '((down enlarge-window) (right enlarge-window-horizontally)
+                 (up   shrink-window)  (left  shrink-window-horizontally)))
+         (f (cadr (or (assq key keys)
+                      (error 'eli-resize-window "invoked by unknown key: %S"
+                             last-command-event)))))
+    (funcall f n)
+    (message "Use arrows for further adjustment")
+    (when (called-interactively-p 'any)
+      (let ((map (make-sparse-keymap)))
+        (dolist (key keys)
+          (define-key map (vector (car key))
+            `(lambda () (interactive) (eli-resize-window ,n))))
+        (set-temporary-overlay-map map t 2)))))
+
 (defun eli-write-or-move-file (new)
   "Like `write-file', but with a prefix argument delete the original file."
   (interactive

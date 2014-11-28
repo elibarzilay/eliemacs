@@ -152,10 +152,10 @@
   'global
   '("C-x <end>"       split-window-vertically)
   '("C-x <home>"      split-window-horizontally)
-  '("C-x <up>"        shrink-window)
-  '("C-x <down>"      enlarge-window)
-  '("C-x <left>"      shrink-window-horizontally)
-  '("C-x <right>"     enlarge-window-horizontally)
+  '("C-x <up>"        eli-resize-window)
+  '("C-x <down>"      eli-resize-window)
+  '("C-x <left>"      eli-resize-window)
+  '("C-x <right>"     eli-resize-window)
   ;; these are still as the default
   '("C-x <C-left>"    unbury-buffer)
   '("C-x <C-right>"   bury-buffer)

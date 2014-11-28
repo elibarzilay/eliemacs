@@ -3,6 +3,53 @@
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
 ;;-----------------------------------------------------------------------------
+;; Override from "subr.el": add a `timeout' to `set-temporary-overlay-map'
+
+(defun set-temporary-overlay-map (map &optional keep-pred timeout)
+  "Set MAP as a temporary keymap taking precedence over most other keymaps.
+Note that this does NOT take precedence over the \"overriding\" maps
+`overriding-terminal-local-map' and `overriding-local-map' (or the
+`keymap' text property).  Unlike those maps, if no match for a key is
+found in MAP, the normal key lookup sequence then continues.
+
+Normally, MAP is used only once.  If the optional argument
+KEEP-PRED is t, MAP stays active if a key from MAP is used.
+KEEP-PRED can also be a function of no arguments: if it returns
+non-nil then MAP stays active."
+  (let* ((clearfunsym (make-symbol "clear-temporary-overlay-map"))
+         (overlaysym (make-symbol "t"))
+         (alist (list (cons overlaysym map)))
+         (clearfun
+          ;; FIXME: Use lexical-binding.
+          `(lambda ()
+             (interactive)
+             (unless ,(cond ((null keep-pred) nil)
+                            ((eq t keep-pred)
+                             `(eq this-command
+                                  (lookup-key ',map
+                                              (this-command-keys-vector))))
+                            (t `(funcall ',keep-pred)))
+               (set ',overlaysym nil)   ;Just in case.
+               (remove-hook 'pre-command-hook ',clearfunsym)
+               (setq emulation-mode-map-alists
+                     (delq ',alist emulation-mode-map-alists))))))
+    ;; calling the clear function from an idle timer won't work for the
+    ;; waiting read itself, which means that the map still holds for one
+    ;; more read -- avoid that with a fake no-op key
+    (define-key map (vector clearfunsym) clearfunsym)
+    (set overlaysym overlaysym)
+    (fset clearfunsym clearfun)
+    (add-hook 'pre-command-hook clearfunsym)
+    ;; FIXME: That's the keymaps with highest precedence, except for
+    ;; the `keymap' text-property ;-(
+    (push alist emulation-mode-map-alists)
+    (when timeout
+      ;; (run-with-idle-timer timeout nil 'funcall clearfunsym)
+      (run-with-idle-timer timeout nil
+        (lambda (c) (message nil) (push c unread-command-events) (funcall c))
+        clearfunsym))))
+
+;;-----------------------------------------------------------------------------
 ;; Override from "simple.el": avoid the "helpful" octal/hexadecimal if it goes
 ;; into the buffer
 
