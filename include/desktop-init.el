@@ -29,7 +29,7 @@
                    (shell-command-history    .  50)
                    (yes-or-no-p-history      .   2)
                    (faces-history            .  40))
-                 desktop-globals-to-save)
+                 (delq 'file-name-history desktop-globals-to-save))
         desktop-locals-to-save
           (nconc '(word-wrap line-move-visual) desktop-locals-to-save)
         desktop-buffers-not-to-save ; skip " *" names & completions
