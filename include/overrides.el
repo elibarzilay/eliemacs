@@ -227,9 +227,6 @@ specifies what to do when the user exits the help buffer."
   t)
 (setq temp-buffer-show-function 'eli-temp-buffer-show-function)
 
-(setq display-buffer-alist
-      '(("^[*]Shell Command Output[*]$" eli-temp-buffer-show-function)))
-
 ;;-----------------------------------------------------------------------------
 ;; Override from "userlock.el": make a changed file automatically reload
 

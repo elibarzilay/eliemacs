@@ -232,9 +232,9 @@
   '("C-c k"           global-set-key)
   '("C-c l"           local-set-key)
   '("C-c b"           buffer-local-set-key)
-  '("C-c C-S-k"       global-unset-key)
-  '("C-c C-S-l"       local-unset-key)
-  '("C-c C-S-b"       buffer-local-unset-all)
+  '("C-c K"           global-unset-key)
+  '("C-c L"           local-unset-key)
+  '("C-c B"           buffer-local-unset-all)
 
   ;; variable setting
   'global

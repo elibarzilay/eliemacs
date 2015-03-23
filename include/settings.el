@@ -178,7 +178,7 @@
  ;; >> convenience/Buffer-menu
  Buffer-menu-use-header-line t
  Buffer-menu-buffer+size-width 25
- Buffer-menu-mode-width 10
+ Buffer-menu-mode-width 14
  ;; >> convenience/whitespace
  whitespace-style '(face                  ; use faces (=> customizable)
                     tabs ;newline spaces  ; only tabs

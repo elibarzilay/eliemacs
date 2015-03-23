@@ -11,9 +11,9 @@
 
 ;; (electric-indent-mode 1) ; would be nice, but indents the existing line too
                             ; also affects C-o in the same way
-;; (electric-pair-mode 1) ; would be nice, but doesn't play well with delsel
-                          ; eg, type "(" when there's an active region
-(electric-layout-mode 1)
+;; (electric-pair-mode 1)   ; would be nice, but doesn't play well with delsel
+                            ; eg, type "(" when there's an active region
+;; (electric-layout-mode 1) ; tends to be really annoying (eg, in js-mode)
 
 ;;-----------------------------------------------------------------------------
 ;; Some generic utilities
@@ -188,7 +188,12 @@ With a prefix argument go back to the default."
             [remap eli-previous-line] 'dired-previous-line)
           (put 'dired-next-line 'CUA 'move)
           (put 'dired-previous-line 'CUA 'move)
-          (add-hook 'dired-mode-hook (lambda () (setq truncate-lines t)))))
+          (add-hook 'dired-mode-hook
+            (lambda ()
+              (setq truncate-lines t)
+              (when list-buffers-directory
+                (setq list-buffers-directory
+                      (abbreviate-file-name list-buffers-directory)))))))
 
 ;;-----------------------------------------------------------------------------
 ;; More utilities.

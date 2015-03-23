@@ -48,20 +48,86 @@
           (lambda ()
             (add-hook 'post-command-hook 'eli-track-last-shell nil t)))
 
-(defun eli-shell-command ()
-  "Similar to `shell-command' but sets environment variables $f, $F, and $d
-to the current file's name, fullname,and directory name (if the current
-buffer is associated with a file).  Also, use the region if it is on."
-  (interactive)
-  (let ((max-mini-window-height 1) ; make it more predictable
-        (process-environment process-environment)) ; restore the env later
-    (cond ((buffer-file-name)
-           (setenv "f" (file-name-nondirectory (buffer-file-name)))
-           (setenv "F" (buffer-file-name))
-           (setenv "d" (file-name-directory (buffer-file-name))))
-          (t (setenv "d" default-directory)))
-    (call-interactively
-     (if (use-region-p) 'shell-command-on-region 'shell-command))))
+(declare-function dired-get-filename ; used below
+                  "dired" (&optional localp no-error-if-not-filep))
+(defun eli-shell-command (command &optional output-buffer error-buffer)
+  "Similar to `shell-command' but sets convenient environment variables when
+the command runs if the current buffer is associated with a file, and use the
+current selected region (if active) as stdin.  Also, shows the pwd and the
+command in the buffer list.
+
+The environment variables set are:
+
+  $f, $F, $Fh: current file name, full path, relative to $HOME
+               (full path if it's not in $HOME)
+               The value is taken from `buffer-file-name'
+
+  $D, $Dh:     full directory name, relative to $HOME (same as above)
+               The value is taken from `buffer-file-name' or
+               `default-directory'.
+
+Notes:
+- in dired mode only the directory paths are set
+- behaves as if `async-shell-command-buffer' is 'new-buffer"
+  (interactive ; args and this are the same as in `shell-command'
+   (list
+    (read-shell-command
+     (if (use-region-p) "Shell command on region: " "Shell command: ")
+     nil nil
+     (let ((filename (or buffer-file-name
+                         (and (eq major-mode 'dired-mode)
+                              (dired-get-filename nil t)))))
+       (and filename (file-relative-name filename))))
+    current-prefix-arg
+    shell-command-default-error-buffer))
+  (let* ((process-environment process-environment) ; restore the env later
+         (path (buffer-file-name))
+         (file (and path (file-name-nondirectory path)))
+         (dir  (if path (file-name-directory path) default-directory))
+         (HOME (getenv "HOME"))
+         (async-p  (save-match-data (string-match "[ \t]*&[ \t]*\\'" command)))
+         (region-p (use-region-p))
+         (bufname  (cond (output-buffer output-buffer)
+                         (async-p "*Async Shell Command*")
+                         (t       "*Shell Command Output*"))))
+    (setenv "f"  file)
+    (setenv "F"  path)
+    (setenv "Fh" (and path (file-relative-name path HOME)))
+    (setenv "D"  dir)
+    (setenv "Dh" (file-relative-name dir HOME))
+    (setq output-buffer (get-buffer-create bufname))
+    (when (and async-p region-p)
+      (message-sit 1 "Cannot run an async command on selection, ignoring it")
+      (setq region-p nil))
+    (when (and async-p (get-buffer-process output-buffer))
+      (setq output-buffer (generate-new-buffer bufname)))
+    (let* ((win (selected-window)) (prev (window-prev-buffers win)))
+      (prog1 (if async-p
+               (save-window-excursion ; messes up: shows it twice, display below
+                 (shell-command command output-buffer error-buffer))
+               (let ((max-mini-window-height 1) ; make it more predictable
+                     (resize-mini-windows t)
+                     (range (if (not region-p) (list (point) (point))
+                                (list (region-beginning) (region-end)))))
+                 (shell-command-on-region
+                  (car range) (cadr range) command
+                  output-buffer current-prefix-arg error-buffer)))
+        (with-current-buffer output-buffer
+          (setq list-buffers-directory
+                (concat (replace-regexp-in-string
+                         "/?\\'" "" (abbreviate-file-name default-directory))
+                        "$ " command))
+          (view-mode 1))
+        (when async-p
+          (display-buffer output-buffer)
+          ;; the window is not selected, so avoid switching to it if we
+          ;; use `delete-other-windows'
+          (set-window-prev-buffers win prev))))))
+
+(add-to-list 'display-buffer-alist
+             '("^[*]Shell Command Output[*]$" eli-temp-buffer-show-function))
+(add-to-list 'display-buffer-alist
+             '("^[*]Async Shell Command[*]" display-buffer-pop-up-window))
 
 ;;-----------------------------------------------------------------------------
 ;; * Make it possible for comint to send input immediately.

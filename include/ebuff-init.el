@@ -27,13 +27,19 @@
   (and window-system '([escape] Electric-buffer-menu-quit))
   (unless window-system '([?\e ?O] nil)) ; allow arrows in text mode
   '([?1]                        Electric-buffer-menu-select)
-  '([?x]                        Buffer-menu-execute))
+  '([?x]                        Buffer-menu-execute)
+  ;; kind of works, except that it throws an error because of the below hook
+  '([down-mouse-1]              Electric-buffer-menu-mouse-select)
+  '([mouse-1]                   Electric-buffer-menu-mouse-select)
+  )
 
 ;; Add a hook to fix 'ebuff-menu.el' -- exit Ebuff when click outside (like in
 ;; ehelp) - should be done by Emacs.
 (add-hook
  'electric-buffer-menu-mode-hook
  (lambda ()
+   ;; The following messes up clicking, but losing that is minor
+   ;; compared to getting out of the ebuff window by mistake.
    (add-hook 'mouse-leave-buffer-hook 'Electric-buffer-menu-quit nil t)
    (add-hook 'kill-buffer-hook
              '(lambda ()

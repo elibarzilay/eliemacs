@@ -3,14 +3,14 @@ EliEmacs Quick Reference
 
 Arrow Keys etc:
                | [normal]        | [ctrl]       | [shft]    | [meta]
-  <left/right> | move back/forwd | word move    | mv+select | paren move
-  <up/down>    | move up/down    | scroll line  | mv+select | paragraph move
-  <home/end>   | mv beg/end line | beg/end file | mv+select | sentence move
-  <page-up/dn> | move page       | mv+scrl line | mv+select | page move (to ^L)
+  <left/right> | move back/forwd | word move    | mv+select | expr move
+  <up/down>    | move up/down    | scroll line  | mv+select | para move
+  <home/end>   | mv beg/end line | beg/end file | mv+select | sent move
+  <page-up/dn> | move page       | mv+scrl line | mv+select | page move (^L)
   <ins>        | ins/ovrwrt mode | copy         | paste     | paste-prev
-  <del>        | delete (region) | del word     | cut       | del parens
-  <bksp>       | del back        | del wrd back |           | del prns bk
-  <tab>        | indent          | other window | prev bffr |
+  <del>        | delete (region) | del word     | cut       | del expr
+  <bksp>       | del-back (rgn)  | del wrd back |           | del expr back
+  <tab>        | indent (region) | other window | prev bffr |
 
 Function Keys:
         | [normal]       | [ctrl]        | [shift]         | [shft+ctrl]
