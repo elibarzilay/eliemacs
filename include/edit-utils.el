@@ -391,7 +391,8 @@ negative, count from the end."
 ;;-----------------------------------------------------------------------------
 ;; Better character-pair inserting
 
-(defvar eli-insert-pair-last-position nil)
+(defvar eli-insert-pair-last-data nil)
+(defvar eli-pairs-cycle nil)
 
 (defun eli-insert-pair (&optional arg open close)
   "Similar to `insert-pair', except better.
@@ -401,51 +402,86 @@ negative, count from the end."
 - calling this a second time will use the previous call's location
 - always deactivate the mark and put the cursor in the beginning
 - wraps pair around the next *sexprs*, skipping comments and newlines
-- more cases for spaces (comments, symbols, etc)"
+- more cases for spaces (comments, symbols, etc)
+
+`eli-pairs-cycle' can be '((OPEN . CLOSE) ...) to choose OPEN and
+CLOSE from the list based on the delimiters used in the last
+call (on consecutive calls)."
   (interactive "P")
-  (unless (and open close)
-    (let* ((ch (event-basic-type last-command-event))
-           (pair (or (assq last-command-event insert-pair-alist)
-                     (assq ch insert-pair-alist))))
-      (if pair
-        (if (nth 2 pair)
-          (setq open (nth 1 pair) close (nth 2 pair))
-          (setq open (nth 0 pair) close (nth 1 pair)))
-        (setq open (or open ch) close (or close ch)))))
-  (let (beg end (arg (if arg (prefix-numeric-value arg) 0)))
-    (cond ((and (eq last-command this-command) eli-insert-pair-last-position)
-           (setq beg (car eli-insert-pair-last-position)
-                 end (cdr eli-insert-pair-last-position)))
-          ((use-region-p)
-           (setq beg (region-beginning)
-                 end (region-end)))
+  (let* ((arg (if arg (prefix-numeric-value arg) 0))
+         (again (and (eq last-command this-command) eli-insert-pair-last-data))
+         (to-str (lambda (x)
+                   (cond ((stringp x) x) ((integerp x) (string x))
+                         (t (error "internal error")))))
+         openlen closelen beg end)
+    (unless (and open close)
+      (if eli-pairs-cycle
+        (let* ((x (member (nth 2 again) eli-pairs-cycle))
+               (x (if (cdr x) (cadr x) (car eli-pairs-cycle))))
+          (setq open (car x) close (cdr x)))
+        (let* ((ch (event-basic-type last-command-event))
+               (pair (or (assq last-command-event insert-pair-alist)
+                         (assq ch insert-pair-alist))))
+          (if pair
+            (if (nth 2 pair)
+              (setq open (nth 1 pair) close (nth 2 pair))
+              (setq open (nth 0 pair) close (nth 1 pair)))
+            (setq open (or open ch) close (or close ch))))))
+    (setq open  (funcall to-str open ) openlen  (length open)
+          close (funcall to-str close) closelen (length close))
+    (cond (again (setq beg (nth 0 again) end (nth 1 again))
+                 (when eli-pairs-cycle
+                   (let ((len0 (length (car (nth 2 again))))
+                         (len1 (length (cdr (nth 2 again)))))
+                     (delete-region end (+ end len1))
+                     (delete-region (- beg len0) beg)
+                     ;; merge this command's undo with last one
+                     (let ((last-undo (nth 3 again))
+                           (new-undo buffer-undo-list)
+                           (p '()))
+                       (while (and new-undo (not (eq new-undo last-undo)))
+                         (let ((x (pop new-undo))) (when x (push x p))))
+                       (setq buffer-undo-list (nconc (nreverse p) new-undo)))
+                     (setq end (- end len0) beg (- beg len0)))))
+          ((use-region-p) (setq beg (region-beginning) end (region-end)))
           ((> arg 0) (forward-sexp 1)
-                     (forward-sexp -1)
-                     (setq beg (point))
-                     (forward-sexp arg)
-                     (setq end (point)))
+           (forward-sexp -1)
+           (setq beg (point))
+           (forward-sexp arg)
+           (setq end (point)))
           ((< arg 0) (forward-word 1)
-                     (forward-word -1)
-                     (setq beg (point))
-                     (forward-word arg)
-                     (setq end (point)))
+           (forward-word -1)
+           (setq beg (point))
+           (forward-word arg)
+           (setq end (point)))
           (t (setq beg (point) end (point))))
     (goto-char end)
     (insert close)
-    (when (and parens-require-spaces (not (eobp)) (not (eolp))
+    (when (and parens-require-spaces (not again) (not (eobp)) (not (eolp))
                (memq (char-syntax (following-char))
-                     (cons (char-syntax open) '(?w ?_ ?\" ?\' ?<))))
+                     (cons (char-syntax (aref open 0))
+                           '(?w ?_ ?\" ?\' ?<))))
       (insert " "))
     (goto-char beg)
-    (when (and parens-require-spaces (not (bobp)) (not (bolp))
+    (when (and parens-require-spaces (not again) (not (bobp)) (not (bolp))
                (memq (char-syntax (preceding-char))
-                     (cons (char-syntax close) '(?w ?_ ?\" ?<))))
+                     (cons (char-syntax (aref close (1- closelen)))
+                           '(?w ?_ ?\" ?<))))
       (insert " ")
       ;; adjust locations (could be done with markers, but this should work)
       (setq beg (1+ beg) end (1+ end)))
     (insert open)
-    (setq beg (1+ beg) end (1+ end))
-    (setq eli-insert-pair-last-position (cons beg end))))
+    (setq beg (+ beg openlen) end (+ end openlen))
+    (setq eli-insert-pair-last-data
+          (list beg end (cons open close) buffer-undo-list))))
+
+(defun eli-insert-backquote-pair (arg)
+  "Insert a `...` pair, on consecutive calls, replace that with `...',
+``...``, etc."
+  (interactive "P")
+  (let ((eli-pairs-cycle
+         '(("`" . "`") ("`" . "'") ("``" . "``") ("``" . "''"))))
+    (eli-insert-pair arg)))
 
 ;;-----------------------------------------------------------------------------
 ;; A useful counter thing

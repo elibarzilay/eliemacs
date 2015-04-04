@@ -168,7 +168,7 @@
   '("M-<"             eli-insert-pair)
   '("M-\""            eli-insert-pair)
   '("M-'"             eli-insert-pair)
-  '("M-`"             eli-insert-pair)
+  '("M-`"             eli-insert-backquote-pair)
   '("M-*"             eli-insert-pair)
   '("M-_"             eli-insert-pair)
 
