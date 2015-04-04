@@ -48,6 +48,11 @@
           (lambda ()
             (add-hook 'post-command-hook 'eli-track-last-shell nil t)))
 
+;; comint.el sets $EMACS to "t" unless it's set, which messes up running
+;; makefiles inside emacs.  Prevent that by setting it here.
+(unless (getenv "EMACS") (setenv "EMACS" "emacs"))
+
+(declare-function shell-mode "shell" ())
 (declare-function dired-get-filename ; used below
                   "dired" (&optional localp no-error-if-not-filep))
 (defun eli-shell-command (command &optional output-buffer error-buffer)
@@ -83,43 +88,69 @@ Notes:
   (let* ((process-environment process-environment) ; restore the env later
          (path (buffer-file-name))
          (file (and path (file-name-nondirectory path)))
-         (dir  (if path (file-name-directory path) default-directory))
+         (ddir default-directory)
+         (dir  (if path (file-name-directory path) ddir))
          (HOME (getenv "HOME"))
-         (async-p  (save-match-data (string-match "[ \t]*&[ \t]*\\'" command)))
+         (command0 command)
+         (command (replace-regexp-in-string "[ \t]*&[ \t]*\\'" "" command0))
+         (async-p (not (equal command command0)))
          (region-p (use-region-p))
-         (bufname  (cond (output-buffer output-buffer)
-                         (async-p "*Async Shell Command*")
-                         (t       "*Shell Command Output*"))))
+         (obuf (cond ((stringp output-buffer) output-buffer)
+                     ((bufferp output-buffer) output-buffer)
+                     ((not output-buffer) (if async-p "*Async Shell Command*"
+                                              "*Shell Command Output*"))
+                     (t (barf-if-buffer-read-only) (current-buffer)))))
     (setenv "f"  file)
     (setenv "F"  path)
     (setenv "Fh" (and path (file-relative-name path HOME)))
     (setenv "D"  dir)
     (setenv "Dh" (file-relative-name dir HOME))
-    (setq output-buffer (get-buffer-create bufname))
     (when (and async-p region-p)
       (message-sit 1 "Cannot run an async command on selection, ignoring it")
       (setq region-p nil))
-    (when (and async-p (get-buffer-process output-buffer))
-      (setq output-buffer (generate-new-buffer bufname)))
+    (unless (bufferp obuf)
+      (setq obuf (get-buffer-create
+                  (if (not (and async-p (get-buffer-process obuf))) obuf
+                      (generate-new-buffer obuf)))))
     (let* ((win (selected-window)) (prev (window-prev-buffers win)))
       (prog1 (if async-p
                (save-window-excursion ; messes up: shows it twice, display below
-                 (shell-command command output-buffer error-buffer))
+                 ;; (shell-command command obuf error-buffer)
+                 ;; => copied & modified from the async part of `shell-command`
+                 (with-current-buffer obuf
+                   (setq buffer-read-only nil)
+                   (unless output-buffer
+                     (let ((inhibit-read-only t)) (erase-buffer)))
+                   (display-buffer obuf)
+                   ;; this is probably done in case of preexisting
+                   ;; output buffer in a different directory
+                   (setq default-directory ddir)
+                   (push-mark (point) 'nomsg)
+                   (let ((proc (start-process "Shell" obuf shell-file-name
+                                              shell-command-switch command)))
+                     (setq mode-line-process '(":%s"))
+                     (unless output-buffer (require 'shell) (shell-mode))
+                     (set-process-sentinel proc 'shell-command-sentinel)
+                     (set-process-filter proc 'comint-output-filter)
+                     ;; this is needed, otherwise comint barfs
+                     (setq-local comint-last-output-start (make-marker))
+                     ;; this makes the output appear at the current point
+                     (set-marker (process-mark proc) (point)))))
                (let ((max-mini-window-height 1) ; make it more predictable
                      (resize-mini-windows t)
                      (range (if (not region-p) (list (point) (point))
                                 (list (region-beginning) (region-end)))))
                  (shell-command-on-region
                   (car range) (cadr range) command
-                  output-buffer current-prefix-arg error-buffer)))
-        (with-current-buffer output-buffer
+                  obuf current-prefix-arg error-buffer)))
+        (with-current-buffer obuf
           (setq list-buffers-directory
                 (concat (replace-regexp-in-string
-                         "/?\\'" "" (abbreviate-file-name default-directory))
+                         "/?\\'" "" (abbreviate-file-name ddir))
                         "$ " command))
-          (view-mode 1))
+          (unless output-buffer (view-mode 1)))
         (when async-p
-          (display-buffer output-buffer)
+          (display-buffer obuf)
           ;; the window is not selected, so avoid switching to it if we
           ;; use `delete-other-windows'
           (set-window-prev-buffers win prev))))))
