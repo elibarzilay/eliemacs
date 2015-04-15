@@ -29,6 +29,12 @@
 (autoload 'bigfont-flash-big-string  "bigfont" nil t)
 (autoload 'bigfont-scroll-big-string "bigfont" nil t)
 
+;;-----------------------------------------------------------------------------
+;; Markdown viewing
+
+(autoload 'markdown-mode "markdown" nil t)
+(autoload 'markdown-text-mode "markdown" nil t)
+
 ;; ----------------------------------------------------------------------------
 ;; filladapt (protected against multiple loads)
 
