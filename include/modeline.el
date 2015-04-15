@@ -6,49 +6,56 @@
 (column-number-mode 1)
 (size-indication-mode 1)
 
+(defvar my-help-echo
+  "Click left to select&resize, right: single window, left: delete it")
+
 (setq display-time-default-load-average nil
       display-time-load-average nil
       display-time-use-mail-icon t
       display-time-day-and-date nil
       display-time-24hr-format t
-      display-time-format "%H:%M-") ; add a dash (ignores the above two)
+      display-time-format ; ignores the above, used to add a dash in the end
+      (propertize "%H:%M" 'face display-time-mail-face)
+      )
+;; The above doesn't get the face through, so dump the load & mail
+;; completely (it'll be tedious to find the bit to change just the time,
+;; or to copy the whole thing); just set the time with this code:
+(setq display-time-string-forms
+  '((propertize ">" 'help-echo my-help-echo)
+    (propertize " " 'help-echo my-help-echo 'display
+                '((space :align-to (- (+ right right-fringe right-margin) 5))))
+    (propertize (format-time-string "%H:%M" now)
+                'help-echo (format-time-string "%A, %Y-%m-%d %H:%M" now)
+                'face display-time-mail-face)))
 (display-time-mode 1)
 
 ;; copied from "bindings.el" and modified
-(let* ((help-echo
-	;; The multi-line message doesn't work terribly well on the
-	;; bottom mode line...  Better ideas?
-	;; 	  "\
-	;; mouse-1: select window, mouse-2: delete others, mouse-3: delete,
-	;; drag-mouse-1: resize, C-mouse-2: split horizontally"
-	"mouse-1: Select (drag to resize)\n\
-mouse-2: Make current window occupy the whole frame\n\
-mouse-3: Remove current window from display")
-       (recursive-edit-help-echo "Recursive edit, type C-M-c to get out")
-       (dashes (propertize "-" 'help-echo help-echo)) ;ELI
+(let* ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out")
+       (dashes (propertize "-" 'help-echo my-help-echo)) ;ELI
        (standard-mode-line-format
 	(list
 	 "%e"
-	 (propertize "-" 'help-echo help-echo)
+	 (propertize "-" 'help-echo my-help-echo)
 	 'mode-line-mule-info
 	 ;;ELI 'mode-line-client
 	 'mode-line-modified
 	 ;;ELI 'mode-line-remote
 	 ;;ELI 'mode-line-frame-identification
-         (propertize ">" 'help-echo help-echo) ;ELI
+         (propertize ">" 'help-echo my-help-echo) ;ELI
 	 'mode-line-buffer-identification
-	 (propertize " " 'help-echo help-echo) ;ELI
+	 (propertize " " 'help-echo my-help-echo) ;ELI
 	 'mode-line-position
 	 '(vc-mode vc-mode)
-	 (propertize "  " 'help-echo help-echo)
+	 (propertize "  " 'help-echo my-help-echo)
 	 'mode-line-modes
 	 `(which-func-mode (,dashes which-func-format)) ;ELI
 	 `(global-mode-string (,dashes global-mode-string))
-	 (propertize "%-" 'help-echo help-echo))) ;ELI
+	 ; (propertize "%-" 'help-echo my-help-echo) ;ELI, added, then removed
+         ))
        (standard-mode-line-modes
 	(list
 	 (propertize "%[" 'help-echo recursive-edit-help-echo)
-	 (propertize "(" 'help-echo help-echo)
+	 (propertize "(" 'help-echo my-help-echo)
 	 `(:propertize ("" mode-name)
 		       help-echo "Major mode\n\
 mouse-1: Display major mode menu\n\
@@ -68,9 +75,9 @@ mouse-3: Toggle minor modes"
 		     'mouse-face 'mode-line-highlight
 		     'local-map (make-mode-line-mouse-map
 				 'mouse-2 #'mode-line-widen))
-	 (propertize ")" 'help-echo help-echo)
+	 (propertize ")" 'help-echo my-help-echo)
 	 (propertize "%]" 'help-echo recursive-edit-help-echo)
-	 (propertize "-" 'help-echo help-echo))) ;ELI
+	 (propertize "-" 'help-echo my-help-echo))) ;ELI
 
        (standard-mode-line-position
 	`((line-number-mode
@@ -94,7 +101,7 @@ mouse-1: Display Line and Column Mode Menu"))))
 		  'mouse-face 'mode-line-highlight
 		  'help-echo "Column number\n\
 mouse-1: Display Line and Column Mode Menu")))))
-          ,(propertize "-" 'help-echo help-echo)
+          ,(propertize "-" 'help-echo my-help-echo)
 	  (0 ,(propertize
 		"%p"
 		'local-map mode-line-column-line-number-mode-map

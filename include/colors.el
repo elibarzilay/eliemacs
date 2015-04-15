@@ -30,7 +30,8 @@ Attributes can also be in these forms:
   - `*' or `default', or just empty
 * `box[N]' for a box with width N, defaults to 1
 * `big[N]', `small[N]' for a multiplier or divider of N0%, defaults to 25%
-* `scale[N]' (for a scale of N%)
+* `scale[N]' for a scale of N%
+* `height[N]' for a fixed height of N
 
 An optional argument FACE-NAME will make it be defined as the result face, and
 force the face to be modified if it exists (good for setting properties of
@@ -73,7 +74,7 @@ existing faces)."
 
 (defun simple-face-parse-compound-attr (attr)
   (cond
-    ((string-match "\\`\\(big\\|small\\|scale\\)\\([0-9]+\\)?\\'" attr)
+    ((string-match "\\`\\(big\\|small\\|scale\\|height\\)\\([0-9]+\\)?\\'" attr)
      (let* ((op    (match-string 1 attr))
             (arg   (match-string 2 attr))
             (arg   (and arg (string-to-number arg)))
@@ -82,7 +83,7 @@ existing faces)."
                         (+ 100 (if arg (* 10 arg) 25)))
                       100.0))
             (scale (if (equal op "small") (/ 1.0 scale) scale)))
-       (list :height scale)))
+       (list :height (if (equal op "height") arg scale))))
     ((string-match "\\`box\\([0-9]+\\)?\\'" attr)
      (list :box (if (match-beginning 1)
                   (list :line-width (string-to-number (match-string 1 attr)))
@@ -382,8 +383,8 @@ one added first), if negative removes all."
    (scroll-bar                   white/gray10           black/gray90)
    (mode-line                    yellow/red2-uninverse-scale75
                                        red2/yellow-uninverse-scale75)
-   (mode-line-inactive           orange4/red4-uninverse-scale65
-                                       orange4/yellow4-uninverse-scale65)
+   (mode-line-inactive           orange3/red4-uninverse-scale65
+                                       orange3/yellow4-uninverse-scale65)
    (mode-line-buffer-id bold)
    ;; (mode-line-highlight */green) ???
    (header-line                  yellow/green4-bold     green4/yellow-bold)
@@ -438,7 +439,7 @@ one added first), if negative removes all."
    ))
 
 (setq mode-line-in-non-selected-windows t)
-(setq display-time-mail-face (simple-make-face 'yellow/orange4-bold))
+(setq display-time-mail-face (simple-make-face 'yellow/orangered4-bold))
 
 ;;-----------------------------------------------------------------------------
 ;; Paren coloring using "mic-paren"
