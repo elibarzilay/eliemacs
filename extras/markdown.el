@@ -29,7 +29,7 @@
 ;; that markdown is basically just human readable text, and that
 ;; justifies avoiding such edge cases in a tool like this.)
 ;;
-;; Note: doesn't work with tabs.  Intentionally.
+;; Note: does not work with tabs.
 ;;
 ;; Implementation note: it would have been easy if there was a way to
 ;; communicate a whole bunch of face decisions to font-lock, but I
@@ -41,6 +41,8 @@
 ;; the parsing information in a hash-table, and then the matcher
 ;; functions that font-lock uses pull information from that table.  It
 ;; complicates things a bit, but it works.
+
+;; =====================================================================
 
 (defgroup markdown nil
   "Markdown highlights etc."
@@ -54,18 +56,29 @@
          `(let ((str (format ,fmt/expr ,@args)))
             (with-current-buffer (get-buffer-create "*Markdown Debug*")
               (goto-char (point-max))
-              (insert str "\n"))))
+              (insert (format-time-string "[%H:%M:%S.%3N] ") str "\n"))))
         ((null args)
          `(condition-case e ,fmt/expr
             (error (markdown-debug "ERROR in %S:\n  %S" ',fmt/expr e))))
         (t `(markdown-debug (progn ,fmt/expr ,@args)))))
 
+;; =====================================================================
+
 ;; Holds a (cons buffer-chars-modified-tick hash), where the hash maps
-;; BOL locations to their type: (list TYPE N TYPE N) where TYPE is
-;; 'blockquote or 'code (can have either one of these, or both (in this
-;; order), but nothing else), and N is the position on the line where
-;; TYPE starts.
-(defvar-local markdown-blocks-cache (cons nil nil))
+;; BOL locations to parse information: (cons block-info inline-info)
+;; - block-info is (list TYPE N TYPE N) where TYPE is 'listitem,
+;;   'blockquote, or 'code, and N is the position on the line where TYPE
+;;   starts.  There can also be a terminating TYPE of 'text for toplevel
+;;   text or 'empty for lines that have no text (possibly just prefix
+;;   text) -- these have no N after them.
+;; - inline-info is a list of inline entries that start somewhere on
+;;   this line, each one is (cons delim-len (cons from to)), where
+;;   delim-len is the length of delimiter that was used: 1 for italic, 2
+;;   for bold, 3 for both, and 0 is used for the delimiter itself.
+(defvar-local markdown-info-cache nil)
+
+;; =====================================================================
+;; Block-level parsing
 
 ;; this is used after skipping initial indentation
 (defconst markdown-listitem-rx
@@ -75,7 +88,7 @@
           "(\\(?:[0-9]+\\|[a-zA-Z]\\))"
           "\\)\\(?: \\|$\\)"))
 
-(defun markdown-block-info* (p bound)
+(defun markdown-get-block-info (p bound)
   ;; Assume that this is called at some toplevel text
   (save-excursion
     (goto-char p)
@@ -86,36 +99,35 @@
            (pending-types+indents0 '())
            (pending-types+indents '())
            (consumed-line
-            ;; used below to set info on line between two blocks that
-            ;; are the same type (for some prefix of the types of both)
+            ;; used below to set info on an empty line between two
+            ;; blocks that are the same type (for some prefix of the
+            ;; types of both)
             (lambda (l1 l2 b)
               (let ((r '()))
                 (while (and l1 l2 (equal (car l1) (car l2)))
                   (setq r (cons b (cons (car l1) r))
                         l1 (cddr l1) l2 (cddr l2)))
-                (nreverse r))))
+                (nreverse (cons 'empty r)))))
            (new-line
             (lambda (new)
               (setq pending-types+indents (nreverse indents+types)
                     indents+types '())
-              (when (listp new) ; doesn't apply to toplevel texts
-                (let ((ts+is pending-types+indents) (p linepos) (pfx '()))
-                  (while ts+is
-                    (push (pop ts+is) pfx)
-                    (push (setq p (min (point) (+ p (or (pop ts+is) 0)))) pfx))
-                  (setq new `(,@(nreverse pfx) ,@new)))
-                (when (listp (cdr (cadr r)))
-                  (pcase (car r)
-                    (`(,b . nil)
-                     (let ((mid (funcall consumed-line new (cdr (cadr r))
-                                         (1- linepos))))
-                       (when mid (setcar r (cons b mid))))))))
+              (let ((ts+is pending-types+indents) (p linepos) (pfx '()))
+                (while ts+is
+                  (push (pop ts+is) pfx)
+                  (push (setq p (min (point) (+ p (or (pop ts+is) 0)))) pfx))
+                (setq new `(,@(nreverse pfx) ,@new)))
+              (let ((prev (cdr (cadr r))))
+                (pcase (car r)
+                  ((and `(,b empty) (guard (not (equal '(text) prev))))
+                   (let ((mid (funcall consumed-line new prev (1- linepos))))
+                     (when mid (setcar r (cons b mid)))))))
               (push `(,linepos . ,new) r)
               (forward-line 1)
               (setq linepos (point))
-              (if new
-                (setq pending-types+indents0 pending-types+indents)
-                (setq pending-types+indents pending-types+indents0))))
+              (if (equal '(empty) new)
+                (setq pending-types+indents pending-types+indents0)
+                (setq pending-types+indents0 pending-types+indents))))
            (enter-block
             (lambda (type indent)
               (push type indents+types)
@@ -128,8 +140,9 @@
         (cond
           ;; going into preexisting container
           ((and pending-types+indents (>= spcs (cadr pending-types+indents))
-                (or (cdar r) ; blockquote doesn't continue after an empty line
-                    (not (eq 'blockquote (car pending-types+indents)))))
+                ;; blockquote doesn't continue after an empty line
+                (not (and (eq 'blockquote (car pending-types+indents))
+                          (memq 'empty (cdar r)))))
            (push (pop pending-types+indents) indents+types)
            (push (pop pending-types+indents) indents+types)
            ;; spcs0 is used to simulate backtracking some spaces (also below)
@@ -139,10 +152,10 @@
           ;; code
           ((and (>= spcs 4)
                 (let ((last (cdar r)))
-                  (or (not last) (and (consp last) (memq 'code last)))))
+                  (or (not last) (memq 'empty last) (memq 'code last))))
            (funcall new-line `(code ,(+ p 4))))
           ;; empty
-          ((eolp) (funcall new-line '()))
+          ((eolp) (funcall new-line '(empty)))
           ;; closing containers
           ((and pending-types+indents
                 (< spcs (cadr pending-types+indents))
@@ -160,52 +173,314 @@
            (goto-char (match-end 0)))
           ;; other text
           (indents+types (funcall new-line '()))
-          (t (funcall new-line 'text))))
-      (when (and (eobp) (bolp)) (push `(,linepos . nil) r))
+          (t (funcall new-line '(text)))))
+      (cond (indents+types (funcall new-line '(empty)))
+            ((and (eobp) (bolp)) (push `(,linepos empty) r)))
       (nreverse r))))
 
-(defun markdown-block-info (p bound)
-  ;; should always be called at a BOL, drop test only because it's
-  ;; always checked before calling this
-  ;; (unless (memq (char-before p) '(?\n nil))
-  ;;   (error "markdown-block-info: should be called at a BOL"))
-  (let ((h (cdr markdown-blocks-cache)) (none " nothing "))
-    (let ((m (buffer-chars-modified-tick)))
-      (unless (eq m (car markdown-blocks-cache))
-        (setq h (make-hash-table))
-        (setq markdown-blocks-cache (cons m h))))
-    (let ((r (gethash p h none)))
-      (if (not (eq none r)) r
-          (progn (dolist (x (markdown-block-info* p bound))
-                   (puthash (car x) (cdr x) h))
-                 (let ((r (gethash p h none)))
-                   (if (not (eq none r)) r
-                       (error "internal error: no value at %S" p))))))))
+;; =====================================================================
+;; Inline parsing
 
-;; return the list of just type symbols, dropping a prefix-only type;
+;; (This is a rough translation of the code in "lib/inlines.js" in
+;; https://github.com/jgm/commonmark.js)
+
+(defconst markdown-inline-delim-rx
+  "\\\\\\|[*]+\\|_+\\|\\(`+\\)[ \r\n]*\\|<")
+(defconst markdown-inline-code-end-delim-rx
+  ;; %s is the expected backtick delimiter; includes the last inline code char
+  "\\(\\(?:[^ \r\n][ \r\n]+\\|[^`]\\)%s\\)\\(?:[^`]\\|\\'\\)")
+(defconst markdown-autolink-rx
+  "[a-z][a-z0-9.-]*:[^<> [:cntrl:]]*>")
+(defconst markdown-autolink-email-rx
+  (concat "[[:alnum:].!#$%&'*+/=?^_`{|}~-]+@"
+          "[[:alnum:]]\\(?:[[:alnum:]-]\\{0,61\\}[[:alnum:]]\\)?"
+          "\\(?:\\.[[:alnum:]]\\(?:[[:alnum:]-]\\{0,61\\}[[:alnum:]]\\)?\\)*"
+          ">"))
+
+(defun markdown-try-html (bound)
+  (pcase (char-after)
+    (?\/ (and (looking-at "/[a-z][[:alnum:]]*[[:space:]]*>")
+              (progn (goto-char (match-end 0)) 'html)))
+    (?\! (goto-char (1+ (point)))
+         (cond ((looking-at "--")
+                (goto-char (match-end 0))
+                (and (not (looking-at "-?>"))
+                     (search-forward "--" bound t)
+                     (looking-at ">")
+                     (progn (goto-char (match-end 0)) 'comment)))
+               ((looking-at "[A-Z]+[[:space:]]")
+                (and (search-forward ">" nil t) 'html))
+               ((looking-at "\\[CDATA\\[")
+                (and (search-forward "]]>" nil t) 'html))))
+    (?\? (goto-char (1+ (point)))
+         (and (search-forward "?>" nil t) 'html))
+    (_ (and (looking-at "[a-z][[:alnum:]]*")
+            (progn (goto-char (match-end 0))
+                   (while (looking-at "[[:space:]]+[a-z_:][[:alnum:]_.:-]*")
+                     (goto-char (match-end 0))
+                     (when (looking-at "[[:space:]]*=[[:space:]]*")
+                       (goto-char (match-end 0))
+                       (when (or (looking-at "[^\"`'=<>]+")
+                                 (looking-at "'[^']*'")
+                                 (looking-at "\"[^\"]*\""))
+                         (goto-char (match-end 0)))))
+                   (and (looking-at "[[:space:]]*/?>")
+                        (progn (goto-char (match-end 0)) 'html)))))))
+
+;; returns (cons ranges delimiters), where
+;; - ranges is a list of ranges, each one is (cons type (cons from to))
+;;   where `type' is a symbol that indicates the type of range
+;; - delimiters is a doubly-linked list of delimiters from the current
+;;   point to `bound', each one is
+;;     (cons (list char length pos can-open can-close) (cons prev next))
+(defun markdown-raw-inline-ranges-and-delimiters (bound)
+  (let ((ranges '()) (first nil) (last nil)
+        (whitespacep ; inluding nil, which happens on buffer edges
+         (lambda (ch cc) (or (eq cc 'Zs) (memq ch '(nil ?\n ?\r ?\t ?\f)))))
+        (punctuationp
+         (lambda (ch cc) (or (memq cc '(Pc Pd Pe Pf Pi Po Ps))
+                             (memq ch '(?$ ?+ ?< ?= ?> ?^ ?` ?\| ?~)))))
+        b e)
+    (while (re-search-forward markdown-inline-delim-rx bound t)
+      (setq b (match-beginning 0) e (match-end 0))
+      (pcase (char-after b)
+        (?\\ (goto-char (1+ (match-end 0))))
+        (?\< (if (or (looking-at markdown-autolink-rx)
+                     (looking-at markdown-autolink-email-rx))
+               (let ((b2 (1- (match-end 0))) (e2 (match-end 0)))
+                 (goto-char e2)
+                 (setq ranges `((delim    . (,b2 . ,e2))
+                                (autolink . (,e  . ,b2))
+                                (delim    . (,b  . ,e ))
+                                . ,ranges)))
+               (let ((type (markdown-try-html bound)))
+                 (if (not type) (goto-char e)
+                     (setq ranges `((,type . (,b  . ,(point))) . ,ranges))))))
+        (?\` (let ((delim (match-string-no-properties 1)))
+               (when (re-search-forward
+                      (format markdown-inline-code-end-delim-rx delim) bound t)
+                 (let ((b2 (1+ (match-beginning 1))) (e2 (match-end 1)))
+                   (goto-char e2)
+                   (setq ranges `((delim . (,b2 . ,e2))
+                                  (code  . (,e  . ,b2))
+                                  (delim . (,b  . ,e ))
+                                  . ,ranges))))))
+        (c (let* ((bc (char-before b)) (ec (char-after e))
+                  (bcc (and bc (get-char-code-property bc 'general-category)))
+                  (ecc (and ec (get-char-code-property ec 'general-category)))
+                  (left-flank
+                   (and (not (funcall whitespacep ec ecc))
+                        (not (and (funcall punctuationp ec ecc)
+                                  (not (funcall whitespacep bc bcc))
+                                  (not (funcall punctuationp bc bcc))))))
+                  (right-flank
+                   (and (not (funcall whitespacep bc bcc))
+                        (not (and (funcall punctuationp bc bcc)
+                                  (not (funcall whitespacep ec ecc))
+                                  (not (funcall punctuationp ec ecc))))))
+                  (openp  (and left-flank (or (= c ?*) (not right-flank))))
+                  (closep (and right-flank (or (= c ?*) (not left-flank)))))
+             (setq last (cons (list c (- e b) b openp closep)
+                              (cons last nil)))
+             (cond ((not first) (setq first last))
+                   ((cadr last) (setcdr (cdr (cadr last)) last)))))))
+    (cons ranges first)))
+
+;; returns ranges as a list of (cons type (cons from to)), where `type'
+;; here is the length of delimiters for emphasis ranges, 0 for the
+;; emphasis delimiter text itself
+(defun markdown-inline-emphasis-ranges (delim-dlist)
+  (let ((ranges '()) r opener (closer delim-dlist))
+    (setq closer (cddr closer))
+    (while closer
+      (while (and closer (not (nth 4 (car closer))))
+        (setq closer (cddr closer)))
+      (setq opener (cadr closer))
+      (while (and opener (not (and (nth 3 (car opener))
+                                   (= (caar opener) (caar closer)))))
+        (setq opener (cadr opener)))
+      (if (not opener)
+        (setq closer (cddr closer))
+        (let* ((o (cdar opener)) (olen (car o)) (opos (cadr o))
+               (c (cdar closer)) (clen (car c)) (cpos (cadr c))
+               (len (min olen clen))
+               (len (cond ((< len 3) len) ((zerop (% clen 2)) 2) (t 1))))
+          (setq ranges `((0    . (,cpos                  . ,(+ cpos len)))
+                         (,len . (,(+ opos olen)         . ,cpos))
+                         (0    . (,(+ opos (- olen len)) . ,(+ opos olen)))
+                         ,@ranges))
+          (unless (eq (cddr opener) closer)
+            (setcdr (cdr opener) closer)
+            (setcar (cdr closer) opener))
+          (if (= olen len)
+            (progn (setcar (cdr closer) (cadr opener))
+                   (when (cadr closer) (setcdr (cdr (cadr closer)) closer)))
+            (setcar o (- olen len)))
+          (if (= clen len)
+            (progn (setq closer (cddr closer))
+                   (when closer
+                     (setcar (cdr closer) (cadr (cadr closer)))
+                     (when (cadr closer)
+                       (setcdr (cdr (cadr closer)) closer))))
+            (progn (setcar c (- clen len))
+                   (setcar (cdr c) (+ cpos len)))))))
+    (nreverse ranges)))
+
+;; return normalized emphasis ranges: all disjoint, merge consecutive
+;; ones, merge ranges of 1- and 2-delims (italic, bold) into 3-delims;
+;; assumes a non-empty input list
+(defun markdown-normalize-ranges (ranges)
+  (let* ((mn (cadr (car ranges)))
+         (mx (cddr (car ranges)))
+         v last-i (last-len nil) r)
+    (dolist (p (cdr ranges)) (when (< (cadr p) mn) (setq mn (cadr p))))
+    (dolist (p (cdr ranges)) (when (> (cddr p) mx) (setq mx (cddr p))))
+    (setq v (make-vector (- mx mn) nil))
+    (dolist (p ranges)
+      (let ((len (car p)) (from (- (cadr p) mn)) (to (- (cddr p) mn)))
+        (dotimes (i (- to from))
+          (let ((old (aref v (+ i from))))
+            (unless (or (eq old len) (eq old 0))
+              (aset v (+ i from) (if (or (not old) (eq len 0)) len 3)))))))
+    (dotimes (i (- mx mn))
+      (unless (eq last-len (aref v i))
+        (when last-len (push (cons last-len (cons (+ mn last-i) (+ mn i))) r))
+        (setq last-i i last-len (aref v i))))
+    (when last-len (push (cons last-len (cons (+ mn last-i) mx)) r))
+    (nreverse r)))
+
+;; returns a list of ranges, each as the above two functions: so type is
+;; 1/2/3 for emphasis ranges, 0 for their delimiters, or a symbol for
+;; other ranges
+(defun markdown-inline-ranges (bound)
+  (let* ((raw (markdown-raw-inline-ranges-and-delimiters bound))
+         (ranges1 (car raw))
+         (ranges2 (markdown-inline-emphasis-ranges (cdr raw)))
+         (ranges2 (if (null ranges2) '()
+                      (markdown-normalize-ranges ranges2))))
+    (sort (append ranges1 ranges2)
+          (lambda (x y)
+            (or (< (cadr x) (cadr y))
+                (and (= (cadr x) (cadr y)) (< (cddr x) (cddr y))))))))
+
+(defun markdown-add-inline-info (block-info)
+  (let ((r '()) (lines block-info) (curblock '())
+        line linetype lastlinetype (start nil))
+    (while (or lines curblock)
+      (setq line (pop lines) linetype '())
+      (let ((l line)) (while l (pop l) (push (pop l) linetype)))
+      (unless (equal linetype lastlinetype)
+        (setq lastlinetype linetype)
+        (when start
+          (let ((inlines (save-excursion
+                           (goto-char start)
+                           (markdown-inline-ranges (car line)))))
+            (setq curblock (nreverse curblock))
+            (while curblock
+              (let ((l (pop curblock)) (is '()))
+                (while (and inlines
+                            (or (null curblock)
+                                (< (cadr (car inlines)) (caar curblock))))
+                  (push (pop inlines) is))
+                (push (cons (car l) (cons (cdr l) (nreverse is))) r)))))
+        (setq start (and (not (memq (car linetype) '(empty code)))
+                         (car line))))
+      (when line
+        (if start (push line curblock)
+            (push (cons (car line) (cons (cdr line) nil)) r))))
+    (setq r (append curblock r) curblock '())
+    (nreverse r)))
+
+;; =====================================================================
+;; internal functions
+
+(defun markdown-set+get-info (p bound)
+  ;; should always be called at a BOL (actually at the beginning of a
+  ;; block), drop test because it's always checked before calling it
+  ;; (unless (memq (char-before p) '(?\n nil))
+  ;;   (error "markdown-info: should be called at a BOL"))
+  (let ((h (cdr markdown-info-cache)))
+    (let ((m (buffer-chars-modified-tick)))
+      (unless (eq m (car markdown-info-cache))
+        (if h (clrhash h) (setq h (make-hash-table)))
+        (setq markdown-info-cache (cons m h))))
+    (or (gethash p h)
+        (let* ((info (markdown-get-block-info p bound))
+               (info (markdown-add-inline-info info)))
+          (dolist (x info) (puthash (car x) (cdr x) h))
+          (or (gethash p h)
+              (error "internal error: no value set at %S" p))))))
+
+(defun markdown-get-block-boundaries (b e)
+  ;; look for toplevel block boundaries containing b--e, simple version:
+  ;; just look for boundaries that are an empty line followed by a line
+  ;; that starts with a non-whitespace; changes point
+  (goto-char b)
+  (unless (bobp)
+    (setq b (if (re-search-backward "\n\n[^ \t\r\n*=+-]" nil t)
+              (progn (forward-line 1) (point))
+              (point-min))))
+  (goto-char e)
+  (unless (eobp)
+    (setq e (if (re-search-forward "\n\n+[^ \t\r\n*=+-]" nil t)
+              (progn (forward-line -1) (point))
+              (point-max))))
+  (cons b e))
+
+(defun markdown-block-info*  (p bound) (car (markdown-set+get-info p bound)))
+(defun markdown-inline-info* (p bound) (cdr (markdown-set+get-info p bound)))
+
+;; =====================================================================
+;; public functions
+
+(defun markdown-info (&optional p)
+  (unless p (setq p (point)))
+  (unless (memq (char-before p) '(?\n nil))
+    (save-excursion (goto-char p) (forward-line 0) (setq p (point))))
+  (or (and (eq (car markdown-info-cache) (buffer-chars-modified-tick))
+           (gethash p (cdr markdown-info-cache)))
+      (let ((r (save-excursion (markdown-get-block-boundaries p p))))
+        ;; first populate hash in the block around p, then get the value at p
+        (markdown-set+get-info (car r) (cdr r))
+        (markdown-set+get-info p (cdr r)))))
+
+(defun markdown-block-info  (&optional p) (car (markdown-info p)))
+(defun markdown-inline-info (&optional p) (cdr (markdown-info p)))
+
+;; returns a list of just type symbols, which is the block info -- it's
+;; a list of 'blockquote, 'listitem, or 'code (which cannot have the
+;; former in it), and can end with 'empty to indicate an empty
+;; (prefix-only) line or 'text for toplevel text lines;
 ;; useful to identify blocks of the same type
-(defun markdown-line-type ()
-  (save-excursion
-    (beginning-of-line)
-    (let ((p (markdown-block-info (point) (point-max))))
-      (if (not (consp p)) p
-          (let ((r '())) (while p (push (pop p) r) (pop p)) (nreverse r))))))
+(defun markdown-line-type (&optional p)
+  (let ((p (markdown-block-info p)) (r '()))
+    (while p (push (pop p) r) (pop p))
+    (nreverse r)))
+
+;; =====================================================================
+;; font-lock functionality
+
+(eval-when-compile (defvar font-lock-beg) (defvar font-lock-end))
+(defun markdown-extend-font-lock-region ()
+  (let ((r (markdown-get-block-boundaries font-lock-beg font-lock-end))
+        (changed nil))
+    (unless (= font-lock-beg (car r)) (setq font-lock-beg (car r) changed t))
+    (unless (= font-lock-end (cdr r)) (setq font-lock-end (cdr r) changed t))
+    changed))
 
 (defun markdown-match-blocks (bound type)
-  (let* (;; The `save-excursion' here is important: without it we can
+  (let* ((p     (point))
+         ;; the `save-excursion' here is important: without it we can
          ;; return a match that is before the starting point, which will
          ;; make font-lock spin in an infinite loop
-         (bol (save-excursion (forward-line 0) (point)))
-         (info (markdown-block-info bol bound))
-         ;; skip empty lines (here and below)
-         (info (and (consp info) (not (eq bol (car (last info)))) info))
-         (info0 (cons bol info))
-         (p (point)))
-    (while (and info (<= (cadr info) p)) (setq info (cddr info)))
+         (bol   (save-excursion (forward-line 0) (point)))
+         (info  (markdown-block-info* bol bound))
+         (info0 (cons bol info)))
+    (while (and (cdr info) (<= (cadr info) p)) (setq info (cddr info)))
     (while (and (not (setq info (memq type info))) (< p bound))
       (forward-line 1)
-      (setq info (markdown-block-info (setq p (point)) bound)
-            info (and (consp info) (not (eq p (car (last info)))) info)
+      (setq p     (point)
+            info  (and (not (eobp)) (markdown-block-info* p bound))
             info0 (cons p info)))
     (and info (< p bound)
          (let ((p0 p) (info* nil))
@@ -216,22 +491,22 @@
            ;; merge same kinds (optimization, not required)
            (while (not (equal info info*))
              (setq info* info)
-             (pcase info
-               (`(,type ,a ,type ,b . ,_) (setq info (cddr info)))))
+             (pcase info (`(,type ,a ,type ,b . ,_) (setq info (cddr info)))))
            (set-match-data
             (pcase info
               (`(code ,b)
                (goto-char b) (forward-line 1) (setq p (point))
                ;; This can be used to have a different highlight for
                ;; first/last lines in a code block, if it'll be possible
-               ;; to have border only on some sides in the future.
+               ;; to have border only on some sides in the future it can
+               ;; be used to have borders on the top/left/bottom sides.
                ;; (let* ((c1 (save-excursion
                ;;              (forward-line -2)
                ;;              (if (bobp) 'edge
-               ;;                  (markdown-block-info (point) bound))))
+               ;;                  (markdown-block-info* (point) bound))))
                ;;        (c1 (if (consp c1) (memq 'code c1) (eq c1 'edge)))
                ;;        (c2 (if (eobp) 'edge
-               ;;                (markdown-block-info (point) bound)))
+               ;;                (markdown-block-info* (point) bound)))
                ;;        (c2 (if (consp c2) (memq 'code c2) (eq c2 'edge))))
                ;;   (cond ((and c1 c2)
                ;;             `(,p0 ,p nil nil ,b ,p nil nil nil nil nil nil))
@@ -243,11 +518,34 @@
                (goto-char b) (forward-line 1) (setq p (point))
                (if (< b (1- p)) (list p0 p p0 b b p)
                    ;; don't highlight empty block lines (do just prefix)
-                   (list p0 p p0 b nil nil)))
+                   (list p0 p p0 b)))
               (`(,(or `blockquote `listitem) ,b . ,_) ; no text content
                (goto-char (setq p b))
-               (list p0 b p0 b nil nil))
+               (list p0 b p0 b))
               (_ (error "internal error: %S" info))))
+           p))))
+
+(defun markdown-match-inlines (bound types)
+  (let* ((p      (point))
+         (bol    (save-excursion (forward-line 0) (point))) ;; as above
+         (ranges (markdown-inline-info* bol bound))
+         (range  (pop ranges)))
+    (while (and range (or (< (cadr range) p) (not (memq (car range) types))))
+      (setq range (pop ranges)))
+    (while (and (not range) (< p bound))
+      (forward-line 1)
+      (setq p      (point)
+            ranges (and (not (eobp)) (markdown-inline-info* p bound))
+            range (pop ranges))
+      (while (and range (not (memq (car range) types)))
+        (setq range (pop ranges))))
+    (and range (< p bound)
+         (let* ((type (car range)) (b (cadr range)) (e (cddr range))
+                (md `(,b ,e)))
+           (while (not (eq type (car types)))
+             (setq types (cdr types) md (cons nil (cons nil md))))
+           (goto-char e)
+           (set-match-data (cons b (cons e md)))
            p))))
 
 (defun markdown-match-code-blocks (bound)
@@ -256,14 +554,35 @@
   (markdown-debug (markdown-match-blocks bound 'blockquote)))
 (defun markdown-match-listitem-blocks (bound)
   (markdown-debug (markdown-match-blocks bound 'listitem)))
+(defun markdown-match-emphasis-inlines (bound)
+  (markdown-debug (markdown-match-inlines bound '(0 1 2 3))))
+(defun markdown-match-source*-inlines (bound) ; source and source-like
+  (markdown-debug
+   (markdown-match-inlines bound '(delim code autolink html comment))))
+
+(defun markdown-nobreak-p ()
+  (let ((props (text-properties-at (point))))
+    (and (plist-get props 'fontified)
+         (eq 'markdown-inline-code-face (plist-get props 'face)))))
+
+;; =====================================================================
 
 (defface markdown-inline-code-face
-  '((t :foreground "yellow" :background "#333" :weight bold
+  '((t :foreground "yellow" :background "#282828"
        :box (:color "#444" :line-width -2 :style released-button)))
   "Face for inline code.")
 (defface markdown-code-block-face
-  '((t :background "#333"))
+  '((t :background "#282828"))
   "Face for code blocks.")
+(defface markdown-autolink-face
+  '((t :foreground "yellow" :background "#226" :underline "gray50"))
+  "Face for inline autolinks.")
+(defface markdown-html-face
+  '((t :foreground "gray55"))
+  "Face for inline html tags.")
+(defface markdown-html-comment-face
+  '((t :foreground "gray35"))
+  "Face for html comments.")
 (defvar markdown-header-magnify/level 0.025)
 (defface markdown-header1-line-face
   '((t :background "#842400"))
@@ -322,9 +641,6 @@
 (defface markdown-blockquote-text-face
   '((t :background "#224"))
   "Face for text in blockquote blocks.")
-(defface markdown-html-comment-face
-  '((t :foreground "gray40"))
-  "Face for html comments.")
 (defface markdown-bold-face
   '((t :inherit bold))
   "Face for inline bold text.")
@@ -347,30 +663,18 @@ Used for the backquotes of inline code, and trailing header hashes.")
   `(;; blocks first, supressing everything else below for code blocks
     (markdown-match-code-blocks
      (2 'markdown-code-block-face t t))
-    ;; comments
-    ("<!--.*?-->"
-     (0 'markdown-html-comment-face t))
-    ;; inline code
-    ("\\(\\(`+\\) *\\)\\(.\\(?:.\\|\n[^\n]\\)*?\\)\\( *\\2\\)"
-     (1 'markdown-markup-punctuation-face)
-     (4 'markdown-markup-punctuation-face)
-     (3 'markdown-inline-code-face))
-    ;; other inline markdowns
-    (,(concat "\\(?:[^*_`.a-zA-Z0-9\\]\\|\\`\\)\\(___\\|\\*\\*\\*\\)"
-              "\\([^ \t\n_*]\\(?:.\\|\n[^\n]\\)*?\\)\\(\\1\\)")
-     (1 'markdown-markup-punctuation-face)
-     (3 'markdown-markup-punctuation-face)
-     (2 'markdown-bold-italic-face))
-    (,(concat "\\(?:[^*_`.a-zA-Z0-9\\]\\|\\`\\)\\(__\\|\\*\\*\\)"
-              "\\([^ \t\n_*]\\(?:.\\|\n[^\n]\\)*?\\)\\(\\1\\)")
-     (1 'markdown-markup-punctuation-face)
-     (3 'markdown-markup-punctuation-face)
-     (2 'markdown-bold-face))
-    (,(concat "\\(?:[^*_`.a-zA-Z0-9\\]\\|\\`\\)\\([_*]\\)"
-              "\\([^ \t\n_*]\\(?:.\\|\n[^\n]\\)*?\\)\\(\\1\\)")
-     (1 'markdown-markup-punctuation-face)
-     (3 'markdown-markup-punctuation-face)
-     (2 'markdown-italic-face))
+    ;; inlines
+    (markdown-match-source*-inlines
+     (1 'markdown-markup-punctuation-face nil t)
+     (2 'markdown-inline-code-face nil t)
+     (3 'markdown-autolink-face nil t)
+     (4 'markdown-html-face nil t)
+     (5 'markdown-html-comment-face nil t))
+    (markdown-match-emphasis-inlines
+     (1 'markdown-markup-punctuation-face nil t)
+     (2 'markdown-italic-face append t)
+     (3 'markdown-bold-face append t)
+     (4 'markdown-bold-italic-face append t))
     ;; horizontal rules
     ("^ *\\([-_*]\\)\\( *\\1\\)\\{2,\\}\n"
      (0 'markdown-horizontal-rule-line-face))
@@ -382,7 +686,7 @@ Used for the backquotes of inline code, and trailing header hashes.")
      (1 '(:height ,(+ 1.0 (* 6 markdown-header-magnify/level))) append)
      (2 'markdown-invisible-markup-punctuation-face append))
     ("^\\(?:\f?\n\\)?## +\\(.*[^ #\n]\\)?\\([ #]*\\)\\(?:\n\\|\\'\\)"
-     (0 'markdown-header2-line-face)
+     (0 'markdown-header2-line-face append)
      (1 'markdown-header2-text-face append)
      (1 '(:height ,(+ 1.0 (* 5 markdown-header-magnify/level))) append)
      (2 'markdown-invisible-markup-punctuation-face append))
@@ -395,7 +699,7 @@ Used for the backquotes of inline code, and trailing header hashes.")
      (0 'markdown-header2-line-face)
      (1 'markdown-header2-text-face append)
      (1 'markdown-invisible-markup-punctuation-face append))
-    ;; lower headers
+    ;; h4/.../h6 headers
     ("^### +\\(.*[^ #\n]\\)?\\([ #]*\\)\\(?:\n\\|\\'\\)"
      (0 'markdown-header3-line-face append)
      (1 'markdown-header3-text-face append)
@@ -426,30 +730,7 @@ Used for the backquotes of inline code, and trailing header hashes.")
     )
   "Syntax highlighting for Markdown files.")
 
-(eval-when-compile (defvar font-lock-beg) (defvar font-lock-end))
-(defun markdown-extend-font-lock-region ()
-  ;; Just extend it to text boundaries that are at 0 indentation
-  (let ((changed nil))
-    (goto-char font-lock-beg)
-    (unless (bobp)
-      (and (if (re-search-backward "\n\n[^ \t\r\n*=+-]" nil t)
-             (forward-line 1)
-             (goto-char (point-min)))
-           (< (point) font-lock-beg)
-           (setq changed t font-lock-beg (point))))
-    (goto-char font-lock-end)
-    (unless (eobp)
-      (and (if (re-search-forward "\n\n+[^ \t\r\n*=+-]" nil t)
-             (forward-line -1)
-             (goto-char (point-max)))
-           (< font-lock-end (point))
-           (setq changed t font-lock-end (point))))
-    changed))
-
-(defun markdown-nobreak-p ()
-  (let ((props (text-properties-at (point))))
-    (and (plist-get props 'fontified)
-         (eq 'markdown-inline-code-face (plist-get props 'face)))))
+;; =====================================================================
 
 (defvar-local markdown-mode-undo nil
   "Set to a form that undoes the effect of `markdown-mode'")
@@ -510,6 +791,8 @@ Same as `indented-text-mode' with `markdown-mode'."
   ;; Seems silly: maybe it's better to just add it as a hook, but see
   ;; `paragraph-indent-text-mode'.
   (markdown-mode +1))
+
+;; =====================================================================
 
 (provide 'markdown)
 
