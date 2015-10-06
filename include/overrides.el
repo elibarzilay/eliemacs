@@ -3,73 +3,64 @@
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
 ;;-----------------------------------------------------------------------------
-;; Override from "subr.el": add a `timeout' to `set-temporary-overlay-map'
-
-(defun set-temporary-overlay-map (map &optional keep-pred timeout)
-  "Set MAP as a temporary keymap taking precedence over most other keymaps.
-Note that this does NOT take precedence over the \"overriding\" maps
-`overriding-terminal-local-map' and `overriding-local-map' (or the
-`keymap' text property).  Unlike those maps, if no match for a key is
-found in MAP, the normal key lookup sequence then continues.
-
-Normally, MAP is used only once.  If the optional argument
-KEEP-PRED is t, MAP stays active if a key from MAP is used.
-KEEP-PRED can also be a function of no arguments: if it returns
-non-nil then MAP stays active."
-  (let* ((clearfunsym (make-symbol "clear-temporary-overlay-map"))
-         (overlaysym (make-symbol "t"))
-         (alist (list (cons overlaysym map)))
-         (clearfun
-          ;; FIXME: Use lexical-binding.
-          `(lambda ()
-             (interactive)
-             (unless ,(cond ((null keep-pred) nil)
-                            ((eq t keep-pred)
-                             `(eq this-command
-                                  (lookup-key ',map
-                                              (this-command-keys-vector))))
-                            (t `(funcall ',keep-pred)))
-               (set ',overlaysym nil)   ;Just in case.
-               (remove-hook 'pre-command-hook ',clearfunsym)
-               (setq emulation-mode-map-alists
-                     (delq ',alist emulation-mode-map-alists))))))
-    ;; calling the clear function from an idle timer won't work for the
-    ;; waiting read itself, which means that the map still holds for one
-    ;; more read -- avoid that with a fake no-op key
-    (define-key map (vector clearfunsym) clearfunsym)
-    (set overlaysym overlaysym)
-    (fset clearfunsym clearfun)
-    (add-hook 'pre-command-hook clearfunsym)
-    ;; FIXME: That's the keymaps with highest precedence, except for
-    ;; the `keymap' text-property ;-(
-    (push alist emulation-mode-map-alists)
-    (when timeout
-      ;; (run-with-idle-timer timeout nil 'funcall clearfunsym)
-      (run-with-idle-timer timeout nil
-        (lambda (c) (message nil) (push c unread-command-events) (funcall c))
-        clearfunsym))))
+;; needed to make the simple.el behavior do what cua-mode used to do
+;; (bug reported, fixed in repo so should be dropped in the future)
+(make-variable-buffer-local 'transient-mark-mode)
 
 ;;-----------------------------------------------------------------------------
-;; Override from "simple.el": avoid the "helpful" octal/hexadecimal if it goes
-;; into the buffer
+;; Get new version from "subr.el" to get the new exitfun return value
+;;   (No other changes, beyond the lexical-let)
 
-(defun eval-expression-print-format (value)
-  "Format VALUE as a result of evaluated expression.
-Return a formatted string which is displayed in the echo area
-in addition to the value printed by prin1 in functions which
-display the result of expression evaluation."
-  (if (and (integerp value)
-           (not (bufferp standard-output)) ;ELI
-           (or (not (memq this-command '(eval-last-sexp eval-print-last-sexp)))
-               (eq this-command last-command)
-               (if (boundp 'edebug-active) edebug-active)))
-      (let ((char-string
-             (if (or (if (boundp 'edebug-active) edebug-active)
-		     (memq this-command '(eval-last-sexp eval-print-last-sexp)))
-                 (prin1-char value))))
-        (if char-string
-            (format " (#o%o, #x%x, %s)" value value char-string)
-          (format " (#o%o, #x%x)" value value)))))
+(defun set-transient-map (map &optional keep-pred on-exit)
+  "Set MAP as a temporary keymap taking precedence over other keymaps.
+Normally, MAP is used only once, to look up the very next key.
+However, if the optional argument KEEP-PRED is t, MAP stays
+active if a key from MAP is used.  KEEP-PRED can also be a
+function of no arguments: it is called from `pre-command-hook' and
+if it returns non-nil, then MAP stays active.
+
+Optional arg ON-EXIT, if non-nil, specifies a function that is
+called, with no arguments, after MAP is deactivated.
+
+This uses `overriding-terminal-local-map' which takes precedence over all other
+keymaps.  As usual, if no match for a key is found in MAP, the normal key
+lookup sequence then continues.
+
+This returns an \"exit function\", which can be called with no argument
+to deactivate this transient map, regardless of KEEP-PRED."
+  (let* ((clearfun (make-symbol "clear-transient-map"))
+         (exitfun
+          (lambda ()
+            (internal-pop-keymap map 'overriding-terminal-local-map)
+            (remove-hook 'pre-command-hook clearfun)
+            (when on-exit (funcall on-exit)))))
+    ;; Don't use letrec, because equal (in add/remove-hook) would get trapped
+    ;; in a cycle.
+    (fset clearfun
+          (lambda ()
+            (with-demoted-errors "set-transient-map PCH: %S"
+              (unless (cond
+                       ((null keep-pred) nil)
+                       ((not (eq map (cadr overriding-terminal-local-map)))
+                        ;; There's presumably some other transient-map in
+                        ;; effect.  Wait for that one to terminate before we
+                        ;; remove ourselves.
+                        ;; For example, if isearch and C-u both use transient
+                        ;; maps, then the lifetime of the C-u should be nested
+                        ;; within isearch's, so the pre-command-hook of
+                        ;; isearch should be suspended during the C-u one so
+                        ;; we don't exit isearch just because we hit 1 after
+                        ;; C-u and that 1 exits isearch whereas it doesn't
+                        ;; exit C-u.
+                        t)
+                       ((eq t keep-pred)
+                        (eq this-command
+                            (lookup-key map (this-command-keys-vector))))
+                       (t (funcall keep-pred)))
+                (funcall exitfun)))))
+    (add-hook 'pre-command-hook clearfun)
+    (internal-push-keymap map 'overriding-terminal-local-map)
+    exitfun))
 
 ;;-----------------------------------------------------------------------------
 ;; Overrides from "window.el"
@@ -77,7 +68,8 @@ display the result of expression evaluation."
 ;; Messes up the count when the window is not shown yet (example: breaks
 ;; resizing of the electric-bubber-list), so add a redisplay.  Actually,
 ;; it's unclear when this happens, so disable it for now.
-'(defun count-screen-lines (&optional beg end count-final-newline window)
+'
+(defun count-screen-lines (&optional beg end count-final-newline window)
   "Return the number of screen lines in the region.
 The number of screen lines may be different from the number of actual lines,
 due to line breaking, display table, etc.
@@ -111,8 +103,8 @@ in some window."
                               (1- (max beg end))
                             (max beg end)))
         (goto-char (point-min))
-        ;; (redisplay) ; ELI
-        ;; (save-excursion (vertical-motion (buffer-size) window)) ; ELI
+        (redisplay) ; ELI
+        (save-excursion (vertical-motion (buffer-size) window)) ; ELI
         (1+ (vertical-motion (buffer-size) window))))))
 
 ;;-----------------------------------------------------------------------------
@@ -126,7 +118,9 @@ This function assumes that `standard-output' is the help buffer.
 It computes a message, and applies the optional argument FUNCTION to it.
 If FUNCTION is nil, it applies `message', thus displaying the message.
 In addition, this function sets up `help-return-method', which see, that
-specifies what to do when the user exits the help buffer."
+specifies what to do when the user exits the help buffer.
+
+Do not call this in the scope of `with-help-window'."
   (and (not (get-buffer-window standard-output))
        (let ((first-message
 	      (cond ((or
@@ -170,9 +164,8 @@ specifies what to do when the user exits the help buffer."
 		       (substitute-command-keys
 			"\\[scroll-other-window] to scroll the help."))))))))
 
-(defvar eli-popup-exit-conf nil
+(defvar-local eli-popup-exit-conf nil
   "Window configuration to restore after quitting viewing a temp buffer.")
-(make-variable-buffer-local 'eli-popup-exit-conf)
 
 (defun buffer-op-and-restore-winconf (buf op)
   (let ((conf (buffer-local-value 'eli-popup-exit-conf buf)))
@@ -202,7 +195,8 @@ specifies what to do when the user exits the help buffer."
   ;; A rough Lisp version of the code in temp_output_buffer_show, which leaves
   ;; us in the new window unless it is a completions window; also take an
   ;; optional alist argument and return t so it can be used with
-  ;; `display-buffer-alist'.
+  ;; `display-buffer-alist'.  Well, while we're at it, allow a `truncate-lines'
+  ;; in the alist to do the obvious thing.
   (let* ((origbuf (current-buffer))
          (origwin (get-buffer-window origbuf))
          (temp-buffer-show-function nil)
@@ -222,6 +216,8 @@ specifies what to do when the user exits the help buffer."
       (unless (and (eq buf origbuf) (eq win origwin))
         (setq eli-popup-exit-conf conf))
       (run-hooks 'temp-buffer-show-hook)
+      (let ((tl (assq 'truncate-lines alist)))
+        (when tl (setq truncate-lines (cdr tl))))
       (select-window win)
       (view-mode 1)))
   t)
@@ -238,7 +234,7 @@ specifies what to do when the user exits the help buffer."
 (eval-after-load "userlock" '(progn
 
 (defun ask-user-about-supersession-threat (fn)
-  "(DON'T) Ask a user who is about to modify an obsolete buffer what to do.
+  "(DON'T!) Ask a user who is about to modify an obsolete buffer what to do.
 This function has two choices: it can return, in which case the modification
 of the buffer will proceed, or it can (signal 'file-supersession (file)),
 in which case the proposed buffer modification will not be made.
@@ -248,25 +244,57 @@ The buffer in question is current when this function is called.
 
 THIS IS A MODIFIED VERSION THAT AUTOMATICALLY RELOADS THE FILE."
   (unless inside-ask-user-about-supersession-threat
-    (let ((inside-ask-user-about-supersession-threat t)
-          (opoint (point))
-          (strt   (window-start (get-buffer-window (current-buffer))))
-          (inhibit-read-only t))
+    (let* ((inside-ask-user-about-supersession-threat t)
+           (win    (get-buffer-window (current-buffer)))
+           (opoint (point))
+           (wstart (window-start win))
+           (inhibit-read-only t)
+           (has-undo (listp buffer-undo-list)))
       (discard-input)
       ;; hack: make the previous version available with undo
-      (undo-boundary) (erase-buffer)
-      (let ((saved-undo buffer-undo-list))
-        (setq buffer-undo-list nil)
+      (undo-boundary)
+      (let ((saved-undo (and has-undo buffer-undo-list))
+            (bufstr (buffer-string)))
+        (when has-undo (setq buffer-undo-list t))
+        (erase-buffer)
         (revert-buffer t t t)
-        (setq buffer-undo-list
-              (cons (cons (point-min) (point-max)) saved-undo)))
-      (set-window-start (get-buffer-window (current-buffer)) strt)
-      (goto-char opoint)
+        (set-window-start win (min wstart (point-max)))
+        (goto-char (min opoint (point-max)))
+        (when has-undo
+          (setq buffer-undo-list
+                (cons (cons (point-min) (point-max))
+                      (cons (cons bufstr (point-min))
+                            (cons opoint saved-undo))))))
+      (undo-boundary)
       (error "%s was modifed on disk, reloaded" (file-name-nondirectory fn)))))
 
 ))
 
 )
+
+;;-----------------------------------------------------------------------------
+;; Override from "files.el": fix a bug in this function (reported, and
+;; should be resolved in a future version)
+
+(defun set-file-extended-attributes (filename attributes)
+  "Set extended attributes of file FILENAME to ATTRIBUTES.
+
+ATTRIBUTES must be an alist of file attributes as returned by
+`file-extended-attributes'.  Value is t if the function succeeds
+in setting all of the given attributes excluding ones that
+indicate \"no information\"."
+  (let ((result t))
+    (dolist (elt attributes)
+      (let ((attr (car elt))
+            (val (cdr elt)))
+        (unless (cond ((eq attr 'acl)
+                       (or (equal val nil)
+                           (set-file-acl filename val)))
+                      ((eq attr 'selinux-context)
+                       (or (equal val '(nil nil nil nil))
+                           (set-file-selinux-context filename val))))
+          (setq result nil))))
+    result))
 
 ;;-----------------------------------------------------------------------------
 ;; Override from "files.el": don't ask about reverting a buffer, just say it
@@ -385,21 +413,22 @@ the various files."
 			      (eq read-only buffer-file-read-only)
 			      (eq read-only buffer-read-only))
 		    (when (or nowarn
-			      (let ((question
-				     (format "File %s is %s on disk.  Change buffer mode? "
-					     buffer-file-name
-					     (if read-only "read-only" "writable"))))
+			      (let* ((new-status
+				      (if read-only "read-only" "writable"))
+				     (question
+				      (format "File %s is %s on disk.  Make buffer %s, too? "
+					      buffer-file-name
+					      new-status new-status)))
 				(y-or-n-p question)))
 		      (setq buffer-read-only read-only)))
 		  (setq buffer-file-read-only read-only))
 
-		(when (and (not (eq (not (null rawfile))
-				    (not (null find-file-literally))))
-			   (not nonexistent)
-			   ;; It is confusing to ask whether to visit
-			   ;; non-literally if they have the file in
-			   ;; hexl-mode or image-mode.
-			   (not (memq major-mode '(hexl-mode image-mode))))
+		(unless (or (eq (null rawfile) (null find-file-literally))
+			    nonexistent
+			    ;; It is confusing to ask whether to visit
+			    ;; non-literally if they have the file in
+			    ;; hexl-mode or image-mode.
+			    (memq major-mode '(hexl-mode image-mode)))
 		  (if (buffer-modified-p)
 		      (if (y-or-n-p
 			   (format
@@ -465,6 +494,7 @@ Do you want to revisit the file normally now? ")
 ;;-----------------------------------------------------------------------------
 ;; Override from "files.el": make this respect case-folding
 
+' ; looks like there's no need for this anymore--?
 (defun file-expand-wildcards (pattern &optional full)
   "Expand wildcard pattern PATTERN.
 This returns a list of file names which match the pattern.
@@ -519,186 +549,158 @@ default directory.  However, if FULL is non-nil, they are absolute."
       contents)))
 
 ;;-----------------------------------------------------------------------------
-;; Overrides from "isearch.el": make `isearch-allow-scroll' not remove shift
-;; modifiers, so it plays nicely with cua-mode (have an active region, then do
-;; a search, then do a movement with shift: the region should not be lost).
-;; Also, make scroll keys simply leave isearch if the point goes out of the
-;; screen.
+;; Override from "isearch.el": Also, make scroll keys simply leave isearch if
+;; the point goes out of the screen.
 
-(defun isearch-reread-key-sequence-naturally (keylist)
-  "Reread key sequence KEYLIST with an inactive Isearch-mode keymap.
-Return the key sequence as a string/vector."
-  (isearch-unread-key-sequence keylist)
-  (let (overriding-terminal-local-map)
-    ;; This will go through function-key-map, if nec.
-    (read-key-sequence nil nil t))) ;ELI: Add the t
+(defun isearch-post-command-hook ()
+  (when isearch-pre-scroll-point
+    (let ((ab-bel (isearch-string-out-of-window isearch-pre-scroll-point)))
+      (if ab-bel
+	  ;; ELI: disable the following, and exit isearch instead
+	  ;; (isearch-back-into-window (eq ab-bel 'above) isearch-pre-scroll-point)
+	  (progn (isearch-done) (isearch-clean-overlays))
+	;; ELI: also drag the rest of the function here
+	(progn (goto-char isearch-pre-scroll-point)
+	       (setq isearch-pre-scroll-point nil)
+	       (isearch-update))))))
 
-(defun isearch-other-meta-char (&optional arg)
-  "Process a miscellaneous key sequence in Isearch mode.
+;;-----------------------------------------------------------------------------
+;; Override from "comint.el": don't leave point where it was, let it
+;; move to the EOL.  (Feature request for such an option submitted.)
 
-Try to convert the current key-sequence to something usable in Isearch
-mode, either by converting it with `function-key-map', downcasing a
-key with C-<upper case>, or finding a \"scrolling command\" bound to
-it.  \(In the last case, we may have to read more events.)  If so,
-either unread the converted sequence or execute the command.
+(eval-after-load "comint" '(progn
 
-Otherwise, if `search-exit-option' is non-nil (the default) unread the
-key-sequence and exit the search normally.  If it is the symbol
-`edit', the search string is edited in the minibuffer and the meta
-character is unread so that it applies to editing the string.
+(defun comint-previous-matching-input-from-input (n)
+  "Search backwards through input history for match for current input.
+\(Previous history elements are earlier commands.)
+With prefix argument N, search for Nth previous match.
+If N is negative, search forwards for the -Nth following match."
+  (interactive "p")
+  (let (; (opoint (point)) ELI: unused
+        )
+    (unless (memq last-command '(comint-previous-matching-input-from-input
+				 comint-next-matching-input-from-input))
+      ;; Starting a new search
+      (setq comint-matching-input-from-input-string
+	    (buffer-substring
+	     (or (marker-position comint-accum-marker)
+		 (process-mark (get-buffer-process (current-buffer))))
+	     (point))
+	    comint-input-ring-index nil))
+    (comint-previous-matching-input
+     (concat "^" (regexp-quote comint-matching-input-from-input-string))
+     n)
+    ;; ELI: don't do this: (goto-char opoint)
+    ))
 
-ARG is the prefix argument.  It will be transmitted through to the
-scrolling command or to the command whose key-sequence exits
-Isearch mode."
-  (interactive "P")
-  (let* ((key (if current-prefix-arg    ; not nec the same as ARG
-                  (substring (this-command-keys) universal-argument-num-events)
-                (this-command-keys)))
-	 (main-event (aref key 0))
-	 (keylist (listify-key-sequence key))
-         scroll-command isearch-point)
-    (cond ((and (= (length key) 1)
-		(let ((lookup (lookup-key local-function-key-map key)))
-		  (not (or (null lookup) (integerp lookup)
-			   (keymapp lookup)))))
-	   ;; Handle a function key that translates into something else.
-	   ;; If the key has a global definition too,
-	   ;; exit and unread the key itself, so its global definition runs.
-	   ;; Otherwise, unread the translation,
-	   ;; so that the translated key takes effect within isearch.
-	   (cancel-kbd-macro-events)
-	   (if (lookup-key global-map key)
-	       (progn
-		 (isearch-done)
-		 (setq prefix-arg arg)
-		 (apply 'isearch-unread keylist))
-	     (setq keylist
-		   (listify-key-sequence
-		    (lookup-key local-function-key-map key)))
-	     (while keylist
-	       (setq key (car keylist))
-	       ;; If KEY is a printing char, we handle it here
-	       ;; directly to avoid the input method and keyboard
-	       ;; coding system translating it.
-	       (if (and (integerp key)
-			(>= key ?\s) (/= key 127) (< key 256))
-		   (progn
-		     ;; Ensure that the processed char is recorded in
-		     ;; the keyboard macro, if any (Bug#4894)
-		     (store-kbd-macro-event key)
-		     (isearch-process-search-char key)
-		     (setq keylist (cdr keylist)))
-		 ;; As the remaining keys in KEYLIST can't be handled
-		 ;; here, we must reread them.
-		 (setq prefix-arg arg)
-		 (apply 'isearch-unread keylist)
-		 (setq keylist nil)))))
-	  (
-	   ;; Handle an undefined shifted control character
-	   ;; by downshifting it if that makes it defined.
-	   ;; (As read-key-sequence would normally do,
-	   ;; if we didn't have a default definition.)
-	   (let ((mods (event-modifiers main-event)))
-	     (and (integerp main-event)
-		  (memq 'shift mods)
-		  (memq 'control mods)
-		  (not (memq (lookup-key isearch-mode-map
-					 (let ((copy (copy-sequence key)))
-					   (aset copy 0
-						 (- main-event
-						    (- ?\C-\S-a ?\C-a)))
-					   copy)
-					 nil)
-			     '(nil
-			       isearch-other-control-char)))))
-	   (setcar keylist (- main-event (- ?\C-\S-a ?\C-a)))
-	   (cancel-kbd-macro-events)
-	   (setq prefix-arg arg)
-	   (apply 'isearch-unread keylist))
-	  ((eq search-exit-option 'edit)
-	   (setq prefix-arg arg)
-	   (apply 'isearch-unread keylist)
-	   (isearch-edit-string))
-          ;; ELI: The following branch is moved here for convenience
-	  ;; A mouse click on the isearch message starts editing the search string
-	  ((and (eq (car-safe main-event) 'down-mouse-1)
-		(window-minibuffer-p (posn-window (event-start main-event))))
-	   ;; Swallow the up-event.
-	   (read-event)
-	   (isearch-edit-string))
-          ;; Handle a scrolling function.
-          ((and isearch-allow-scroll
-                (progn (setq key (isearch-reread-key-sequence-naturally keylist))
-                       (setq keylist (listify-key-sequence key))
-                       (setq main-event (aref key 0))
-                       (setq scroll-command (isearch-lookup-scroll-key key))))
-           ;; From this point onwards, KEY, KEYLIST and MAIN-EVENT hold a
-           ;; complete key sequence, possibly as modified by function-key-map,
-           ;; not merely the one or two event fragment which invoked
-           ;; isearch-other-meta-char in the first place.
-           (setq isearch-point (point))
-           (setq prefix-arg arg)
-           (command-execute scroll-command)
-           (let ((ab-bel (isearch-string-out-of-window isearch-point)))
-             (if ab-bel
-                 ;; ELI: if got out of window -- get out of isearch
-                 ;; (isearch-back-into-window (eq ab-bel 'above) isearch-point)
-                 ;; This is an exact copy of the next case, except for the
-                 ;; keyboard stuff
-                 (let (window)
-                   ;; (setq prefix-arg arg)
-                   ;; (isearch-unread-key-sequence keylist)
-                   ;; (setq main-event (car unread-command-events))
-                   (if (and (not isearch-mode)
-                            (listp main-event)
-                            (setq window (posn-window (event-start main-event)))
-                            (windowp window)
-                            (or (> (minibuffer-depth) 0)
-                                (not (window-minibuffer-p window))))
-                     (with-current-buffer (window-buffer window)
-                       (isearch-done)
-                       (isearch-clean-overlays))
-                     (isearch-done)
-                     (isearch-clean-overlays)
-                     (setq prefix-arg arg)))
-               (goto-char isearch-point)
-               (isearch-update)))) ; ELI: moved inside here
-	  (search-exit-option
-	   (let (window)
-	     (setq prefix-arg arg)
-             (isearch-unread-key-sequence keylist)
-             (setq main-event (car unread-command-events))
+))
 
-	     ;; If we got a mouse click event, that event contains the
-	     ;; window clicked on. maybe it was read with the buffer
-	     ;; it was clicked on.  If so, that buffer, not the current one,
-	     ;; is in isearch mode.  So end the search in that buffer.
+;;-----------------------------------------------------------------------------
+;; Override from "dired.el": make these functions have ^ in their
+;; interactive specs.
 
-	     ;; ??? I have no idea what this if checks for, but it's
-	     ;; obviously wrong for the case that a down-mouse event
-	     ;; on another window invokes this function.  The event
-	     ;; will contain the window clicked on and that window's
-	     ;; buffer is certainly not always in Isearch mode.
-	     ;;
-	     ;; Leave the code in, but check for current buffer not
-	     ;; being in Isearch mode for now, until someone tells
-	     ;; what it's really supposed to do.
-	     ;;
-	     ;; --gerd 2001-08-10.
+(eval-after-load "dired" '(progn
 
-	     (if (and (not isearch-mode)
-		      (listp main-event)
-		      (setq window (posn-window (event-start main-event)))
-		      (windowp window)
-		      (or (> (minibuffer-depth) 0)
-			  (not (window-minibuffer-p window))))
-		 (with-current-buffer (window-buffer window)
-		   (isearch-done)
-		   (isearch-clean-overlays))
-	       (isearch-done)
-	       (isearch-clean-overlays)
-               (setq prefix-arg arg))))
-          (t;; otherwise nil
-	   (isearch-process-search-string key key)))))
+(defmacro add-^-to-interactive-command (name)
+  `(advice-add ',name :filter-return
+     (lambda (x)
+       "Add ^ to the interactive spec of this function"
+       (interactive (lambda (o) (advice-eval-interactive-spec (concat "^" o))))
+       x)))
+(add-^-to-interactive-command dired-next-line)
+(add-^-to-interactive-command dired-previous-line)
+(add-^-to-interactive-command dired-next-dirline)
+(add-^-to-interactive-command dired-prev-dirline)
+
+))
+
+;;-----------------------------------------------------------------------------
+;; Override from "server.el": fix a bug, don't ask questions for
+;; unmodified buffers.
+
+(eval-after-load "server" '(progn
+
+(defun server-kill-buffer-query-function ()
+  "Ask before killing a server buffer."
+  (or (not server-buffer-clients)
+      ;; ELI: don't ask if the buffer was saved
+      (not (buffer-modified-p))
+      (let ((res t))
+	(dolist (proc server-buffer-clients)
+          (when (and (memq proc server-clients)
+                     (eq (process-status proc) 'open))
+            (setq res nil)))
+         res)
+      (yes-or-no-p (format "Buffer `%s' still has clients; kill it? "
+			   (buffer-name (current-buffer))))))
+
+(defun server-kill-emacs-query-function ()
+  "Ask before exiting Emacs if it has live clients."
+  (or (let (live-client)
+	(dolist (proc server-clients)
+          ;; ELI: also check modifications and ignore unmodified buffers
+	  (when (memq t (mapcar (lambda (buf) (and (buffer-live-p buf)
+                                                   (buffer-modified-p buf)))
+                                (process-get proc 'buffers)))
+	    (setq live-client t)))
+        ;; ELI: fix a (reported) bug, also no need for the first
+        ;; condition as a result
+        (not live-client))
+      (yes-or-no-p "This Emacs session has clients; exit anyway? ")))
+
+))
+
+;;-----------------------------------------------------------------------------
+;; Override from "delsel.el": arrange for a single undo boundary.
+
+(defvar-local delsel-undo-to-tweak t)
+
+(eval-after-load "delsel" '(progn
+
+(define-minor-mode delete-selection-mode
+  "Toggle Delete Selection mode.
+With a prefix argument ARG, enable Delete Selection mode if ARG
+is positive, and disable it otherwise.  If called from Lisp,
+enable the mode if ARG is omitted or nil.
+
+When Delete Selection mode is enabled, typed text replaces the selection
+if the selection is active.  Otherwise, typed text is just inserted at
+point regardless of any selection."
+  :global t :group 'editing-basics
+  (if (not delete-selection-mode)
+      (progn (remove-hook 'pre-command-hook 'delete-selection-pre-hook)
+             (remove-hook 'post-command-hook 'delete-selection-post-hook))
+    (progn (add-hook 'pre-command-hook 'delete-selection-pre-hook)
+           (add-hook 'post-command-hook 'delete-selection-post-hook))))
+
+(defun delete-selection-pre-hook ()
+  "Function run before commands that delete selections are executed.
+Commands which will delete the selection need a `delete-selection'
+property on their symbol; commands which insert text but don't
+have this property won't delete the selection.
+See `delete-selection-helper'."
+  (when (and delete-selection-mode (use-region-p)
+	     (not buffer-read-only))
+    (setq delsel-undo-to-tweak buffer-undo-list)
+    (delete-selection-helper (and (symbolp this-command)
+                                  (get this-command 'delete-selection)))
+    (when (eq delsel-undo-to-tweak buffer-undo-list)
+      (setq delsel-undo-to-tweak t))))
+
+(defun delete-selection-post-hook ()
+  "Function run after commands to make `delete-selection' deletions not
+have an extra undo boundary."
+  (interactive)
+  (when (and (listp buffer-undo-list) (listp delsel-undo-to-tweak))
+    (let ((undos buffer-undo-list) (p '(nil)) (seen-nil nil))
+      (while (and undos (not (eq undos delsel-undo-to-tweak)))
+        (if (car undos) (push (car undos) p) (setq seen-nil t))
+        (setq undos (cdr undos)))
+      (when (and seen-nil (eq undos delsel-undo-to-tweak))
+        (while p (push (pop p) undos))
+        (setq buffer-undo-list undos)))
+    (setq delsel-undo-to-tweak t)))
+
+))
 
 ;;; override.el ends here

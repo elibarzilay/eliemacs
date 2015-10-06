@@ -1,7 +1,7 @@
 ;;; scheme.el --- Scheme (and DSSSL) editing mode
 
-;; Copyright (C) 1986, 1987, 1988, 1997, 1998, 2001, 2002, 2003, 2004, 2005,
-;;   2006, 2007, 2008, 2009  Free Software Foundation, Inc.
+;; Copyright (C) 1986-1988, 1997-1998, 2001-2015 Free Software
+;; Foundation, Inc.
 
 ;; Author: Bill Rozas <jinx@martigny.ai.mit.edu>
 ;; Adapted-by: Dave Love <d.love@dl.ac.uk>
@@ -55,24 +55,24 @@
 (defvar scheme-mode-syntax-table
   (let ((st (make-syntax-table))
 	(i 0))
-
-    ;; Default is atom-constituent.
-    (while (< i 256)
+    ;; Symbol constituents
+    ;; We used to treat chars 128-256 as symbol-constituent, but they
+    ;; should be valid word constituents (Bug#8843).  Note that valid
+    ;; identifier characters are Scheme-implementation dependent.
+    (while (< i ?0)
       (modify-syntax-entry i "_   " st)
       (setq i (1+ i)))
-
-    ;; Word components.
-    (setq i ?0)
-    (while (<= i ?9)
-      (modify-syntax-entry i "w   " st)
+    (setq i (1+ ?9))
+    (while (< i ?A)
+      (modify-syntax-entry i "_   " st)
       (setq i (1+ i)))
-    (setq i ?A)
-    (while (<= i ?Z)
-      (modify-syntax-entry i "w   " st)
+    (setq i (1+ ?Z))
+    (while (< i ?a)
+      (modify-syntax-entry i "_   " st)
       (setq i (1+ i)))
-    (setq i ?a)
-    (while (<= i ?z)
-      (modify-syntax-entry i "w   " st)
+    (setq i (1+ ?z))
+    (while (< i 128)
+      (modify-syntax-entry i "_   " st)
       (setq i (1+ i)))
 
     ;; Whitespace
@@ -102,7 +102,7 @@
     (modify-syntax-entry ?\) ")(  " st)
     ;;ELI {{{ from http://debbugs.gnu.org/cgi/bugreport.cgi?bug=3824
     ;; It's used for single-line comments as well as for #;(...) sexp-comments.
-    ;; (modify-syntax-entry ?\; "< 2 " st)
+    ;; (modify-syntax-entry ?\; "<"    st)
     (modify-syntax-entry ?\; "<   " st)
     ;;ELI }}}
     (modify-syntax-entry ?\" "\"   " st)
@@ -112,7 +112,7 @@
     ;; Special characters
     (modify-syntax-entry ?, "'   " st)
     (modify-syntax-entry ?@ "'   " st)
-    (modify-syntax-entry ?# "' 14b" st)
+    (modify-syntax-entry ?# "' 14" st)
     (modify-syntax-entry ?\\ "\\   " st)
     st))
 
@@ -131,61 +131,42 @@
 (defun scheme-mode-variables ()
   (set-syntax-table scheme-mode-syntax-table)
   (setq local-abbrev-table scheme-mode-abbrev-table)
-  (make-local-variable 'paragraph-start)
-  (setq paragraph-start (concat "$\\|" page-delimiter))
-  (make-local-variable 'paragraph-separate)
-  (setq paragraph-separate paragraph-start)
-  (make-local-variable 'paragraph-ignore-fill-prefix)
-  (setq paragraph-ignore-fill-prefix t)
-  (make-local-variable 'fill-paragraph-function)
-  (setq fill-paragraph-function 'lisp-fill-paragraph)
+  (setq-local paragraph-start (concat "$\\|" page-delimiter))
+  (setq-local paragraph-separate paragraph-start)
+  (setq-local paragraph-ignore-fill-prefix t)
+  (setq-local fill-paragraph-function 'lisp-fill-paragraph)
   ;; Adaptive fill mode gets in the way of auto-fill,
   ;; and should make no difference for explicit fill
   ;; because lisp-fill-paragraph should do the job.
-  (make-local-variable 'adaptive-fill-mode)
-  (setq adaptive-fill-mode nil)
-  (make-local-variable 'normal-auto-fill-function);ELI
-  (setq normal-auto-fill-function 'lisp-mode-auto-fill);ELI
-  (make-local-variable 'indent-line-function)
-  (setq indent-line-function 'lisp-indent-line)
-  (make-local-variable 'parse-sexp-ignore-comments)
-  (setq parse-sexp-ignore-comments t)
-  (make-local-variable 'outline-regexp)
-  (setq outline-regexp ";;; \\|(....")
-  (make-local-variable 'comment-start)
-  (setq comment-start ";")
-  (set (make-local-variable 'comment-add) 1)
-  (make-local-variable 'comment-start-skip)
-  ;; Look within the line for a ; following an even number of backslashes
-  ;; after either a non-backslash or the line beginning.
-  (setq comment-start-skip "\\(\\(^\\|[^\\\\\n]\\)\\(\\\\\\\\\\)*\\);+[ \t]*")
-  (set (make-local-variable 'font-lock-comment-start-skip) ";+ *")
-  (make-local-variable 'comment-column)
-  (setq comment-column 40)
-  (make-local-variable 'parse-sexp-ignore-comments)
-  (setq parse-sexp-ignore-comments t)
-  (make-local-variable 'lisp-indent-function)
-  (setq lisp-indent-function 'scheme-indent-function)
+  (setq-local adaptive-fill-mode nil)
+  (setq-local normal-auto-fill-function 'lisp-mode-auto-fill);ELI
+  (setq-local indent-line-function 'lisp-indent-line)
+  (setq-local parse-sexp-ignore-comments t)
+  (setq-local outline-regexp ";;; \\|(....")
+  (setq-local add-log-current-defun-function #'lisp-current-defun-name)
+  (setq-local comment-start ";")
+  (setq-local comment-add 1)
+  (setq-local comment-start-skip ";+[ \t]*")
+  (setq-local comment-use-syntax t)
+  (setq-local comment-column 40)
+  (setq-local parse-sexp-ignore-comments t)
+  (setq-local lisp-indent-function 'scheme-indent-function)
   (setq mode-line-process '("" scheme-mode-line-process))
-  (set (make-local-variable 'imenu-case-fold-search) t)
-  (setq imenu-generic-expression scheme-imenu-generic-expression)
-  (set (make-local-variable 'imenu-syntax-alist)
-	'(("+-*/.<>=?!$%_&~^:" . "w")))
-  (set (make-local-variable 'font-lock-defaults)
-       '((scheme-font-lock-keywords
-          scheme-font-lock-keywords-1 scheme-font-lock-keywords-2)
-         nil t (("+-*/.<>=!?$%_&~^:" . "w") (?#. "w 14"))
-         beginning-of-defun
-         (font-lock-mark-block-function . mark-defun)
-         ;;ELI {{{
-         ;; (font-lock-syntactic-face-function
-         ;;  . scheme-font-lock-syntactic-face-function)
-         (font-lock-syntactic-keywords . scheme-font-lock-syntactic-keywords)
-         ;;ELI }}}
-         (parse-sexp-lookup-properties . t)
-         (font-lock-extra-managed-props syntax-table)))
-  (set (make-local-variable 'lisp-doc-string-elt-property)
-       'scheme-doc-string-elt))
+  (setq-local imenu-case-fold-search t)
+  (setq-local imenu-generic-expression scheme-imenu-generic-expression)
+  (setq-local imenu-syntax-alist '(("+-*/.<>=?!$%_&~^:" . "w")))
+  ;; ELI: (setq-local syntax-propertize-function #'scheme-syntax-propertize)
+  (setq font-lock-defaults
+	'((scheme-font-lock-keywords
+	   scheme-font-lock-keywords-1 scheme-font-lock-keywords-2)
+	  nil t (("+-*/.<>=!?$%_&~^:" . "w") (?#. "w 14"))
+	  beginning-of-defun
+	  (font-lock-mark-block-function . mark-defun)
+          ;;ELI {{{
+          (font-lock-syntactic-keywords . scheme-font-lock-syntactic-keywords)
+          ;;ELI }}}
+          ))
+  (setq-local lisp-doc-string-elt-property 'scheme-doc-string-elt))
 
 (defvar scheme-mode-line-process "")
 
@@ -216,14 +197,14 @@ All commands in `lisp-mode-shared-map' are inherited by this map.")
   (define-key map "\e\C-q" 'indent-sexp))
 
 ;;;###autoload
-(defun scheme-mode ()
+(define-derived-mode scheme-mode prog-mode "Scheme"
   "Major mode for editing Scheme code.
 Editing commands are similar to those of `lisp-mode'.
 
 In addition, if an inferior Scheme process is running, some additional
 commands will be defined, for evaluating expressions and controlling
 the interpreter, and the state of the process will be displayed in the
-modeline of all Scheme buffers.  The names of commands that interact
+mode line of all Scheme buffers.  The names of commands that interact
 with the Scheme process start with \"xscheme-\" if you use the MIT
 Scheme-specific `xscheme' package; for more information see the
 documentation for `xscheme-interaction-mode'.  Use \\[run-scheme] to
@@ -232,16 +213,8 @@ start an inferior Scheme using the more general `cmuscheme' package.
 Commands:
 Delete converts tabs to spaces as it moves back.
 Blank lines separate paragraphs.  Semicolons start comments.
-\\{scheme-mode-map}
-Entry to this mode calls the value of `scheme-mode-hook'
-if that value is non-nil."
-  (interactive)
-  (kill-all-local-variables)
-  (use-local-map scheme-mode-map)
-  (setq major-mode 'scheme-mode)
-  (setq mode-name "Scheme")
-  (scheme-mode-variables)
-  (run-mode-hooks 'scheme-mode-hook))
+\\{scheme-mode-map}"
+  (scheme-mode-variables))
 
 (defgroup scheme nil
   "Editing Scheme code."
@@ -257,7 +230,7 @@ Set this to nil if you normally use another dialect."
 (defcustom dsssl-sgml-declaration
   "<!DOCTYPE style-sheet PUBLIC \"-//James Clark//DTD DSSSL Style Sheet//EN\">
 "
-  "*An SGML declaration for the DSSSL file.
+  "An SGML declaration for the DSSSL file.
 If it is defined as a string this will be inserted into an empty buffer
 which is in `dsssl-mode'.  It is typically James Clark's style-sheet
 doctype, as required for Jade."
@@ -279,7 +252,7 @@ See `run-hooks'."
 
 ;; This is shared by cmuscheme and xscheme.
 (defcustom scheme-program-name "scheme"
-  "*Program invoked by the `run-scheme' command."
+  "Program invoked by the `run-scheme' command."
   :type 'string
   :group 'scheme)
 
@@ -332,11 +305,11 @@ See `run-hooks'."
 		   ;; Any whitespace and declared object.
 		   "[ \t]*(?"
 		   "\\(\\sw+\\)?")
-           '(1 font-lock-keyword-face)
-           '(6 (cond ((match-beginning 3) font-lock-function-name-face)
-                     ((match-beginning 5) font-lock-variable-name-face)
-                     (t font-lock-type-face))
-               nil t))
+	   '(1 font-lock-keyword-face)
+	   '(6 (cond ((match-beginning 3) font-lock-function-name-face)
+		     ((match-beginning 5) font-lock-variable-name-face)
+		     (t font-lock-type-face))
+	       nil t))
      ))
   "Subdued expressions to highlight in Scheme modes.")
 
@@ -401,7 +374,7 @@ See `run-hooks'."
                "no-errors" "cases" "match"
                "for" "for*" "for/list" "for*/list" "for/fold" "for*/fold"
                ) t)
-        "\\>") 1)
+	"\\>") 1)
       ;;
       ;; It wouldn't be Scheme w/o named-let.
       '("(let\\s-+\\(\\sw+\\)"
@@ -441,28 +414,28 @@ See `run-hooks'."
        (forward-comment (point-max))
        (if (eq (char-after) ?\() 2 0)))
 
-(defun scheme-font-lock-syntactic-face-function (state)
-  (when (and (null (nth 3 state))
-             (eq (char-after (nth 8 state)) ?#)
-             (eq (char-after (1+ (nth 8 state))) ?\;))
-    ;; It's a sexp-comment.  Tell parse-partial-sexp where it ends.
-    (save-excursion
-      (let ((pos (point))
-            (end
-             (condition-case err
-                 (let ((parse-sexp-lookup-properties nil))
-                   (goto-char (+ 2 (nth 8 state)))
-                   ;; FIXME: this doesn't handle the case where the sexp
-                   ;; itself contains a #; comment.
-                   (forward-sexp 1)
-                   (point))
-               (scan-error (nth 2 err)))))
-        (when (< pos (- end 2))
-          (put-text-property pos (- end 2)
-                             'syntax-table scheme-sexp-comment-syntax-table))
-        (put-text-property (- end 1) end 'syntax-table '(12)))))
-  ;; Choose the face to use.
-  (lisp-font-lock-syntactic-face-function state))
+(defun scheme-syntax-propertize (beg end)
+  (goto-char beg)
+  (scheme-syntax-propertize-sexp-comment (point) end)
+  (funcall
+   (syntax-propertize-rules
+    ("\\(#\\);" (1 (prog1 "< cn"
+                     (scheme-syntax-propertize-sexp-comment (point) end)))))
+   (point) end))
+
+(defun scheme-syntax-propertize-sexp-comment (_ end)
+  (let ((state (syntax-ppss)))
+    (when (eq 2 (nth 7 state))
+      ;; It's a sexp-comment.  Tell parse-partial-sexp where it ends.
+      (condition-case nil
+          (progn
+            (goto-char (+ 2 (nth 8 state)))
+            ;; FIXME: this doesn't handle the case where the sexp
+            ;; itself contains a #; comment.
+            (forward-sexp 1)
+            (put-text-property (1- (point)) (point)
+                               'syntax-table (string-to-syntax "> cn")))
+        (scan-error (goto-char end))))))
 
 ;;;###autoload
 (define-derived-mode dsssl-mode scheme-mode "DSSSL"
@@ -476,10 +449,7 @@ Blank lines separate paragraphs.  Semicolons start comments.
 Entering this mode runs the hooks `scheme-mode-hook' and then
 `dsssl-mode-hook' and inserts the value of `dsssl-sgml-declaration' if
 that variable's value is a string."
-  (make-local-variable 'page-delimiter)
-  (setq page-delimiter "^;;;" ; ^L not valid SGML char
-	major-mode 'dsssl-mode
-	mode-name "DSSSL")
+  (setq-local page-delimiter "^;;;") ; ^L not valid SGML char
   ;; Insert a suitable SGML declaration into an empty buffer.
   ;; FIXME: This should use `auto-insert-alist' instead.
   (and (zerop (buffer-size))
@@ -490,10 +460,10 @@ that variable's value is a string."
 			     nil t (("+-*/.<>=?$%_&~^:" . "w"))
 			     beginning-of-defun
 			     (font-lock-mark-block-function . mark-defun)))
-  (set (make-local-variable 'imenu-case-fold-search) nil)
+  (setq-local add-log-current-defun-function #'lisp-current-defun-name)
+  (setq-local imenu-case-fold-search nil)
   (setq imenu-generic-expression dsssl-imenu-generic-expression)
-  (set (make-local-variable 'imenu-syntax-alist)
-       '(("+-*/.<>=?$%_&~^:" . "w"))))
+  (setq-local imenu-syntax-alist '(("+-*/.<>=?$%_&~^:" . "w"))))
 
 ;; Extra syntax for DSSSL.  This isn't separated from Scheme, but
 ;; shouldn't cause much trouble in scheme-mode.
@@ -503,6 +473,7 @@ that variable's value is a string."
 ;; (put 'make 'scheme-indent-function 1)
 ;; (put 'style 'scheme-indent-function 1)
 ;; (put 'root 'scheme-indent-function 1)
+;; (put 'λ 'scheme-indent-function 1)
 
 (defvar dsssl-font-lock-keywords
   (eval-when-compile
@@ -535,43 +506,53 @@ that variable's value is a string."
 
 (defvar calculate-lisp-indent-last-sexp)
 
-;; Copied from lisp-indent-function, but with gets of
-;; scheme-indent-{function,hook}.
+
+;; FIXME this duplicates almost all of lisp-indent-function.
+;; Extract common code to a subroutine.
 (defun scheme-indent-function (indent-point state)
+  "Scheme mode function for the value of the variable `lisp-indent-function'.
+This behaves like the function `lisp-indent-function', except that:
+
+i) it checks for a non-nil value of the property `scheme-indent-function'
+\(or the deprecated `scheme-indent-hook'), rather than `lisp-indent-function'.
+
+ii) if that property specifies a function, it is called with three
+arguments (not two), the third argument being the default (i.e., current)
+indentation."
   (let ((normal-indent (current-column)))
     (goto-char (1+ (elt state 1)))
     (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
     (if (and (elt state 2)
              (not (looking-at "\\sw\\|\\s_")))
-      ;; car of form doesn't seem to be a symbol
-      (progn
-        (if (not (> (save-excursion (forward-line 1) (point))
-                    calculate-lisp-indent-last-sexp))
-          (progn (goto-char calculate-lisp-indent-last-sexp)
-                 (beginning-of-line)
-                 (parse-partial-sexp (point)
-                                     calculate-lisp-indent-last-sexp 0 t)))
-        ;; Indent under the list or under the first sexp on the same
-        ;; line as calculate-lisp-indent-last-sexp.  Note that first
-        ;; thing on that line has to be complete sexp since we are
-        ;; inside the innermost containing sexp.
-        (backward-prefix-chars)
-        (current-column))
+        ;; car of form doesn't seem to be a symbol
+        (progn
+          (if (not (> (save-excursion (forward-line 1) (point))
+                      calculate-lisp-indent-last-sexp))
+              (progn (goto-char calculate-lisp-indent-last-sexp)
+                     (beginning-of-line)
+                     (parse-partial-sexp (point)
+					 calculate-lisp-indent-last-sexp 0 t)))
+          ;; Indent under the list or under the first sexp on the same
+          ;; line as calculate-lisp-indent-last-sexp.  Note that first
+          ;; thing on that line has to be complete sexp since we are
+          ;; inside the innermost containing sexp.
+          (backward-prefix-chars)
+          (current-column))
       (let ((function (buffer-substring (point)
-                                        (progn (forward-sexp 1) (point))))
-            method)
-        (setq method (or (get (intern-soft function) 'scheme-indent-function)
-                         (get (intern-soft function) 'scheme-indent-hook)))
-        (cond ((or (eq method 'defun)
-                   (and (null method)
-                        (> (length function) 3)
-                        (string-match "\\`def" function)))
-               (lisp-indent-defform state indent-point))
-              ((integerp method)
-               (lisp-indent-specform method state
-                                     indent-point normal-indent))
-              (method
-               (funcall method state indent-point normal-indent)))))))
+					(progn (forward-sexp 1) (point))))
+	    method)
+	(setq method (or (get (intern-soft function) 'scheme-indent-function)
+			 (get (intern-soft function) 'scheme-indent-hook)))
+	(cond ((or (eq method 'defun)
+		   (and (null method)
+			(> (length function) 3)
+			(string-match "\\`def" function)))
+	       (lisp-indent-defform state indent-point))
+	      ((integerp method)
+	       (lisp-indent-specform method state
+				     indent-point normal-indent))
+	      (method
+		(funcall method state indent-point normal-indent)))))))
 
 
 ;;; Let is different in Scheme

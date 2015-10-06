@@ -6,14 +6,9 @@
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
 (add-hook 'comint-output-filter-functions 'comint-postoutput-scroll-to-bottom)
 
-;; `q' removes the grep buffer, switch to the grep buffer when started
-(add-hook 'grep-mode-hook
-  (lambda ()
-    (define-keys 'grep-mode-map
-      '("q" (lambda () (interactive) (quit-window nil (selected-window)))))
-    (setq truncate-lines t)
-    (run-with-idle-timer 0 nil ; ugly hack...
-      `(lambda () (select-window (get-buffer-window ,(current-buffer)))))))
+;; switch to the grep buffer when started, truncate lines
+(add-to-list 'display-buffer-alist
+  '("^[*]grep[*]" eli-temp-buffer-show-function (truncate-lines . t)))
 
 ;; Replace the true home directory name by the HOME environment value, this is
 ;; necessary for automounters that map some name to another
@@ -66,5 +61,8 @@
     (add-to-list 'directory-abbrev-alist
                  (cons (concat "^" (cdr u-h) "\\(/\\|$\\)")
                        (concat "~" (car u-h) "/")))))
+
+;; dired stuff
+(add-hook 'dired-mode-hook (lambda () (hl-line-mode)))
 
 ;;; misc.el ends here

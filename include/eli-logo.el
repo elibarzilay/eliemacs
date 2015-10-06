@@ -89,7 +89,7 @@
   (let ((buf (current-buffer)) (key nil))
     (unwind-protect
         (while (not key)
-          (let ((i 15) c)
+          (let ((i 15))
             (goto-char (point-min)) (forward-line 4)
             (while (> (setq i (1- i)) 0)
               (let ((c (buffer-substring (point) (1+ (point)))))

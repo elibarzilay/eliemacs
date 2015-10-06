@@ -1,4 +1,4 @@
-;;; eli-marker.el --- Convenient marker keys.
+;;; macro-keys.el --- Convenient macro keys.
 ;;-----------------------------------------------------------------------------
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
@@ -154,4 +154,4 @@ The macro key that gets recorded is always global."
               (setcar (cdr x) indicator)))
           t)
 
-;;; eli-marker.el ends here
+;;; macro-keys.el ends here

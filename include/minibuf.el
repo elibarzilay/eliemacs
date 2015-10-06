@@ -56,7 +56,7 @@
         (if (string-match eli-userid-re string)
             (list* 'boundaries
                    (match-beginning 1)
-                   (string-match-p "/" (cdr action)))))
+                   (string-match-p "/" suffix))))
     (when (string-match eli-userid-re string)
       (unless (and eli-userid-table-cache
                    (eq eli-user-homedirs (car eli-userid-table-cache)))

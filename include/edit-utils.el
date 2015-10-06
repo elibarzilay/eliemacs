@@ -52,7 +52,7 @@ A prefix argument ARG reverses this behavior."
       (when del (delete-windows-on buf))
       (kill-buffer buf))))
 
-;; Move to another window in the opposite direction
+;; Move to another window in either direction
 (defun eli-other-window (arg &optional all-frames)
   "Same as `other-window' but goes back when shifted."
   (interactive "p")
@@ -61,16 +61,16 @@ A prefix argument ARG reverses this behavior."
 
 ;; Non-killing deletions
 (defun delete-word (arg)
-  (interactive "p")
+  (interactive "*p")
   (delete-region (point) (progn (forward-word arg) (point))))
 (defun delete-sexp (arg)
-  (interactive "p")
+  (interactive "*p")
   (delete-region (point) (progn (forward-sexp arg) (point))))
 (defun backward-delete-word (arg)
-  (interactive "p")
+  (interactive "*p")
   (delete-word (- arg)))
 (defun backward-delete-sexp (arg)
-  (interactive "p")
+  (interactive "*p")
   (delete-sexp (- arg)))
 
 (defun eli-kill-region (beg end)
@@ -146,7 +146,6 @@ With a prefix argument go back to the default."
           (ding)))))
   (setq this-command 'previous-line)
   nil)
-(put 'eli-previous-line 'CUA 'move)
 
 (defun eli-next-line (&optional arg try-vscroll)
   "Like `next-line', but ding only if cannot move + do my eol tracking."
@@ -162,7 +161,6 @@ With a prefix argument go back to the default."
           (ding)))))
   (setq this-command 'next-line)
   nil)
-(put 'eli-next-line 'CUA 'move)
 
 (defun eli-end-of-line (&optional arg)
   "Like `end-of-line', but makes further up/down movements stick to the eol."
@@ -172,28 +170,21 @@ With a prefix argument go back to the default."
   ;;Eli: This makes the cursor stay at the end-of-line (won't reset next-line)
   (setq temporary-goal-column (float (* (window-width) (frame-char-width))))
   (setq this-command 'next-line))
-(put 'eli-end-of-line 'CUA 'move)
 
 (defun eli-beginning-of-line (&optional arg)
   "Like `beginning-of-line'."
   (interactive "^p")
   (unless arg (setq arg 1))
   (if line-move-visual (beginning-of-visual-line arg) (beginning-of-line arg)))
-(put 'eli-beginning-of-line 'CUA 'move)
 
-(eval-after-load "dired"
-  '(progn (define-key dired-mode-map
-            [remap eli-next-line] 'dired-next-line)
-          (define-key dired-mode-map
-            [remap eli-previous-line] 'dired-previous-line)
-          (put 'dired-next-line 'CUA 'move)
-          (put 'dired-previous-line 'CUA 'move)
-          (add-hook 'dired-mode-hook
-            (lambda ()
-              (setq truncate-lines t)
-              (when list-buffers-directory
-                (setq list-buffers-directory
-                      (abbreviate-file-name list-buffers-directory)))))))
+(defun eli-up-directory (&optional other-window)
+  "Similar to `dired-up-directory', but works from non-dired buffers too."
+  (interactive "P")
+  (if (bound-and-true-p dired-subdir-alist)
+    (dired-up-directory other-window)
+    (let ((up default-directory) (file buffer-file-name))
+      (if other-window (dired-other-window up) (dired up))
+      (when file (dired-goto-file file)))))
 
 ;;-----------------------------------------------------------------------------
 ;; More utilities.
@@ -230,7 +221,8 @@ With a prefix argument go back to the default."
 (defun eli-next-buffer-acyclic (n)
   "Like `next-buffer', but not cyclic.
 A prefix argument determines how many buffers to skip (default is 1), if
-negative, count from the end."
+negative, count from the end.  With no argument, don't choose a buffer
+that is shown in some other window."
   (interactive "p")
   (unless (equal n 0)
     ;; similar to the scan that `switch-to-prev-buffer' does
@@ -252,6 +244,7 @@ negative, count from the end."
                           (or (null pred) (funcall pred buf))
                           (not (eq (aref (buffer-name buf) 0) ?\s))
                           (or (and (consp buf*)
+                                   current-prefix-arg ; no arg: no visible bufs
                                    switch-to-visible-buffer)
                               (null (get-buffer-window buf))))))
           (when good (if (zerop n) (setq found buf*) (setq n (1- n))))
@@ -286,7 +279,8 @@ negative, count from the end."
         (dolist (key keys)
           (define-key map (vector (car key))
             `(lambda () (interactive) (eli-resize-window ,n))))
-        (set-temporary-overlay-map map t 2)))))
+        (run-with-idle-timer 2 nil
+          (set-transient-map map t (lambda () (message nil))))))))
 
 (defun eli-write-or-move-file (new)
   "Like `write-file', but with a prefix argument delete the original file."
@@ -713,6 +707,5 @@ full page scrolling."
     (progn (when lines
              (setq eli-View-scroll-page-lines (and (integerp lines) lines)))
            (View-scroll-page-backward eli-View-scroll-page-lines))))
-
 
 ;;; edit-utils.el ends here

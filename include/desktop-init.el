@@ -4,7 +4,7 @@
 
 (defun eli-use-desktop (load-buffers)
   (require 'desktop)
-  (unless load-buffers ; avoid loading buffers, don's save the desktop
+  (unless load-buffers ; avoid loading buffers, don't save the desktop
     (fset 'desktop-create-buffer (lambda (&rest _) nil))
     (remove-hook 'kill-emacs-hook 'desktop-kill))
   (setq desktop-save 'ask-if-new
@@ -12,6 +12,7 @@
         desktop-path '("." "~") ; maybe go back to just "~"?
         desktop-missing-file-warning nil
         desktop-file-name-format 'absolute
+        desktop-restore-frames (and load-buffers t)
         ;; would be nice to use some lazy loading, but if Emacs exits before
         ;; the lazy loading, then these buffers are lost
         desktop-restore-eager t

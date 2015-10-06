@@ -39,11 +39,6 @@
  comment-style 'indent
  ;; >> editing/fill/filladapt [uninteresting]
  ;; >> editing/fill/align [uninteresting]
- ;; >> editing/fill/longlines
- longlines-auto-wrap t
- longlines-show-hard-newlines t
- longlines-show-effect (propertize "<@>\n" 'face 'escape-glyph)
- ;; >> editing/fill/refill [uninteresting]
  ;; >> editing/electricity
  electric-indent-mode nil    ; see comment at the top of "edit-utils.el"
  electric-pair-skip-self nil ; --""--
@@ -65,9 +60,6 @@
  blink-matching-paren nil ; use `show-paren-mode'
  blink-matching-paren-distance 200000
  blink-matching-delay 0.5
- ;; >> editing/matching/paren-matching/paren-showing ;;??? dead?
- show-paren-style 'parenthesis
- show-paren-delay 0.125
  ;; >> editing/matching/paren-matching/mic-paren-matching [in mic-paren]
  ;; >> editing/matching/isearch
  search-exit-option t
@@ -100,15 +92,12 @@
  save-completions-retention-time (* 24 7 4)
  completions-file-versions-kept 1
  completion-search-distance 150000
- ;; >> editing/matching/completion/iswitchb [uninteresting]
+ ;; >> editing/matching/completion/iswitchb [gone?]
  ;; >> editing/matching/ffap [uninteresting]
  ;; >> editing/matching/imenu [uninteresting]
  ;; >> editing/emulations
  ;; >> editing/emulations/cua [in "eli-cua.el"]
- ;; >> editing/emulations/crisp [uninteresting]
  ;; >> editing/emulations/edt [uninteresting]
- ;; >> editing/emulations/tpu [uninteresting]
- ;; >> editing/emulations/vip [uninteresting]
  ;; >> editing/emulations/viper [uninteresting]
  ;; >> editing/mouse
  mouse-yank-at-point nil
@@ -142,7 +131,6 @@
  input-method-highlight-flag t
  input-method-use-echo-area t
  ;; >> editing/i18n/mule/leim [uninteresting]
- ;; >> editing/i18n/ccl [uninteresting]
  ;; >> editing/i18n/double [uninteresting]
  ;; >> editing/i18n/iso-ascii [uninteresting]
  ;; >> editing/i18n/latin1-display [uninteresting]
@@ -152,10 +140,10 @@
  undo-strong-limit 300000
  undo-outer-limit 30000000
  ;; >> editing/editing-basics
- read-quoted-char-radix 10
  require-final-newline t ; try nil with the following t?
  mode-require-final-newline t
  change-major-mode-with-file-name t
+ read-quoted-char-radix 10
  use-empty-active-region nil ; t could be cute, but inconsistent for macros
  shift-select-mode t
  next-line-add-newlines nil
@@ -167,11 +155,9 @@
  parse-sexp-ignore-comments t
  ;; words-include-escapes nil ??
  ;; open-paren-in-column-0-is-defun-start t ??
- ;; >> editing/editing-basics/pc-select ;; all of these are dead?
- pc-select-override-scroll-error t
- pc-select-meta-moves-sexps t
  ;; >> convenience
  confirm-kill-emacs nil
+ repeat-on-final-keystroke t
  ;; >> convenience/visual-line
  visual-line-fringe-indicators '(up-arrow down-arrow)
  ;; >> convenience/register [uninteresting]
@@ -179,6 +165,7 @@
  Buffer-menu-use-header-line t
  Buffer-menu-buffer+size-width 25
  Buffer-menu-mode-width 14
+ Buffer-menu-use-frame-buffer-list t
  ;; >> convenience/whitespace
  whitespace-style '(face                  ; use faces (=> customizable)
                     tabs ;newline spaces  ; only tabs
@@ -196,34 +183,11 @@
  whitespace-line-column 79
  whitespace-global-modes t ; maybe only in scheme mode and turn on global mode?
  ;; whitespace-action '(report-on-bogus) ; too extreme
+ ;; >> convenience/kmacro [uninteresting]
  ;; >> convenience/abbrev [uninteresting]
  ;; >> convenience/auto-insert [uninteresting]
  ;; >> convenience/auto-revert [uninteresting]
- ;; >> convenience/bs
- bs-must-always-show-regexp "[*]shell"
- bs-default-configuration "all"
- bs-alternative-configuration "files-and-scratch"
- bs-default-sort-name "by nothing" ; by visit order
- ;; >> convenience/bs/bs-appearance
- bs-attributes-list '(("" 1 1 left bs--get-marked-string)
-                      ("M" 1 1 left bs--get-modified-string)
-                      ("R" 2 2 left bs--get-readonly-string)
-                      ("Buffer" bs--get-name-length 10 left bs--get-name)
-                      ("" 1 1 left " ")
-                      ("Size" 8 8 right bs--get-size-string)
-                      ("" 1 1 left " ")
-                      ("Mode" 8 8 left bs--get-mode-name)
-                      ("" 1 1 left " ")
-                      ("File" 12 12 left bs--get-file-name))
- bs-max-window-height 20
- bs-maximal-buffer-name-column 45
- bs-minimal-buffer-name-column 15
- bs-string-show-always "+"
- bs-string-show-never "-"
- bs-string-current "."
- bs-string-current-marked "#"
- bs-string-marked "*"
- bs-string-show-normally " "
+ ;; >> convenience/bs [uninteresting]
  ;; >> convenience/emacs-lock [uninteresting]
  ;; >> convenience/file-cache [uninteresting]
  ;; >> convenience/filesets [uninteresting]
@@ -231,22 +195,16 @@
  ;; >> convenience/hl-line [uninteresting]
  ;; >> convenience/ibuffer [uninteresting]
  ;; >> convenience/ido [uninteresting]
- ;; >> convenience/kmacro [uninteresting]
  ;; >> convenience/linum
  linum-format 'dynamic
  linum-eager t
  linum-delay 0.5
- ;; >> convenience/master [uninteresting]
  ;; >> convenience/org-protocol [uninteresting]
  ;; >> convenience/reveal [uninteresting]
  ;; >> convenience/ruler-mode [uninteresting]
  ;; >> convenience/speedbar [uninteresting]
  ;; >> convenience/vcursor [uninteresting]
  ;; >> convenience/windmove [uninteresting]
- ;; >> convenience/partial-completion
- PC-first-char nil ; allways do smart completion
- PC-meta-flag t ; complete on TAB
- PC-word-delimiters "-_./:| " ; same as `completion-pcm-word-delimiters'
  ;; >> files
  find-file-wildcards t
  find-file-suppress-same-file-warnings nil ; tell me when already visited
@@ -275,7 +233,7 @@
  list-directory-verbose-switches "-laFh"
  ;; directory-free-space-program "df"
  directory-free-space-args "-h"
- dired-listing-switches "-laFh"
+ dired-listing-switches "-laFh --dired --time-style=iso"
  dired-subdir-switches nil
  ;; dired-chown-program "chown"
  ;; dired-use-ls-dired t
@@ -288,22 +246,39 @@
  dired-recursive-deletes 'top
  dired-no-confirm '() ; might be useful to add stuff here
  dired-recursive-copies 'top
- completion-ignored-extensions `(".bak" "~" "#" ".obj"
-                                 ,@completion-ignored-extensions)
- ;; >> files/dired/dired-mark [uninteresting]
- ;; >> files/dired/dired-faces [uninteresting]
+ ;; >> files/dired/ls-lisp
+ ls-lisp-emulation nil
+ ls-lisp-ignore-case nil
+ ls-lisp-dirs-first t
+ ;; no link count, username, group (mostly useless, but very long)
+ ;; ("ls-lisp" is used on windows to do ls by default)
+ ls-lisp-verbosity '()
+ ls-lisp-use-insert-directory-program nil ; to use ls-lisp (default on w32)
+ ls-lisp-support-shell-wildcards t
+ ls-lisp-format-time-list '("%m-%d %H:%M" "%Y-%m-%d")
+ ls-lisp-use-localized-time-format nil
+ ;; >> files/dired/dired-mark
+ ;; dired-keep-marker-rename t ; maybe disable these things?
+ ;; dired-keep-marker-copy 67
+ ;; dired-keep-marker-hardlink 72
+ ;; dired-keep-marker-symlink 89
+ ;; >> files/dired/dired-faces [just faces]
  ;; >> files/dired/dired-x [uninteresting]
  ;; >> files/dired/find-dired
- find-dired-find-program "find"
  find-exec-terminator "+"
- find-ls-option '("-exec ls -ldaF {} +" . "-ldaF") ; adding "h" would be nice
- find-ls-subdir-switches "-laF"                    ; but => bad rendering
+ ;; -h would be nice below, but messes up output alignment,
+ ;; also, could try `--group-directories-first' `long-iso' always shows
+ ;; everything, `iso' shows less info (no year for recents, no time for
+ ;; old stuff)
+ find-ls-option '("-exec ls -ldaF --time-style=iso {} +" . "-ldaF")
+ find-ls-subdir-switches "-ldaF --time-style=iso"
  ;; >> files/dired/wdired
  wdired-use-interactive-rename nil
  wdired-confirm-overwrite t
- wdired-use-dired-vertical-movement nil
+ wdired-use-dired-vertical-movement 'sometimes
  wdired-allow-to-redirect-links t
  wdired-allow-to-change-permissions t
+ wdired-keep-marker-rename t
  ;; >> files/plstore [uninteresting]
  ;; >> files/recentf [uninteresting]
  ;; >> files/shadow [uninteresting]
@@ -314,6 +289,8 @@
  ;; >> wp/picture [uninteresting]
  ;; >> wp/bib [uninteresting]
  ;; >> wp/columns [uninteresting]
+ ;; >> wp/lpr [uninteresting]
+ ;; >> wp/ps-print [uninteresting]
  ;; >> wp/ebnf2ps [uninteresting]
  ;; >> wp/enriched [uninteresting]
  ;; >> wp/nroff [uninteresting]
@@ -346,8 +323,8 @@
  ;; >> data/timeclock [uninteresting]
  ;; >> external
  ;; >> external/processes
- ;; >> external/processes/execute
- ;; >> external/processes/processes-basics
+ ;; >> external/processes/execute [uninteresting]
+ ;; >> external/processes/processes-basics [uninteresting]
  ;; >> external/processes/ansi-colors
  ansi-color-for-comint-mode t
  ;; >> external/processes/comint
@@ -359,44 +336,50 @@
  comint-scroll-show-maximum-output 1
  comint-buffer-maximum-size 5000
  comint-input-ring-size 500
- ;; t is nice, but sometimes screws up (try `cat', or enter a number in mz)
+ ;; t is nice, but sometimes screws up (try `cat', or enter a number in racket)
  ;; a way to fix this is to use `stty echo'
  comint-process-echoes t
  comint-eol-on-send t
  comint-use-prompt-regexp nil
  ;; >> external/processes/comint/comint-completion
  comint-completion-addsuffix t
- ;; >> external/processes/comint/comint-source [uninteresting]
  ;; >> external/processes/gud [uninteresting]
- ;; >> external/processes/pcomplete [uninteresting]
+ ;; >> external/processes/pcomplete
+ ;; => activate with (add-hook 'shell-mode-hook 'pcomplete-shell-setup)
+ pcomplete-ignore-case t
+ pcomplete-autolist t
+ pcomplete-termination-string " "
  ;; >> external/processes/compilation
  compilation-window-height 10
+ compilation-read-command t
  compilation-ask-about-save t
+ compilation-auto-jump-to-first-error nil
  compilation-skip-threshold 1
  compilation-skip-visited nil
- compilation-scroll-output t
+ compilation-scroll-output t ; ?
+ compilation-always-kill nil
  mode-compile-save-all-p nil
  mode-compile-always-save-buffer-p t
  ;; >> external/processes/compilation/next-error
  next-error-highlight t
  next-error-highlight-no-select t
+ next-error-recenter nil
  ;; >> external/processes/shell
  shell-input-autoexpand nil ; let the shell do that
  ;; >> external/processes/shell/shell-directories [uninteresting]
- ;; >> external/processes/shell/shell-faces [uninteresting]
+ ;; >> external/processes/shell/shell-faces [just faces]
  ;; >> external/processes/shell/dirtrack [uninteresting]
- ;; >> external/processes/SQL [uninteresting]
  ;; >> external/processes/executable [uninteresting]
  ;; >> external/processes/flyspell [uninteresting]
  ;; >> external/processes/grep
- grep-window-height 10
- grep-highlight-matches 'auto
- grep-scroll-output nil ; unlike compile
+ grep-window-height 10  ; looks unused in the code
+ grep-scroll-output nil ; unused too?
+ grep-highlight-matches 'auto ; try to use 'always
  ;; >> external/processes/metamail [uninteresting]
  ;; >> external/processes/proced [uninteresting]
- ;; >> external/processes/remote-compile [uninteresting]
  ;; >> external/processes/rlogin [uninteresting]
  ;; >> external/processes/socks [uninteresting]
+ ;; >> external/processes/SQL [uninteresting]
  ;; >> external/processes/term
  term-input-autoexpand nil
  term-input-ignoredups t
@@ -409,8 +392,8 @@
  ;; >> external/locate [uninteresting]
  ;; >> external/server [uninteresting]
  ;; >> comm
- ;; >> comm/netrc [uninteresting]
  ;; >> comm/url [uninteresting]
+ ;; >> comm/netrc [uninteresting]
  ;; >> comm/tls [uninteresting]
  ;; >> comm/bug-reference [uninteresting]
  ;; >> comm/dig [uninteresting]
@@ -418,37 +401,37 @@
  ;; >> comm/gravatar [uninteresting]
  ;; >> comm/ldap [uninteresting]
  ;; >> comm/net-utils [uninteresting]
- ;; >> comm/xesam [uninteresting]
  ;; >> programming
  ;; >> programming/languages
+ ;; >> programming/languages/prog-mode [empty]
  ;; >> programming/languages/lisp
  eval-expression-print-level 5
  eval-expression-print-length 20
  eval-expression-debug-on-error t
  parens-require-spaces t
- ;; >> programming/languages/lisp/advice [uninteresting]
- ;; >> programming/languages/lisp/pp [uninteresting]
  ;; >> programming/languages/lisp/bytecomp [uninteresting]
+ ;; >> programming/languages/lisp/pp [uninteresting]
+ ;; >> programming/languages/lisp/advice [uninteresting]
  ;; >> programming/languages/lisp/find-function [uninteresting]
- ;; >> programming/languages/lisp/warnings [uninteresting]
  ;; >> programming/languages/lisp/eldoc [uninteresting]
- ;; >> programming/languages/lisp/gmm [uninteresting]
  ;; >> programming/languages/lisp/checkdoc [uninteresting]
+ ;; >> programming/languages/lisp/lisp-indent [uninteresting]
  ;; >> programming/languages/lisp/edebug [uninteresting]
  ;; >> programming/languages/lisp/elp [uninteresting]
  ;; >> programming/languages/lisp/ert [uninteresting]
+ ;; >> programming/languages/lisp/gmm [uninteresting]
  ;; >> programming/languages/lisp/ielm [uninteresting]
  ;; >> programming/languages/lisp/inferior-lisp [uninteresting]
- ;; >> programming/languages/lisp/lisp-indent [uninteresting]
- ;; >> programming/languages/lisp/lisp-shadow [uninteresting]
  ;; >> programming/languages/lisp/profiler [uninteresting]
  ;; >> programming/languages/lisp/re-builder [uninteresting]
  ;; >> programming/languages/lisp/scheme
  scheme-mit-dialect nil
  scheme-program-name "racket"
  ;; >> programming/languages/lisp/scheme/cmuscheme [uninteresting]
+ ;; >> programming/languages/lisp/lisp-shadow [uninteresting]
  ;; >> programming/languages/lisp/testcover [uninteresting]
  ;; >> programming/languages/lisp/trace [uninteresting]
+ ;; >> programming/languages/lisp/warnings [uninteresting]
  ;; >> programming/languages/lisp/xscheme [uninteresting]
  ;; >> programming/languages/c
  ;; c-basic-offset 2 <--?
@@ -457,16 +440,16 @@
  ;; >> programming/languages/c/hide-ifdef [uninteresting]
  ;; >> programming/languages/vhdl [uninteresting]
  ;; >> programming/languages/nxml [uninteresting]
- ;; >> programming/languages/PostScript [uninteresting]
  ;; >> programming/languages/ada [uninteresting]
  ;; >> programming/languages/antlr [uninteresting]
  ;; >> programming/languages/asm [uninteresting]
+ ;; >> programming/languages/bat-mode [empty?]
  ;; >> programming/languages/cfengine [uninteresting]
  ;; >> programming/languages/cperl [uninteresting]
  ;; >> programming/languages/css
  css-indent-offset 2
+ ;; >> programming/languages/smie [uninteresting]
  ;; >> programming/languages/dcl [uninteresting]
- ;; >> programming/languages/delphi [uninteresting]
  ;; >> programming/languages/f90 [uninteresting]
  ;; >> programming/languages/fortran [uninteresting]
  ;; >> programming/languages/icon [uninteresting]
@@ -474,18 +457,25 @@
  ;; >> programming/languages/info-lookup [uninteresting]
  ;; >> programming/languages/js
  js-indent-level 2
+ js-expr-indent-offset 2 ; ?
+ ;; js-paren-indent-offset 0
+ ;; js-square-indent-offset 0
+ ;; js-curly-indent-offset 0
+ ;; js-switch-indent-offset 0
  ;; >> programming/languages/ld-script [uninteresting]
  ;; >> programming/languages/m4 [uninteresting]
  ;; >> programming/languages/meta-font [uninteresting]
- ;; >> programming/languages/smie [uninteresting]
  ;; >> programming/languages/modula2 [uninteresting]
  ;; >> programming/languages/octave [uninteresting]
+ ;; >> programming/languages/opascal
+ opascal-indent-level 2
  ;; >> programming/languages/pascal
  pascal-indent-level 2
  ;; >> programming/languages/perl
  perl-indent-level 2
- ;; >> programming/languages/prolog
- ;; >> programming/languages/python
+ ;; >> programming/languages/prolog [uninteresting]
+ ;; >> programming/languages/PostScript [uninteresting]
+ ;; >> programming/languages/python [uninteresting]
  ;; >> programming/languages/ruby
  ruby-indent-tabs-mode nil
  ruby-indent-level 2
@@ -496,7 +486,7 @@
  ;; >> programming/languages/sh
  ;; >> programming/languages/sh/sh-script
  sh-indentation 2
- sh-basic-offset 2 ; also needed
+ sh-basic-offset 2 ; also needed?
  ;; >> programming/languages/sieve [uninteresting]
  ;; >> programming/languages/simula [uninteresting]
  ;; >> programming/languages/tcl
@@ -504,14 +494,15 @@
  ;; >> programming/languages/vera [uninteresting]
  ;; >> programming/languages/verilog-mode [uninteresting]
  ;; >> programming/tools
+ ;; >> programming/tools/semantic [uninteresting]
  ;; >> programming/tools/tempo [uninteresting]
  ;; >> programming/tools/gdb [uninteresting]
  ;; >> programming/tools/which-func [uninteresting]
  ;; >> programming/tools/diff [uninteresting]
+ ;; >> programming/tools/change-log [uninteresting]
  ;; >> programming/tools/calculator
  calculator-electric-mode t
  calculator-bind-escape t
- ;; >> programming/tools/change-log [uninteresting]
  ;; >> programming/tools/compare-windows
  ;; compare-windows-sync nil ; no syncing, but might be useful to use something
  compare-windows-sync 'compare-windows-sync-default-function
@@ -520,15 +511,14 @@
  ;; >> programming/tools/copyright [uninteresting]
  ;; >> programming/tools/ebrowse [uninteresting]
  ;; >> programming/tools/ede [uninteresting]
+ ;; >> programming/tools/makefile [uninteresting]
  ;; >> programming/tools/ediff [uninteresting]
  ;; >> programming/tools/elide-head [uninteresting]
  ;; >> programming/tools/emerge [uninteresting]
  ;; >> programming/tools/etags [uninteresting]
  ;; >> programming/tools/flymake [uninteresting]
  ;; >> programming/tools/glasses [uninteresting]
- ;; >> programming/tools/makefile [uninteresting]
  ;; >> programming/tools/pcl-cvs [uninteresting]
- ;; >> programming/tools/semantic [uninteresting]
  ;; >> programming/tools/smerge [uninteresting]
  ;; >> programming/tools/soap-client [uninteresting]
  ;; >> programming/tools/srecode [uninteresting]
@@ -536,11 +526,11 @@
  vc-follow-symlinks 'ask ; shouldn't matter with `find-file-visit-truename'
  vc-display-status t
  vc-suppress-confirm nil
- ;; >> programming/tools/vc/vc-arch [uninteresting]
- ;; >> programming/tools/vc/vc-bzr [uninteresting]
- ;; >> programming/tools/vc/vc-cvs [uninteresting]
  ;; >> programming/tools/vc/vc-git
  vc-git-diff-switches t ; might be useful to add stuff like `-x -w'
+ ;; >> programming/tools/vc/vc-cvs [uninteresting]
+ ;; >> programming/tools/vc/vc-arch [uninteresting]
+ ;; >> programming/tools/vc/vc-bzr [uninteresting]
  ;; >> programming/tools/vc/vc-hg [uninteresting]
  ;; >> programming/tools/vc/vc-mtn [uninteresting]
  ;; >> programming/tools/vc/vc-rcs [uninteresting]
@@ -549,11 +539,14 @@
  vc-svn-diff-switches t ; might be useful to add stuff like `-x -w'
  ;; >> applications
  ;; >> applications/calendar [done below]
+ ;; >> applications/package [uninteresting]
  ;; >> applications/mail [mostly elsewhere]
  read-mail-command 'rmail ; change to vm?
  mail-user-agent 'sendmail-user-agent ; maybe use feedmail
- send-mail-function 'sendmail-send-it
+ ;; >> applications/mail/sendmail
+ send-mail-function 'smtpmail-send-it
  ;;     or use this (as feedmail says): send-mail-function 'feedmail-send-it
+ ;; >> applications/mail/gnus [elsewhere]
  ;; >> applications/news [elsewhere]
  ;; >> applications/games [uninteresting]
  ;; >> applications/ispell
@@ -566,13 +559,12 @@
  ispell-quietly nil
  ispell-format-word-function (lambda (s) (concat "\"" s "\""))
  ispell-use-framepop-p nil
+ ;; >> applications/eshell [uninteresting]
  ;; >> applications/calc [uninteresting]
  ;; >> applications/erc [uninteresting]
- ;; >> applications/eshell [uninteresting]
  ;; >> applications/htmlfontify [uninteresting]
  ;; >> applications/mpc [uninteresting]
  ;; >> applications/newsticker [uninteresting]
- ;; >> applications/package [uninteresting]
  ;; >> applications/rcirc [uninteresting]
  ;; >> applications/ses [uninteresting]
  ;; >> development
@@ -584,9 +576,6 @@
  ;; >> development/docs/makeinfo [uninteresting]
  ;; >> development/docs/texinfo [uninteresting]
  ;; >> development/extensions [uninteresting]
- ;; >> development/extensions/widgets [uninteresting]
- ;; >> development/extensions/data-debug [uninteresting]
- ;; >> development/extensions/pages [uninteresting]
  ;; >> development/internal
  major-mode 'indented-text-mode
  ;; >> development/internal/alloc
@@ -637,19 +626,18 @@
  read-buffer-completion-ignore-case t
  ;; minibuffer-prompt-properties '(read-only t face minibuffer-prompt point-entered minibuffer-avoid-prompt)
  minibuffer-auto-raise nil
- completion-ignore-case t
+ completion-ignore-case t ; manually added
  ;; >> environment/minibuffer/icomplete [uninteresting]
  ;; >> environment/minibuffer/savehist [uninteresting]
+ ;; >> environment/w32 [below]
  ;; >> environment/hardware [uninteresting]
- ;; >> environment/terminals
- ;; >> environment/terminals/terminal [uninteresting]
+ ;; >> environment/terminals [uninteresting]
  ;; >> environment/unix [uninteresting]
  ;; >> environment/x [uninteresting]
  ;; >> environment/frames [some in "win-init.el"]
  ;; >> environment/frames/cursor
  cursor-in-non-selected-windows '(hbar . 4)
  display-hourglass t
- cursor-type t ; not a custom
  ;; >> environment/frames/fringe
  fringe-mode 2
  indicate-empty-lines t
@@ -659,7 +647,10 @@
  ;; >> environment/frames/two-column [uninteresting]
  ;; >> environment/mode-line [in "modeline.el"]
  ;; >> environment/display
+ ;; visual-order-cursor-movement t ; maybe use this and `right-char' etc?
  idle-update-delay 0.5
+ tty-menu-open-use-tmm nil
+ cursor-type t
  ctl-arrow t
  truncate-lines nil
  word-wrap nil
@@ -696,7 +687,7 @@
  ;; >> environment/windows
  window-min-height 2
  window-min-width 4
- switch-to-visible-buffer t ; also affects `eli-next-buffer-acyclic'
+ switch-to-visible-buffer t ; also affects `eli-next-buffer-acyclic' with arg
  split-window-keep-point t
  pop-up-frames nil
  display-buffer-reuse-frames nil
@@ -704,24 +695,27 @@
  even-window-heights nil
  recenter-positions '(middle top bottom)
  scroll-error-top-bottom t    ; doesn't matter anyway
- scroll-up-aggressively 0.1   ; Make large scrolls have little context
- scroll-down-aggressively 0.1 ; (0.0 doesn't work; restart to try it)
+ scroll-up-aggressively 0.0   ; scrolling against the edge: no context
+ scroll-down-aggressively 0.0 ;   (0.0 finally works, see also scroll-margin)
+ ;; frame-resize-pixelwise t  ; maybe use this?
  next-screen-context-lines 2
- scroll-preserve-screen-position 'in-place ; use my scroll-in-place feature
- window-combination-resize t ; try to see if this is useful
+ scroll-preserve-screen-position 'in-place ; uses *my* scroll-in-place feature
+ window-combination-resize t  ; try to see if this is useful
+ ;; window-resize-pixelwise t ; this would go with frame-resize-pixelwise
  scroll-step 0
  scroll-conservatively 0 ; doesn't look like values <=100 work as intended
                          ; use 0 with scroll-*-aggresively as above
- scroll-margin 0 ; maybe use 1? (forces a line, even at bottom or on C-0 C-L)
- hscroll-margin 1 ; this works better, it seems
+ scroll-margin 1 ; one context line (forces even at bottom or on C-0 C-L)
+ hscroll-margin 2
  hscroll-step 4
  make-cursor-line-fully-visible t
+ scroll-bar-adjust-thumb-portion nil
  ;; >> environment/windows/winner [uninteresting]
  ;; >> environment/dos-fns [uninteresting]
- ;; >> environment/w32 [below]
- ;; >> faces [elsewhere]
+ ;; >> faces [in colors.el]
  ;; >> help
- ;; help-window-select 'other    what does this do?
+ help-window-select t ; always select the help window
+ help-enable-auto-load t
  help-downcase-arguments t
  ;; >> help/customize
  ;; >> help/customize/custom-browse [uninteresting]
@@ -742,8 +736,11 @@
  apropos-sort-by-scores t
  apropos-documentation-sort-by-scores t ; (this is on by default)
  ;; >> help/help-at-pt [uninteresting]
- ;; >> multimedia [uninteresting]
- ;; >> local [uninteresting]
+ ;; >> multimedia
+ ;; >> multimedia/image [uninteresting]
+ image-animate-loop t
+ ;; >> multimedia/image-dired [uninteresting]
+ ;; >> multimedia/thumbs [uninteresting]
  ;; >> misc (non-custom)
  minibuffer-allow-text-properties nil
  resize-mini-windows t        ; exactly as needed
@@ -796,13 +793,13 @@
    w32-pass-alt-to-system nil
    w32-pass-lwindow-to-system t ; they still work fine
    w32-pass-rwindow-to-system t ;   as a super modifier
+   w32-pass-multimedia-buttons-to-system nil ; doesn't always block them anyway
+   ;; w32-pass-extra-mouse-buttons-to-system <- might be needed
    w32-capslock-is-shiftlock nil
    w32-enable-caps-lock t
    w32-enable-num-lock t
    w32-scroll-lock-modifier nil
    ;;
-   w32-enable-synthesized-fonts nil
-   w32-list-proportional-fonts t
    ;; w32-ansi-code-page 1252
    w32-use-w32-font-dialog t
    ;;
@@ -858,7 +855,6 @@
 (put 'with-output-to-string 'lisp-indent-function 1)
 (put 'with-paint-operation  'lisp-indent-function 1)
 (put 'when                  'lisp-indent-function 1)
-(put 'when-eli-feature      'lisp-indent-function 1)
 (put 'while                 'lisp-indent-function 1)
 
 ;;-----------------------------------------------------------------------------

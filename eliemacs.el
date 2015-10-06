@@ -1,11 +1,11 @@
-;;; eliemacs.el --- EliEmacs main file
+;;; eliemacs.el --- EliEmacs main file               -*- lexical-binding: t -*-
 
 (eval-and-compile (defconst eli-version
 ;;     /***************************************************************\    ;;
 ;;    /*****************************************************************\   ;;
 ;;    ***                                                             ***   ;;
 ;;    ***               Eli's Emacs initialization file               ***   ;;
-                                "[2015-04-22]"
+                                "[2015-11-03]"
 ;;    *** Written by Eli Barzilay: Maze is Life!   <eli@barzilay.org> ***   ;;
 ;;    ***                                                             ***   ;;
 ;;    \*****************************************************************/   ;;

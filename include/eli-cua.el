@@ -7,9 +7,9 @@
 (setq cua-enable-cua-keys t
       cua-remap-control-v t
       cua-remap-control-z t
-      cua-highlight-region-shift-only nil
+      ;; cua-highlight-region-shift-only nil
       cua-prefix-override-inhibit-delay 0.5 ; longer
-      cua-delete-selection t
+      cua-delete-selection t ; turns on (delete-selection-mode)
       cua-keep-region-after-copy nil
       cua-toggle-set-mark t
       cua-auto-mark-last-change nil ; maybe this is useful as t?
@@ -31,9 +31,6 @@
       cua-read-only-cursor-color   "orangered1"
       cua-overwrite-cursor-color   "green"
       cua-global-mark-cursor-color "cyan")
-
-(put 'forward-page         'CUA 'move)
-(put 'backward-page        'CUA 'move)
 
 (put 'kill-word            'delete-selection 'supersede)
 (put 'delete-word          'delete-selection 'supersede)
@@ -66,14 +63,30 @@
 
 ;; HACK: redefine `cua-set-rectangle-mark' so it can do something else
 ;; also avoid it in the minibuffer
-(defvar eli-override-cua-set-rectangle-mark 'cua-set-rectangle-mark)
-(make-variable-buffer-local 'eli-override-cua-set-rectangle-mark)
+(defvar-local eli-override-cua-set-rectangle-mark 'cua-set-rectangle-mark)
+(defvar eli-tweaked-cua-rectangle-keymap nil)
 (defun eli-cua-set-rectangle-mark ()
   "Calls `eli-override-cua-set-rectangle-mark' which normally holds
 `cua-set-rectangle-mark'.  The indirection is so it can be overridden."
   (interactive)
   (call-interactively
-   (if (minibufferp) (key-binding "\r") eli-override-cua-set-rectangle-mark)))
-(define-key cua-global-keymap '[(shift return)] 'eli-cua-set-rectangle-mark)
+   (if (minibufferp) (key-binding "\r") eli-override-cua-set-rectangle-mark))
+  (when (and (not eli-tweaked-cua-rectangle-keymap)
+             (boundp 'cua--rectangle-keymap))
+    (define-keys cua--rectangle-keymap
+      '("<right>"  cua-resize-rectangle-right)
+      '("<left>"   cua-resize-rectangle-left)
+      '("<up>"     cua-resize-rectangle-up)
+      '("<down>"   cua-resize-rectangle-down)
+      '("<home>"   cua-resize-rectangle-bol)
+      '("<end>"    cua-resize-rectangle-eol)
+      '("<C-home>" cua-resize-rectangle-top)
+      '("<C-end>"  cua-resize-rectangle-bot)
+      '("<prior>"  cua-resize-rectangle-page-up)
+      '("<next>"   cua-resize-rectangle-page-down)
+      '("DEL"      cua-delete-char-rectangle)
+      )))
+(define-keys cua-global-keymap
+  '("<S-return>" eli-cua-set-rectangle-mark))
 
 ;;; eli-cua.el ends here

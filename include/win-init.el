@@ -106,7 +106,8 @@ is not used.")
             (h         (set-frame-height frame w)   (redisplay t)))
       (when (or x y)
         (modify-frame-parameters
-         frame `((left . (+ ,(or x 0))) (top . (+ ,(or y 0)))))
+         frame `((user-position . t)
+                 (left . (+ ,(or x 0))) (top . (+ ,(or y 0)))))
         (redisplay t)))))
 
 (push (lambda (f)

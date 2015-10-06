@@ -193,13 +193,14 @@ must be sent as well)."
   (insert-and-inherit (read-quoted-char))
   (comint-send-now))
 
+;; see also override for comint-previous-matching-input-from-input that
+;; leaves point at the end of the line.
 (defun comint-previous-matching-input-from-input-or-scroll (n)
   (interactive "p")
   (if (comint-after-pmark-p)
     (progn (setq this-command 'comint-previous-matching-input-from-input)
            (comint-previous-matching-input-from-input n))
     (scroll-down-1-stay n)))
-
 (defun comint-next-matching-input-from-input-or-scroll (n)
   (interactive "p")
   (if (comint-after-pmark-p)
@@ -219,7 +220,6 @@ must be sent as well)."
     (if line-move-visual
       (beginning-of-visual-line arg)
       (beginning-of-line arg))))
-(put 'eli-comint-beginning-of-line 'CUA 'move)
 (defun eli-comint-end-of-line (&optional arg)
   "Like `end-of-line'."
   (interactive)
@@ -232,17 +232,19 @@ must be sent as well)."
     (if line-move-visual
       (end-of-visual-line arg)
       (end-of-line arg))))
-(put 'eli-comint-end-of-line 'CUA 'move)
 
 (defun eli-comint-clear-except-command ()
-  "Erase buffer, leaving the current command-line"
+  "Erase buffer, leaving the current command-line, and/or copy an old command
+if the cursor is on one."
   (interactive)
   (let* ((is-output (lambda (p)
                       (memq (get-text-property p 'field) '(output boundary))))
-         (p (get-buffer-process (current-buffer)))
+         (p (or (get-buffer-process (current-buffer))
+                (user-error "Current buffer has no process")))
          (p (and p (process-mark p))))
     (when (and p (< (point) (marker-position p)))
-      (if (and (funcall is-output (point)) (funcall is-output (1- (point))))
+      (if (and (funcall is-output (point))
+               (or (<= (point) (point-min)) (funcall is-output (1- (point)))))
         (goto-char (point-max))
         (comint-copy-old-input)))
     (let ((inhibit-modification-hooks t))
@@ -255,16 +257,15 @@ must be sent as well)."
                       (not (funcall is-output (1- p))))
              (setq p (previous-single-property-change (point) 'field))
              (when p (goto-char p))))
-         (let ((inhibit-field-text-motion t))
-           (beginning-of-line) (point)))))))
+         (forward-line 0) (point))))))
 
 (eval-after-load "comint"
   '(define-keys comint-mode-map
-     '([(meta q)]       comint-quoted-send)
-     '([(control up)]   comint-previous-matching-input-from-input-or-scroll)
-     '([(control down)] comint-next-matching-input-from-input-or-scroll)
-     '([(home)]         eli-comint-beginning-of-line)
-     '([(end)]          eli-comint-end-of-line)
-     '([(shift backspace)] eli-comint-clear-except-command)))
+     '("M-q"           comint-quoted-send)
+     '("<C-up>"        comint-previous-matching-input-from-input-or-scroll)
+     '("<C-down>"      comint-next-matching-input-from-input-or-scroll)
+     '("<home>"        eli-comint-beginning-of-line)
+     '("<end>"         eli-comint-end-of-line)
+     '("<S-backspace>" eli-comint-clear-except-command)))
 
 ;;; shell-utils.el ends here

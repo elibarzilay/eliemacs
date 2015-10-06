@@ -121,75 +121,69 @@ existing faces)."
 ;; Hacked `read-face-name' that uses simple-make-face
 
 ;; Redefined from "faces.el"
-(defun read-face-name (prompt &optional string-describing-default multiple)
-  "Read a face, defaulting to the face or faces on the char after point.
-If it has the property `read-face-name', that overrides the `face' property.
-PROMPT should be a string that describes what the caller will do with the face;
-it should not end in a space.
-STRING-DESCRIBING-DEFAULT should describe what default the caller will use if
-the user just types RET; you can omit it.
-If MULTIPLE is non-nil, return a list of faces (possibly only one).
-Otherwise, return a single face.
+(defvar crm-separator) ; from crm.el
+(defun read-face-name (prompt &optional default multiple)
+  "Read one or more face names, prompting with PROMPT.
+PROMPT should not end in a space or a colon.
+
+Return DEFAULT if the user enters the empty string.
+If DEFAULT is non-nil, it should be a single face or a list of face names
+\(symbols or strings).  In the latter case, return the `car' of DEFAULT
+\(if MULTIPLE is nil, see below), or DEFAULT (if MULTIPLE is non-nil).
+
+If MULTIPLE is non-nil, this function uses `completing-read-multiple'
+to read multiple faces with \"[ \\t]*,[ \\t]*\" as the separator regexp
+and it returns a list of face names.  Otherwise, it reads and returns
+a single face name.
 
 ** Modified to accept anything, and use `simple-make-face-if-undefined'."
-  (let ((faceprop (or (get-char-property (point) 'read-face-name)
-		      (get-char-property (point) 'face)))
-        (aliasfaces nil)
-        (nonaliasfaces nil)
-	faces)
-    ;; Try to get a face name from the buffer.
-    (if (memq (intern-soft (thing-at-point 'symbol)) (face-list))
-	(setq faces (list (intern-soft (thing-at-point 'symbol)))))
-    ;; Add the named faces that the `face' property uses.
-    (if (and (listp faceprop)
-	     ;; Don't treat an attribute spec as a list of faces.
-	     (not (keywordp (car faceprop)))
-	     (not (memq (car faceprop) '(foreground-color background-color))))
-	(dolist (f faceprop)
-	  (if (symbolp f)
-	      (push f faces)))
-      (if (symbolp faceprop)
-	  (push faceprop faces)))
-    (delete-dups faces)
+  (if (and default (not (stringp default)))
+      (setq default
+            (cond ((symbolp default)
+                   (symbol-name default))
+                  (multiple
+                   (mapconcat (lambda (f) (if (symbolp f) (symbol-name f) f))
+                              default ", "))
+                  ;; If we only want one, and the default is more than one,
+                  ;; discard the unwanted ones.
+                  (t (symbol-name (car default))))))
+  (when (and default (not multiple))
+    (require 'crm)
+    ;; For compatibility with `completing-read-multiple' use `crm-separator'
+    ;; to define DEFAULT if MULTIPLE is nil.
+    (setq default (car (split-string default crm-separator t))))
 
+  (let ((prompt (if default
+                    (format "%s (default `%s'): " prompt default)
+                  (format "%s: " prompt)))
+        aliasfaces nonaliasfaces faces)
     ;; Build up the completion tables.
     (mapatoms (lambda (s)
-                (if (custom-facep s)
+                (if (facep s)
                     (if (get s 'face-alias)
                         (push (symbol-name s) aliasfaces)
                       (push (symbol-name s) nonaliasfaces)))))
-
-    ;; If we only want one, and the default is more than one,
-    ;; discard the unwanted ones now.
-    (unless multiple
-      (if faces
-	  (setq faces (list (car faces)))))
-    (require 'crm)
-    (let* ((input
-	    ;; Read the input.
-	    (completing-read-multiple
-	     (if (or faces string-describing-default)
-		 (format "%s (default %s): " prompt
-			 (if faces (mapconcat 'symbol-name faces ",")
-			   string-describing-default))
-	       (format "%s: " prompt))
-	     (completion-table-in-turn nonaliasfaces aliasfaces)
-	     nil
-             nil ; ELI: don't require a match
-             nil 'face-name-history
-	     (if faces (mapconcat 'symbol-name faces ","))))
-	   ;; Canonicalize the output.
-	   (output
-	    (cond ((or (equal input "") (equal input '("")))
-		   faces)
-		  ((stringp input) (mapcar 'simple-make-face-if-undefined
-                                           (split-string input ", *" t)))
-		  ((listp input) (mapcar 'simple-make-face-if-undefined input))
-		  (input))))
-      ;; Return either a list of faces or just one face.
-      (if multiple
-	  output
-	(car output)))))
+    (if multiple
+        (progn
+          (dolist (face (completing-read-multiple
+                         prompt
+                         (completion-table-in-turn nonaliasfaces aliasfaces)
+                         nil
+                         nil ; ELI: don't require a match
+                         nil 'face-name-history default))
+            ;; Ignore elements that are not faces
+            ;; (for example, because DEFAULT was "all faces")
+            (if (facep face) (push (intern face) faces)
+                (push (simple-make-face-if-undefined face) faces))) ; ELI
+          (nreverse faces))
+      (let ((face (completing-read
+                   prompt
+                   (completion-table-in-turn nonaliasfaces aliasfaces)
+                   nil
+                   nil ; ELI: don't require a match
+                   nil 'face-name-history default)))
+        (if (facep face) (intern face)
+            (simple-make-face-if-undefined face)))))) ; ELI
 
 ;;-----------------------------------------------------------------------------
 ;; Color utilities
@@ -324,6 +318,9 @@ Examples:
       (font-lock-fontify-buffer))))
 (put 'add-color-pattern 'safe-local-eval-function t)
 
+;; used temporarily, to make it easy to choose a pattern
+(defvar patterns-history-list nil)
+
 (defun remove-added-color-pattern (&optional n)
   "Remove the a pattern added with `add-color-pattern'.
 Automatically removes a single-added pattern, otherwise asks which one to
@@ -339,11 +336,11 @@ one added first), if negative removes all."
       (n (while (and added-color-patterns (> n 0))
            (font-lock-remove-keywords nil (list (pop added-color-patterns)))
            (setq n (1- n))))
-      (t (let* ((history-list (mapcar 'car added-color-patterns))
+      (t (let* ((patterns-history-list (mapcar 'car added-color-patterns))
                 (rem (assoc (completing-read "Pattern to unhighlight: "
                                              added-color-patterns nil t
                                              (caar added-color-patterns)
-                                             (cons 'history-list 1))
+                                             (cons 'patterns-history-list 1))
                             added-color-patterns)))
            (font-lock-remove-keywords nil (list rem))
            (setq added-color-patterns (delq rem added-color-patterns))))))
@@ -442,13 +439,10 @@ one added first), if negative removes all."
 (setq display-time-mail-face (simple-make-face 'yellow/orangered4-bold))
 
 ;;-----------------------------------------------------------------------------
-;; Paren coloring using "mic-paren"
+;; Paren coloring using "mic-paren" (still much better than paren-show-mode)
 
-;; Load it
-;;!!!!!!!!!!!!!!!! use show-paren-mode
+;; Load, set defaults, activate
 (load/include "mic-paren")
-
-;; Set defaults
 (setq paren-priority            'both
       paren-highlight-at-point  t
       paren-highlight-offscreen t
@@ -457,14 +451,12 @@ one added first), if negative removes all."
       paren-ding-unmatched      nil
       paren-delay               0.1
       paren-dont-touch-blink    nil)
-
-;; Activate it
 (paren-activate)
 
 ;; Switchable paren coloring modes
 (defvar paren-hilight-mode 1)
 (defvar paren-hilight-modes
-  [nil (paren-face-match . nil) (bold . t) (paren-face-match . t)])
+  [nil (paren-face-match . nil) (bold . t) (paren-face-match-full . t)])
 (defun prev-paren-hilight-mode (arg)
   "Switch to the previous paren-hilight mode or to the ARGth one."
   (interactive "P")
@@ -485,10 +477,11 @@ one added first), if negative removes all."
     (message "Paren mode #%s" paren-hilight-mode)))
 ;; Set the keys
 (define-keys 'global
-  '([(control ?\()] prev-paren-hilight-mode)
-  '([(control ?\))] next-paren-hilight-mode))
+  '("C-(" prev-paren-hilight-mode)
+  '("C-)" next-paren-hilight-mode))
 
 (simple-make-face 'yellow/blue3  'paren-face-match)
+(simple-make-face 'yellow/h315   'paren-face-match-full)
 (simple-make-face 'yellow/red3   'paren-face-mismatch)
 (simple-make-face 'yellow/green3 'paren-face-no-match)
 

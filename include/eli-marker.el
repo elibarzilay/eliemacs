@@ -21,7 +21,8 @@
     (if (not key)
       (setq key (eli-marker-set-frameconf))
       (progn (puthash key nil eli-markers)
-             (message "Setting marker key `%s' to this position+windows." key)))
+             (message "Setting marker key `%s' to this position+windows."
+                      key)))
     (puthash key
              (nconc (gethash key eli-markers '())
                     (list (current-window-configuration)))
@@ -61,7 +62,8 @@ or set such a marker."
             (dolist (d data)
               (cond ((markerp d)
                      (or (marker-buffer d)
-                         (error "The `%s' marker's buffer no longer exists." key))
+                         (error "The `%s' marker's buffer no longer exists."
+                                key))
                      (switch-to-buffer (marker-buffer d))
                      (push-mark)
                      (goto-char d))

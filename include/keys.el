@@ -246,6 +246,13 @@
   '("M-z"             macro-key)
   '("C-`"             self-recording-macro-key)
   '("C-~"             self-recording-macro-key)
+  ;; include high function keys (useful with, eg, logitech gaming keyboard)
+  '("<f13>"           self-recording-macro-key)
+  '("<f14>"           self-recording-macro-key)
+  '("<f15>"           self-recording-macro-key)
+  '("<f16>"           self-recording-macro-key)
+  '("<f17>"           self-recording-macro-key)
+  '("<f18>"           self-recording-macro-key)
 
   ;; misc
   'global
@@ -254,6 +261,7 @@
   '("C-x <f12>"       widen)
   '("<C-return>"      calculator)
   (and (not window-system) '("M-RET" calculator))
+  '("M-."             eli-up-directory)
   '("M-j"             eli-join-line)
   '("C-;"             eli-toggle-comment-line)
   '("M-C"             eli-compare-two-buffers)
@@ -284,11 +292,20 @@
   )
 
 (eval-after-load "dired"
-  '(define-keys dired-mode-map
-     '("r" wdired-change-to-wdired-mode)
-     '("w" wdired-change-to-wdired-mode) ; I always used that
-     '("W" dired-copy-filename-as-kill)  ; originally on w
-     ))
+  '(progn (define-keys dired-mode-map
+            '("r" wdired-change-to-wdired-mode)
+            '("w" wdired-change-to-wdired-mode) ; I always used that
+            '("W" dired-copy-filename-as-kill)  ; originally on w
+            '([remap eli-next-line] dired-next-line)
+            '([remap eli-previous-line] dired-previous-line)
+            '("<M-next>" dired-next-dirline)
+            '("<M-prior>" dired-prev-dirline))
+          (add-hook 'dired-mode-hook
+            (lambda ()
+              (setq truncate-lines t)
+              (when list-buffers-directory
+                (setq list-buffers-directory
+                      (abbreviate-file-name list-buffers-directory)))))))
 
 (eval-after-load "info"
   '(define-keys Info-mode-map
