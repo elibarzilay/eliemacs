@@ -89,11 +89,9 @@
 (defvar SIP-scroll-column nil
   "The column we were moved to as a consequence of scrolling.")
 
-;; remember the last command and its group, so we can identify repeated uses
-;; of groups even when this is invoked from other commands
-(defvar SIP-last-scroll-command+group+tick nil
-  "The last command used to scroll, the group of commands it was in,
-and buffer state counter.")
+;; remember the last buffer state counter to break scroll sequences when the
+;; buffer is modified (eg, in shells)
+(defvar SIP-last-bufchars nil "The last buffer state counter used to scroll.")
 
 (defvar SIP-scroll-posns nil
   "A (buffer-local) list of remembered positions.
@@ -141,30 +139,31 @@ POSN is in the format of `SIP-get-scroll-posn'."
   ;; This is the body of `SIP-do-scroll', which is dealing with the question of
   ;; whether to do an in-place scrolling or not, based on
   ;; `scroll-preserve-screen-position'.
-  (setq this-command orig) ; try this to deal with the C-down C-pgdn problem
-  (let* ((last SIP-last-scroll-command+group+tick)
-         (new (list last-command group (buffer-chars-modified-tick)))
-         (repeated
-          ;; this makes it possible for things to work fine even when called
-          ;; through some other command (and no need for plist on function
-          ;; names)
-          (prog1 (and (equal last new) (memq current-prefix-arg '(nil -)))
-            (setq SIP-last-scroll-command+group+tick new)))
-         (arg (if repeated
-                SIP-last-scroll-arg
-                (progn (SIP-set-visual-column)
-                       (setq SIP-last-scroll-arg arg))))
-         (direction (if isdown -1 +1))
-         (direction (if (or (eq arg '-) (< (prefix-numeric-value arg) 0))
-                      (- direction) direction))
-         (direction (if (> direction 0) 'down 'up))
+  ;; associate commands -> groups, so it work when called from other commands:
+  (put this-command 'SIP-group group)
+  ;; Is the below needed?
+  ;; (setq this-command orig) ; try this to deal with the C-down C-pgdn problem
+  (let* ((bufchars (buffer-chars-modified-tick))
+         (repeated (and (equal group (get last-command 'SIP-group))
+                        (equal SIP-last-bufchars bufchars)
+                        (or (equal arg SIP-last-scroll-arg)
+                            (not (integerp arg)))))
+         (arg (cond ((not repeated)
+                     (SIP-set-visual-column)
+                     (setq SIP-last-scroll-arg arg))
+                    (t (when (eq arg '-) (setq isdown (not isdown)))
+                       SIP-last-scroll-arg)))
+         ;; isdown means pgdn (so => scroll up)
+         (isdown (if (or (eq arg '-) (< (prefix-numeric-value arg) 0))
+                   (not isdown) isdown))
          ;; these hold the referencing cons cell (so it can be modified)
          past-box future-box
          (curpos (SIP-get-scroll-posn)))
+    (setq SIP-last-bufchars bufchars)
     (unless (and repeated SIP-scroll-posns)
       (setq SIP-scroll-posns (list '() '())))
     ;; pull the right boxes
-    (if (eq direction 'up)
+    (if isdown
       (setq future-box SIP-scroll-posns past-box   (cdr SIP-scroll-posns))
       (setq past-box   SIP-scroll-posns future-box (cdr SIP-scroll-posns)))
     ;; remember where we are now, unless it's in the same place as last time
@@ -182,11 +181,9 @@ POSN is in the format of `SIP-get-scroll-posn'."
          (setcar future-box (cdar future-box))
          (SIP-set-scroll-posn posn)))
       ;; we're at the edge so there is nothing to do
-      ((if (eq direction 'up) (bobp) (eobp))
-       nil)
+      ((if isdown (bobp) (eobp)) nil)
       ;; otherwise try to do the needed scroll if the edge is not visible...
-      ((or (pos-visible-in-window-p
-            (if (eq direction 'up) (point-min) (point-max)))
+      ((or (pos-visible-in-window-p (if isdown (point-min) (point-max)))
            (condition-case nil
                (let ((p (and keep (point))))
                  (funcall orig arg)
@@ -195,8 +192,7 @@ POSN is in the format of `SIP-get-scroll-posn'."
                    ((and p (pos-visible-in-window-p p)) (goto-char p))
                    ;; if we went down and now we see the bottom (and it we know
                    ;; it wasn't visible before), then make it be the bottom
-                   ((and (eq direction 'down)
-                         (pos-visible-in-window-p (point-max)))
+                   ((and (not isdown) (pos-visible-in-window-p (point-max)))
                     (save-excursion (goto-char (point-max)) (recenter -1))))
                  nil)
              ((beginning-of-buffer end-of-buffer) t)))
@@ -208,11 +204,9 @@ POSN is in the format of `SIP-get-scroll-posn'."
                ;; and fake a second call to use it
                (this-command 'previous-line))
            (with-no-warnings
-             (if (eq direction 'up)
-               (previous-line (abs arg))
-               (next-line (abs arg))))
+             (if isdown (previous-line (abs arg)) (next-line (abs arg))))
            (SIP-goto-visual-column))
-         (goto-char (if (eq direction 'up) (point-min) (point-max))))))))
+         (goto-char (if isdown (point-min) (point-max))))))))
 
 (defvar scroll-in-place t
   "If this is nil, `scroll-in-place' functionality is disabled.
@@ -237,11 +231,10 @@ cancel each other out."
       (SIP-do-scroll-internal arg isdown group keep orig)
       (let ((p (and keep (point))))
         ;; forcibly break any sequence of scrolling commands
-        (setq SIP-last-scroll-command+group+tick nil)
+        (setq SIP-last-bufchars nil)
         (funcall orig arg)
-        ;; go back if possible
-        (when (and p (pos-visible-in-window-p p))
-          (goto-char p))))))
+        ;; go back if needed and if possible
+        (when (and p (pos-visible-in-window-p p)) (goto-char p))))))
 
 (defmacro defun-SIP-up/down (name-pat inter keep other docstr)
   "A macro to generate up/down scrolling commands.
@@ -265,7 +258,6 @@ DOCSTR is the function's docstring, with `XX' replaced appropriately."
                              doit)))
                 `((defun ,name (&optional arg)
                     ,docstr (interactive ,inter) ,doit)
-                  (put ',name 'CUA 'move)
                   (put ',name 'scroll-command t) ; for v24
                   (put ',name 'isearch-scroll t) ; for v23
                   )))))
