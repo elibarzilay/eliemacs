@@ -5,6 +5,7 @@
 (require 'help-mode)
 (require 'cus-edit)
 (require 'view)
+(require 'bs)
 (require 'server)
 
 (byte-compile-file "~/EliEmacs/eliemacs.el")

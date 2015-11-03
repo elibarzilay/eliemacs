@@ -49,7 +49,7 @@
 (load/include "shell-utils")
 (load/include "eli-backup")
 (load/include "mail-news")
-(load/include "ebuff-init")
+(load/include "show-buffers")
 (load/include "minibuf")
 (load/include "modeline")
 (load/include "macro-keys")

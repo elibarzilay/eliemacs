@@ -77,7 +77,7 @@
 
   ;; F1 - file/buffer operations
   '("<f1>"            find-file)
-  '("<C-f1>"          electric-buffer-list)
+  '("<C-f1>"          eli-show-buffers)
   '("<S-f1>"          find-file-literally)
   '("<C-S-f1>"        find-dired)
   '("ESC <M-f1>"      speedbar-get-focus)
