@@ -9,7 +9,7 @@
 (defvar macro-key-record-name nil
   "When a macro-key is recorded, this is the key name.")
 (defvar macro-key-record-mode nil
-  "When a macro-key is recorded, this is 'global, 'local, or 'append.")
+  "When a macro-key is recorded, this is 'global, 'local, 'append, or nil.")
 (defvar macro-key-saved-binding nil
   "When a macro-key is being recorded, this holds its previous binding.")
 (defvar macro-key-saved-last-kbd-macro nil
@@ -18,7 +18,7 @@
   "Last (key . mode) that we attempted to make a macro key.")
 
 (defun macro-key-start-recording (key mode)
-  ;; mode is 'global, 'local, or 'append
+  ;; mode is 'global, 'local, 'append, or nil for whatever is active
   (let* ((keyname (key-description key))
          (keymap  (cond ((eq mode 'local) (current-local-map))
                         ((eq mode 'global) (current-global-map))
@@ -50,9 +50,12 @@
     (add-hook 'post-command-hook 'macro-key-post-command)
     (if (eq mode 'append) (start-kbd-macro t t) (start-kbd-macro nil))
     (message "%s macro key `%s'..."
-             (cond ((eq mode 'local)  "Recording local")
-                   ((eq mode 'global) "Recording global")
-                   ((eq mode 'append) "Appending to"))
+             (pcase mode
+               (`nil    "Recording")
+               (`local  "Recording local")
+               (`global "Recording global")
+               (`append "Appending to")
+               (_       (format "[mode=%S]" mode)))
              keyname)))
 
 (defun macro-key-post-command ()
@@ -74,9 +77,11 @@
              (beep)
              (sleep-for 0.2))
       (message
-       (cond ((eq macro-key-record-mode 'local) "Local macro key `%s' recorded.")
-             ((eq macro-key-record-mode 'global) "Macro key `%s' recorded.")
-             ((eq macro-key-record-mode 'append) "Appended to `%s' macro key."))
+       (pcase macro-key-record-mode
+         (`nil    "Macro key `%s' recorded.")
+         (`local  "Local macro key `%s' recorded.")
+         (`global "Global macro key `%s' recorded.")
+         (`append "Appended to `%s' macro key."))
        name))))
 
 (defun macro-key-get-key+macro (for-what)
@@ -129,9 +134,10 @@
 (defun self-recording-macro-key ()
   "Start a macro key recording for the key that invoked this.
 Stop recording if this key is being recorded.
-The macro key that gets recorded is always global."
+The macro key that gets recorded is global or local based on where this binding
+is found."
   (interactive)
-  (macro-key-start-recording (this-single-command-keys) current-prefix-arg))
+  (macro-key-start-recording (this-single-command-keys) nil))
 
 (defun macro-key ()
   "Main entry point for recording and managing macro keys."

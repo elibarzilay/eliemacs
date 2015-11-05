@@ -130,7 +130,7 @@
   ;; F10 - buffer killing / menu emulation
   '("<f10>"           kill-buffer)
   '("<C-f10>"         kill-save-buffer)
-  '("<S-f10>"         tmm-menubar)
+  '("<S-f10>"         menu-bar-open)
   '("<C-S-f10>"       kill-some-buffers)
   ;; F11 - register stuff
   '("<f11>"           eli-marker)

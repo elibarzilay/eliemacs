@@ -17,9 +17,10 @@
       display-time-format ; ignores the above, used to add a dash in the end
       (propertize "%H:%M" 'face display-time-mail-face)
       )
-;; The above doesn't get the face through, so dump the load & mail
-;; completely (it'll be tedious to find the bit to change just the time,
-;; or to copy the whole thing); just set the time with this code:
+;; The above doesn't get the face through (probably because of a
+;; risky-local-variable property) , so dump the load & mail completely (it'll
+;; be tedious to find the bit to change just the time, or to copy the whole
+;; thing); just set the time with this code:
 (setq display-time-string-forms
   '((propertize ">" 'help-echo my-help-echo)
     (propertize " " 'help-echo my-help-echo 'display
@@ -32,93 +33,92 @@
 ;; copied from "bindings.el" and modified
 (let* ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out")
        (dashes (propertize "-" 'help-echo my-help-echo)) ;ELI
-       (standard-mode-line-format
-	(list
-	 "%e"
-	 (propertize "-" 'help-echo my-help-echo)
-	 'mode-line-mule-info
-	 ;;ELI 'mode-line-client
-	 'mode-line-modified
-	 ;;ELI 'mode-line-remote
-	 ;;ELI 'mode-line-frame-identification
-         (propertize ">" 'help-echo my-help-echo) ;ELI
-	 'mode-line-buffer-identification
-	 (propertize " " 'help-echo my-help-echo) ;ELI
-	 'mode-line-position
-	 '(vc-mode vc-mode)
-	 (propertize "  " 'help-echo my-help-echo)
-	 'mode-line-modes
-	 `(which-func-mode (,dashes which-func-format)) ;ELI
-	 `(global-mode-string (,dashes global-mode-string))
-	 ; (propertize "%-" 'help-echo my-help-echo) ;ELI, added, then removed
+       (format
+        (list
+         "%e"
+         ;; 'mode-line-front-space
+         dashes
+         'mode-line-mule-info
+         'mode-line-client
+         'mode-line-modified
+         ;; 'mode-line-remote
+         ;; 'mode-line-frame-identification
+         (propertize ">" 'help-echo my-help-echo)
+         'mode-line-buffer-identification
+         (propertize " " 'help-echo my-help-echo)
+         'mode-line-position
+         '(vc-mode vc-mode)
+         (propertize " " 'help-echo my-help-echo)
+         'mode-line-modes
+         'mode-line-misc-info
+         ;; 'mode-line-end-spaces
          ))
-       (standard-mode-line-modes
-	(list
-	 (propertize "%[" 'help-echo recursive-edit-help-echo)
-	 (propertize "(" 'help-echo my-help-echo)
-	 `(:propertize ("" mode-name)
-		       help-echo "Major mode\n\
+       (modes
+        (list
+         (propertize "%[" 'help-echo recursive-edit-help-echo)
+         (propertize "(" 'help-echo my-help-echo)
+         `(:propertize ("" mode-name)
+                       help-echo "Major mode\n\
 mouse-1: Display major mode menu\n\
 mouse-2: Show help for major mode\n\
 mouse-3: Toggle minor modes"
-		       mouse-face mode-line-highlight
-		       local-map ,mode-line-major-mode-keymap)
-	 '("" mode-line-process)
-	 `(:propertize ("" minor-mode-alist)
-		       mouse-face mode-line-highlight
-		       help-echo "Minor mode\n\
+                       mouse-face mode-line-highlight
+                       local-map ,mode-line-major-mode-keymap)
+         '("" mode-line-process)
+         `(:propertize ("" minor-mode-alist)
+                       mouse-face mode-line-highlight
+                       help-echo "Minor mode\n\
 mouse-1: Display minor mode menu\n\
 mouse-2: Show help for minor mode\n\
 mouse-3: Toggle minor modes"
-		       local-map ,mode-line-minor-mode-keymap)
-	 (propertize "%n" 'help-echo "mouse-2: Remove narrowing from the current buffer"
-		     'mouse-face 'mode-line-highlight
-		     'local-map (make-mode-line-mouse-map
-				 'mouse-2 #'mode-line-widen))
-	 (propertize ")" 'help-echo my-help-echo)
-	 (propertize "%]" 'help-echo recursive-edit-help-echo)
-	 (propertize "-" 'help-echo my-help-echo))) ;ELI
-
-       (standard-mode-line-position
-	`((line-number-mode
-	   ((column-number-mode
-	     (0 ,(propertize ;ELI
-		   "%l/%c" ;ELI
-		   'local-map mode-line-column-line-number-mode-map
-		   'mouse-face 'mode-line-highlight
-		   'help-echo "Line number and Column number\n\
+                       local-map ,mode-line-minor-mode-keymap)
+         (propertize "%n" 'help-echo "mouse-2: Remove narrowing from buffer"
+                     'mouse-face 'mode-line-highlight
+                     'local-map (make-mode-line-mouse-map
+                                 'mouse-2 #'mode-line-widen))
+         (propertize ")" 'help-echo my-help-echo)
+         (propertize "%]" 'help-echo recursive-edit-help-echo)
+         (propertize "-" 'help-echo my-help-echo))) ;ELI
+       (position
+        `((line-number-mode
+           ((column-number-mode
+             (0 ,(propertize ;ELI
+                   "%l/%c" ;ELI
+                   'local-map mode-line-column-line-number-mode-map
+                   'mouse-face 'mode-line-highlight
+                   'help-echo "Line number and Column number\n\
 mouse-1: Display Line and Column Mode Menu"))
-	     (0 ,(propertize ;ELI
-		  "L%l" ;ELI
-		  'local-map mode-line-column-line-number-mode-map
-		  'mouse-face 'mode-line-highlight
-		  'help-echo "Line Number\n\
+             (0 ,(propertize ;ELI
+                  "L%l" ;ELI
+                  'local-map mode-line-column-line-number-mode-map
+                  'mouse-face 'mode-line-highlight
+                  'help-echo "Line Number\n\
 mouse-1: Display Line and Column Mode Menu"))))
-	   ((column-number-mode
-	     (0 ,(propertize ;ELI
-		  "C%c" ;ELI
-		  'local-map mode-line-column-line-number-mode-map
-		  'mouse-face 'mode-line-highlight
-		  'help-echo "Column number\n\
+           ((column-number-mode
+             (0 ,(propertize ;ELI
+                  "C%c" ;ELI
+                  'local-map mode-line-column-line-number-mode-map
+                  'mouse-face 'mode-line-highlight
+                  'help-echo "Column number\n\
 mouse-1: Display Line and Column Mode Menu")))))
           ,(propertize "-" 'help-echo my-help-echo)
-	  (0 ,(propertize
-		"%p"
-		'local-map mode-line-column-line-number-mode-map
-		'mouse-face 'mode-line-highlight
-		;; XXX needs better description
-		'help-echo "Location in buffer\n\
+          (0 ,(propertize
+                "%p"
+                'local-map mode-line-column-line-number-mode-map
+                'mouse-face 'mode-line-highlight
+                ;; XXX needs better description
+                'help-echo "Location in buffer\n\
 mouse-1: Display Line and Column Mode Menu"))
-	  (size-indication-mode
-	   (0 ,(propertize ;ELI
-		"/%I" ;ELI
-		'local-map mode-line-column-line-number-mode-map
-		'mouse-face 'mode-line-highlight
-		;; XXX needs better description
-		'help-echo "Size indication mode\n\
+          (size-indication-mode
+           (0 ,(propertize ;ELI
+                "/%I" ;ELI
+                'local-map mode-line-column-line-number-mode-map
+                'mouse-face 'mode-line-highlight
+                ;; XXX needs better description
+                'help-echo "Size indication mode\n\
 mouse-1: Display Line and Column Mode Menu"))))))
-  (setq-default mode-line-format standard-mode-line-format)
-  (setq-default mode-line-modes standard-mode-line-modes)
-  (setq-default mode-line-position standard-mode-line-position))
+  (setq-default mode-line-format   format)
+  (setq-default mode-line-modes    modes)
+  (setq-default mode-line-position position))
 
 ;;; modeline.el ends here

@@ -7,6 +7,7 @@
 
 (minibuffer-electric-default-mode 1)
 
+;; why is this not in by default?
 (add-hook 'emacs-startup-hook
   (lambda ()
     (setq minibuffer-prompt-properties
@@ -114,7 +115,7 @@
             ;; command was different, use the basic file name
             (when (eolp)
               (let ((min (save-excursion (beginning-of-line) (point))))
-                (goto-char (if (re-search-backward "/\\(.\\)/[^/]*\\=" min t)
+                (goto-char (if (re-search-backward "/[^/]*\\=" min t)
                              (1+ (point))
                              min))))
             (concat (regexp-quote
@@ -245,6 +246,15 @@
   (interactive) (eli-minibuffer-electric-key "\\`.*/\\([a-zA-Z]\\)\\'" "\\1"))
 (put 'eli-minibuffer-electric-colon 'delete-selection t)
 
+(defun eli-minibuffer-dir-up () ; ".../x:" -> "x:" on windows
+  (interactive)
+  (let ((last-command-event nil))
+    (goto-char (field-end))
+    (unless (equal (char-before) ?/) (insert "/"))
+    (insert "..")
+    (eli-minibuffer-electric-slash)))
+(put 'eli-minibuffer-dir-up 'delete-selection t)
+
 (defvar eli-electric-file-minibuffer-mode-map
   (let ((map (make-sparse-keymap)))
     (define-keys map
@@ -252,7 +262,8 @@
       (and (eq system-type 'windows-nt) '("\\" eli-minibuffer-electric-bslash))
       '("~" eli-minibuffer-electric-key) ; user names
       '("$" eli-minibuffer-electric-key) ; variable at the beginning
-      (and (eq system-type 'windows-nt) '(":" eli-minibuffer-electric-colon)))
+      (and (eq system-type 'windows-nt) '(":" eli-minibuffer-electric-colon))
+      '("M-." eli-minibuffer-dir-up))
     map))
 
 ;; Make it convenient to navigate between file names using sexp commands.

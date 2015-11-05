@@ -135,16 +135,17 @@ POSN is in the format of `SIP-get-scroll-posn'."
   "Go to the column suggested by the `SIP-scroll-column'."
   (when SIP-scroll-column (vertical-motion (cons SIP-scroll-column 0))))
 
-(defun SIP-do-scroll-internal (arg isdown group keep orig)
+(defun SIP-do-scroll-internal (arg isdown group orig)
   ;; This is the body of `SIP-do-scroll', which is dealing with the question of
   ;; whether to do an in-place scrolling or not, based on
   ;; `scroll-preserve-screen-position'.
   ;; associate commands -> groups, so it work when called from other commands:
-  (put this-command 'SIP-group group)
+  (when (symbolp this-command) (put this-command 'SIP-group group))
   ;; Is the below needed?
   ;; (setq this-command orig) ; try this to deal with the C-down C-pgdn problem
   (let* ((bufchars (buffer-chars-modified-tick))
-         (repeated (and (equal group (get last-command 'SIP-group))
+         (repeated (and (symbolp last-command)
+                        (equal group (get last-command 'SIP-group))
                         (equal SIP-last-bufchars bufchars)
                         (or (equal arg SIP-last-scroll-arg)
                             (not (integerp arg)))))
@@ -185,15 +186,11 @@ POSN is in the format of `SIP-get-scroll-posn'."
       ;; otherwise try to do the needed scroll if the edge is not visible...
       ((or (pos-visible-in-window-p (if isdown (point-min) (point-max)))
            (condition-case nil
-               (let ((p (and keep (point))))
-                 (funcall orig arg)
-                 (SIP-goto-visual-column)
-                 (cond
-                   ((and p (pos-visible-in-window-p p)) (goto-char p))
-                   ;; if we went down and now we see the bottom (and it we know
-                   ;; it wasn't visible before), then make it be the bottom
-                   ((and (not isdown) (pos-visible-in-window-p (point-max)))
-                    (save-excursion (goto-char (point-max)) (recenter -1))))
+               (progn (funcall orig arg)
+                      (SIP-goto-visual-column)
+                      (when (and (not isdown)
+                                 (pos-visible-in-window-p (point-max)))
+                        (save-excursion (goto-char (point-max)) (recenter -1)))
                  nil)
              ((beginning-of-buffer end-of-buffer) t)))
        ;; ...but if the edge is visible (or scrolling failed), move instead
@@ -214,7 +211,7 @@ The main way for controlling `scroll-in-place' is via
 `scroll-preserve-screen-position', but this variable is also used for older
 packages that expect to disable changing scrolling when it is nil.")
 
-(defun SIP-do-scroll (arg isdown group keep)
+(defun SIP-do-scroll (arg isdown group)
   "Scroll, endeavouring to keep the cursor in the same place on the screen.
 
 Keeps the cursor position only if `scroll-preserve-screen-position' is bound
@@ -228,21 +225,17 @@ cancel each other out."
   (let ((orig (if isdown 'SIP-orig-scroll-down 'SIP-orig-scroll-up)))
     (if (and (eq scroll-preserve-screen-position 'in-place)
              scroll-in-place)
-      (SIP-do-scroll-internal arg isdown group keep orig)
-      (let ((p (and keep (point))))
-        ;; forcibly break any sequence of scrolling commands
-        (setq SIP-last-bufchars nil)
-        (funcall orig arg)
-        ;; go back if needed and if possible
-        (when (and p (pos-visible-in-window-p p)) (goto-char p))))))
+      (SIP-do-scroll-internal arg isdown group orig)
+      (progn ;; forcibly break any sequence of scrolling commands
+             (setq SIP-last-bufchars nil)
+             (funcall orig arg)))))
 
-(defmacro defun-SIP-up/down (name-pat inter keep other docstr)
+(defmacro defun-SIP-up/down (name-pat inter other docstr)
   "A macro to generate up/down scrolling commands.
 
 NAME-PAT is the name of the group of up/down scrolling commands being
 defined, with the up/down portion replaced with `XX'.
 INTER is the interactive specification of the scrolling command.
-KEEP is T if the cursor should not be moved, only the screen.
 OTHER is T if the scrolling should be performed on the \"other\" window.
 DOCSTR is the function's docstring, with `XX' replaced appropriately."
   (let ((mk (lambda (downp)
@@ -250,7 +243,7 @@ DOCSTR is the function's docstring, with `XX' replaced appropriately."
                      (name   (intern (replace-regexp-in-string
                                       "XX" u/d (symbol-name name-pat) t)))
                      (docstr (replace-regexp-in-string "XX" u/d docstr t))
-                     (doit `(SIP-do-scroll arg ',downp ',name-pat ',keep))
+                     (doit `(SIP-do-scroll arg ',downp ',name-pat))
                      (doit (if other
                              `(save-selected-window
                                 (select-window (other-window-for-scrolling))
@@ -258,26 +251,40 @@ DOCSTR is the function's docstring, with `XX' replaced appropriately."
                              doit)))
                 `((defun ,name (&optional arg)
                     ,docstr (interactive ,inter) ,doit)
-                  (put ',name 'scroll-command t) ; for v24
-                  (put ',name 'isearch-scroll t) ; for v23
-                  )))))
+                  (put ',name 'scroll-command t))))))
     `(progn ,@(funcall mk nil) ,@(funcall mk t))))
 
-(defun-SIP-up/down SIP-scroll-XX "^P" nil nil
+(defun-SIP-up/down SIP-scroll-XX "^P" nil
   "Wrapper for `scroll-XX' that does a scroll-in-place.
 Also:
 - when reaching the edge, move the cursor instead of beeping,
 - consecutive uses with no prefix use the first prefix in the sequence.")
 
-(defun-SIP-up/down SIP-scroll-other-window-XX "^P" nil t
+(defun-SIP-up/down SIP-scroll-other-window-XX "^P" t
   "Like `scroll-XX', but for the other window.
 \(See `other-window-for-scrolling' for details.)")
 
-(defun-SIP-up/down scroll-XX-1 "^p" nil nil
+(defun-SIP-up/down scroll-XX-1 "^p" nil
   "Like `scroll-XX' with a default of one line.")
 
-(defun-SIP-up/down scroll-XX-1-stay "^p" t nil
-  "Like `scroll-XX-1' but stay in the same place.")
+;; These should not be scroll-XX commands, since then things get messed
+;; up when the built-in scrolling functions try to restore the position,
+;; resulting in jittery cursor jumps.
+(defun scroll-up-1-stay (arg)
+  "Like `scroll-up-1' but stay in the same position."
+  (interactive "^p")
+  (let ((p (point)) (scroll-preserve-screen-position nil))
+    (scroll-up-1 arg)
+    (when (pos-visible-in-window-p p) (goto-char p))))
+(defun scroll-down-1-stay (arg)
+  "Like `scroll-down-1' but stay in the same position."
+  (interactive "^p")
+  (let ((p (point)) (scroll-preserve-screen-position nil))
+    (scroll-down-1 arg)
+    (when (pos-visible-in-window-p p) (goto-char p))))
+;; still use these properties, so it can be used in isearch
+(put 'scroll-up-1-stay 'scroll-command t)
+(put 'scroll-down-1-stay 'scroll-command t)
 
 ;; Replace the standard Emacs commands: preserve their docstrings.
 (dolist (dir '(up down))

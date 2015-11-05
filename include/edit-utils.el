@@ -342,6 +342,18 @@ that is shown in some other window."
     (goto-char p)
     (switch-to-buffer b1)))
 
+(defvar eli-balance-windows-last nil)
+(defun eli-balance-windows (arg)
+  "Like either `balance-windows' or `balance-windows-area'.
+With a (positive) prefix argument, balance by area instead of a plain balance.
+Consecutive uses will flip by-area and plain balancing."
+  (interactive "P")
+  (cond ((eq last-command this-command)
+         (if (setq eli-balance-windows-last (not eli-balance-windows-last))
+           (balance-windows) (balance-windows-area)))
+        (arg (setq eli-balance-windows-last nil) (balance-windows-area))
+        (t   (setq eli-balance-windows-last t)   (balance-windows))))
+
 (defun eli-term ()
   "Like `term', but runs a shell immediately (prefix arg: ask like `term')."
   (interactive)

@@ -2,25 +2,17 @@
 ;;-----------------------------------------------------------------------------
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
-(defvar eli-show-buffers-state nil)
-
 (defun eli-show-buffers ()
   "Show an interactive buffer list.  (Uses `bs'.)
-If a we're currently in a buffer list, then either change it (if used shortly
-after showing) or quit it."
+Consecutive uses of this command (right after the list is shown) changes the
+list configuration, and if used in the list (but not consecutive) quit it."
   (interactive)
   (cond ((not (eq major-mode 'bs-mode))
          (setq bs-default-configuration "files+"
                bs-default-sort-name "by nothing")
-         (bs-show nil)
-         (setq eli-show-buffers-state (cons (current-buffer) (float-time))))
-        ((and eli-show-buffers-state
-              (eq (current-buffer) (car eli-show-buffers-state))
-              (> 1.0 (- (float-time) (cdr eli-show-buffers-state))))
-         (setq eli-show-buffers-state nil)
-         (bs-set-configuration "all")
-         (bs--redisplay t)
-         (bs--set-window-height))
+         (bs-show nil))
+        ((eq last-command this-command)
+         (bs-select-next-configuration))
         (t (bs-kill))))
 
 (setq bs-configurations ; simple two options
@@ -45,7 +37,6 @@ after showing) or quit it."
            (string-match-p eli-bs-show-buffers-rx (buffer-name buf))
            (with-current-buffer buf
              (and (boundp 'dired-subdir-alist) dired-subdir-alist)))))
-
 
 (defun eli-bs-post-command ()
   (when (< (point) (eli-bs--top-point)) (goto-char (eli-bs--top-point))))

@@ -72,7 +72,7 @@
  regexp-search-ring-max 32
  search-highlight t
  isearch-lazy-highlight t
- isearch-allow-scroll t
+ isearch-allow-scroll t ; note my hack that exits isearch when scrolling away
  ;; isearch-lax-whitespace t          ; (not custom options)
  ;; isearch-regexp-lax-whitespace nil ; these are the defaults
  ;; >> editing/matching/isearch/lazy-highlight
@@ -356,7 +356,7 @@
  compilation-auto-jump-to-first-error nil
  compilation-skip-threshold 1
  compilation-skip-visited nil
- compilation-scroll-output t ; ?
+ compilation-scroll-output t ; scroll to bottom on output
  compilation-always-kill nil
  mode-compile-save-all-p nil
  mode-compile-always-save-buffer-p t
@@ -372,9 +372,9 @@
  ;; >> external/processes/executable [uninteresting]
  ;; >> external/processes/flyspell [uninteresting]
  ;; >> external/processes/grep
- grep-window-height 10  ; looks unused in the code
- grep-scroll-output nil ; unused too?
- grep-highlight-matches 'auto ; try to use 'always
+ grep-window-height 10
+ grep-scroll-output nil
+ grep-highlight-matches 'always
  ;; >> external/processes/metamail [uninteresting]
  ;; >> external/processes/proced [uninteresting]
  ;; >> external/processes/rlogin [uninteresting]
@@ -705,7 +705,7 @@
  scroll-step 0
  scroll-conservatively 0 ; doesn't look like values <=100 work as intended
                          ; use 0 with scroll-*-aggresively as above
- scroll-margin 1 ; one context line (forces even at bottom or on C-0 C-L)
+ scroll-margin 0 ; >0 values don't work too well (and issues with C-up/down)
  hscroll-margin 2
  hscroll-step 4
  make-cursor-line-fully-visible t

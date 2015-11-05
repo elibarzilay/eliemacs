@@ -2,10 +2,13 @@
 ;;-----------------------------------------------------------------------------
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
-;; Usually, the shell buffer is entered through `pop-to-buffer', which doesn't
-;; leave it at the top -- this hack makes sure it is selected (better to avoid
-;; surprises when switching buffers).
-(add-hook 'shell-mode-hook (lambda () (switch-to-buffer (current-buffer))))
+(add-hook 'shell-mode-hook
+  (lambda ()
+    ;; Usually, the shell buffer is entered through `pop-to-buffer', which
+    ;; doesn't leave it at the top -- this hack makes sure it is selected
+    ;; (better to avoid surprises when switching buffers).
+    (switch-to-buffer (current-buffer))
+    (setq truncate-lines t)))
 
 ;;-----------------------------------------------------------------------------
 ;; Friendlier `shell' and `shell-command'
@@ -154,11 +157,6 @@ Notes:
           ;; the window is not selected, so avoid switching to it if we
           ;; use `delete-other-windows'
           (set-window-prev-buffers win prev))))))
-
-(add-to-list 'display-buffer-alist
-             '("^[*]Shell Command Output[*]$" eli-temp-buffer-show-function))
-(add-to-list 'display-buffer-alist
-             '("^[*]Async Shell Command[*]" display-buffer-pop-up-window))
 
 ;;-----------------------------------------------------------------------------
 ;; * Make it possible for comint to send input immediately.

@@ -555,10 +555,12 @@ default directory.  However, if FULL is non-nil, they are absolute."
 (defun isearch-post-command-hook ()
   (when isearch-pre-scroll-point
     (let ((ab-bel (isearch-string-out-of-window isearch-pre-scroll-point)))
-      (if ab-bel
+      ;; ELI: add the visibility check (which the above doesn't detect)
+      (if (or ab-bel (not (pos-visible-in-window-p isearch-pre-scroll-point)))
 	  ;; ELI: disable the following, and exit isearch instead
 	  ;; (isearch-back-into-window (eq ab-bel 'above) isearch-pre-scroll-point)
-	  (progn (isearch-done) (isearch-clean-overlays))
+	  (progn (setq isearch-pre-scroll-point nil)
+                 (isearch-exit))
 	;; ELI: also drag the rest of the function here
 	(progn (goto-char isearch-pre-scroll-point)
 	       (setq isearch-pre-scroll-point nil)

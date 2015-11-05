@@ -6,10 +6,6 @@
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
 (add-hook 'comint-output-filter-functions 'comint-postoutput-scroll-to-bottom)
 
-;; switch to the grep buffer when started, truncate lines
-(add-to-list 'display-buffer-alist
-  '("^[*]grep[*]" eli-temp-buffer-show-function (truncate-lines . t)))
-
 ;; Replace the true home directory name by the HOME environment value, this is
 ;; necessary for automounters that map some name to another
 ;; (automount-dir-prefix doesn't help much).
@@ -64,5 +60,31 @@
 
 ;; dired stuff
 (add-hook 'dired-mode-hook (lambda () (hl-line-mode)))
+
+;;-----------------------------------------------------------------------------
+;; Make display-buffer on some buffers pop into the buffer
+
+;; Using a custom action that does a pop-to, and allow some convenient
+;; customizations
+(defvar in-display-buffer-pop-to nil)
+(defun display-buffer-pop-to (buf alist)
+  (and (not in-display-buffer-pop-to)
+       (let ((in-display-buffer-pop-to t))
+         (pop-to-buffer buf)
+         (and (eq (current-buffer) (get-buffer buf))
+              (with-current-buffer buf
+                (let ((tl (assq 'truncate-lines alist)))
+                  (when tl (setq truncate-lines (cdr tl))))
+                t)))))
+
+(add-to-list 'display-buffer-alist
+             '("^[*]Async Shell Command[*]" display-buffer-pop-up-window))
+(add-to-list 'display-buffer-alist
+  '("^[*]Shell Command Output[*]$" display-buffer-pop-to (truncate-lines . t)))
+(add-to-list 'display-buffer-alist
+  '("^[*]grep[*]" display-buffer-pop-to (truncate-lines . t)))
+
+;; Also, in grep, turn on always-kill
+(add-hook 'grep-setup-hook (lambda () (setq-local compilation-always-kill t)))
 
 ;;; misc.el ends here
