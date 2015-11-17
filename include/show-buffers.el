@@ -2,17 +2,21 @@
 ;;-----------------------------------------------------------------------------
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
+(defvar eli-bs-default-conf "files+")
+
 (defun eli-show-buffers ()
   "Show an interactive buffer list.  (Uses `bs'.)
 Consecutive uses of this command (right after the list is shown) changes the
 list configuration, and if used in the list (but not consecutive) quit it."
   (interactive)
   (cond ((not (eq major-mode 'bs-mode))
-         (setq bs-default-configuration "files+"
+         (setq bs-default-configuration eli-bs-default-conf
                bs-default-sort-name "by nothing")
          (bs-show nil))
         ((eq last-command this-command)
-         (bs-select-next-configuration))
+         (bs-select-next-configuration)
+         (when (equal bs-current-configuration eli-bs-default-conf)
+           (bs-kill)))
         (t (bs-kill))))
 
 (setq bs-configurations ; simple two options
@@ -30,8 +34,8 @@ list configuration, and if used in the list (but not consecutive) quit it."
 
 (defvar eli-bs-show-buffers-rx
   (concat "^[*]"
-          (regexp-opt '("scratch" "shell"))
-          "\\(?: *[0-9]*\\)?[*]$"))
+          (regexp-opt '("scratch" "shell")) ; shell set themselves anyway
+          "[* ]*\\(?:\\([0-9]*\\|<[0-9]*>\\)\\)?[* ]*$"))
 (defun eli-bs-hide-buffers (buf)
   (not (or (buffer-file-name buf)
            (string-match-p eli-bs-show-buffers-rx (buffer-name buf))

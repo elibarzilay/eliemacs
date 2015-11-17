@@ -78,9 +78,12 @@
                 t)))))
 
 (add-to-list 'display-buffer-alist
-             '("^[*]Async Shell Command[*]" display-buffer-pop-up-window))
+  '("^[*]shell\\(?:: .+?\\)?[*]\\(?:<[0-9]+>\\)?$"
+    (display-buffer-reuse-window display-buffer-same-window)))
 (add-to-list 'display-buffer-alist
   '("^[*]Shell Command Output[*]$" display-buffer-pop-to (truncate-lines . t)))
+(add-to-list 'display-buffer-alist
+  '("^[*]Async Shell Command[*]" display-buffer-pop-up-window))
 (add-to-list 'display-buffer-alist
   '("^[*]grep[*]" display-buffer-pop-to (truncate-lines . t)))
 

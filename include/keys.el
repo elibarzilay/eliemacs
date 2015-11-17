@@ -72,7 +72,7 @@
   '([(shift iso-lefttab)] eli-next-buffer-acyclic) ; for some X setups
   ;; tab completes a symbol when editing a minibuffer lisp expression
   read-expression-map
-  '("TAB"             lisp-complete-symbol)
+  '("TAB"             completion-at-point)
   'global
 
   ;; F1 - file/buffer operations

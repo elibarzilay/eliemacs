@@ -2,6 +2,7 @@
 
 (require 'dired)
 (require 'info)
+(require 'shell)
 (require 'help-mode)
 (require 'cus-edit)
 (require 'view)

@@ -63,49 +63,43 @@ to deactivate this transient map, regardless of KEEP-PRED."
     exitfun))
 
 ;;-----------------------------------------------------------------------------
-;; Overrides from "window.el"
+;; Override from "simple.el"
 
-;; Messes up the count when the window is not shown yet (example: breaks
-;; resizing of the electric-bubber-list), so add a redisplay.  Actually,
-;; it's unclear when this happens, so disable it for now.
-'
-(defun count-screen-lines (&optional beg end count-final-newline window)
-  "Return the number of screen lines in the region.
-The number of screen lines may be different from the number of actual lines,
-due to line breaking, display table, etc.
-
-Optional arguments BEG and END default to `point-min' and `point-max'
-respectively.
-
-If region ends with a newline, ignore it unless optional third argument
-COUNT-FINAL-NEWLINE is non-nil.
-
-The optional fourth argument WINDOW specifies the window used for obtaining
-parameters such as width, horizontal scrolling, and so on.  The default is
-to use the selected window's parameters.
-
-Like `vertical-motion', `count-screen-lines' always uses the current buffer,
-regardless of which buffer is displayed in WINDOW.  This makes possible to use
-`count-screen-lines' in any buffer, whether or not it is currently displayed
-in some window."
-  (unless beg
-    (setq beg (point-min)))
-  (unless end
-    (setq end (point-max)))
-  (if (= beg end)
-      0
-    (save-excursion
-      (save-restriction
-        (widen)
-        (narrow-to-region (min beg end)
-                          (if (and (not count-final-newline)
-                                   (= ?\n (char-before (max beg end))))
-                              (1- (max beg end))
-                            (max beg end)))
-        (goto-char (point-min))
-        (redisplay) ; ELI
-        (save-excursion (vertical-motion (buffer-size) window)) ; ELI
-        (1+ (vertical-motion (buffer-size) window))))))
+;; Add the last line that fixes transposes with a negative argument.
+;; (Patch reported and committed, so this should go away eventually.)
+(defun transpose-subr (mover arg &optional special)
+  "Subroutine to do the work of transposing objects.
+Works for lines, sentences, paragraphs, etc.  MOVER is a function that
+moves forward by units of the given object (e.g. forward-sentence,
+forward-paragraph).  If ARG is zero, exchanges the current object
+with the one containing mark.  If ARG is an integer, moves the
+current object past ARG following (if ARG is positive) or
+preceding (if ARG is negative) objects, leaving point after the
+current object."
+  (let ((aux (if special mover
+	       (lambda (x)
+		 (cons (progn (funcall mover x) (point))
+		       (progn (funcall mover (- x)) (point))))))
+	pos1 pos2)
+    (cond
+     ((= arg 0)
+      (save-excursion
+	(setq pos1 (funcall aux 1))
+	(goto-char (or (mark) (error "No mark set in this buffer")))
+	(setq pos2 (funcall aux 1))
+	(transpose-subr-1 pos1 pos2))
+      (exchange-point-and-mark))
+     ((> arg 0)
+      (setq pos1 (funcall aux -1))
+      (setq pos2 (funcall aux arg))
+      (transpose-subr-1 pos1 pos2)
+      (goto-char (car pos2)))
+     (t
+      (setq pos1 (funcall aux -1))
+      (goto-char (car pos1))
+      (setq pos2 (funcall aux arg))
+      (transpose-subr-1 pos1 pos2)
+      (goto-char (+ (car pos2) (- (cdr pos1) (car pos1)))))))) ; ELI
 
 ;;-----------------------------------------------------------------------------
 ;; Overrides from "help.el", and showing temporary buffers

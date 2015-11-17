@@ -29,27 +29,38 @@
   history so there's no inconsistent buffer switching
   later."
   (interactive "P")
-  (let ((s (cond ((eq arg 0) (generate-new-buffer-name "*shell*"))
-                 ((eq arg 1) "*shell*")
-                 ((and (integerp arg) (> arg 1)) (format "*shell*<%S>" arg))
-                 ((not arg)
-                  (let ((s nil))
-                    (while (and (not s) eli-last-shells)
-                      (if (get-buffer (car eli-last-shells))
-                        (setq s (car eli-last-shells))
-                        (setq eli-last-shells (cdr eli-last-shells))))
-                    s))
-                 (t nil))))
-    (switch-to-buffer
-     (save-window-excursion (if s (shell s) (call-interactively 'shell))))))
-(defun eli-track-last-shell ()
-  (unless (eq eli-last-shell (buffer-name))
-    (setq eli-last-shell (buffer-name))
-    (setq eli-last-shells
-          (cons eli-last-shell (remove eli-last-shell eli-last-shells)))))
-(add-hook 'shell-mode-hook
-          (lambda ()
-            (add-hook 'post-command-hook 'eli-track-last-shell nil t)))
+  (require 'shell) ; for `explicit-shell-file-name' below
+  (let* ((ex-name (and explicit-shell-file-name
+                       (replace-regexp-in-string "\\.exe$" ""
+                         (downcase (file-name-nondirectory
+                                    explicit-shell-file-name)))))
+         (name (if ex-name (format "*shell: %s*" ex-name) (concat "*shell*")))
+         (s (cond ((eq arg 0) (generate-new-buffer-name name))
+                  ((eq arg 1) name)
+                  ((and (integerp arg) (> arg 1)) (format "%s<%S>" name arg))
+                  ((not arg)
+                   (let ((s nil) (p (assoc ex-name eli-last-shells)))
+                     (while (and (not s) (cdr p))
+                       (if (get-buffer (cadr p))
+                         (setq s (cadr p))
+                         (setcdr p (cddr p))))
+                     (or s name)))
+                  (t nil))))
+    (switch-to-buffer (save-window-excursion
+                        (if s (shell s) (call-interactively 'shell))))
+    (setq-local bs-buffer-show-mark 'always)
+    (add-hook 'post-command-hook
+              (lambda ()
+                (unless (equal eli-last-shell (buffer-name))
+                  (setq eli-last-shell (buffer-name))
+                  (unless (assoc ex-name eli-last-shells)
+                    (setq eli-last-shells
+                          (cons (cons ex-name nil) eli-last-shells)))
+                  (let ((p (assoc ex-name eli-last-shells)))
+                    (unless p (setq p (list ex-name)) (push p eli-last-shells))
+                    (setcdr p (cons eli-last-shell
+                                    (remove eli-last-shell (cdr p)))))))
+              nil t)))
 
 ;; comint.el sets $EMACS to "t" unless it's set, which messes up running
 ;; makefiles inside emacs.  Prevent that by setting it here.

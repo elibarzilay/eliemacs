@@ -337,8 +337,10 @@
  comint-buffer-maximum-size 5000
  comint-input-ring-size 500
  ;; t is nice, but sometimes screws up (try `cat', or enter a number in racket)
- ;; a way to fix this is to use `stty echo'
- comint-process-echoes t
+ ;; a way to fix this is to use `stty echo'; better: only use t on linux (but
+ ;; set to nil in case of non-shells, like running racket directly via
+ ;; `explicit-shell-file-name')
+ comint-process-echoes (not (eq system-type 'windows-nt))
  comint-eol-on-send t
  comint-use-prompt-regexp nil
  ;; >> external/processes/comint/comint-completion
@@ -702,9 +704,8 @@
  scroll-preserve-screen-position 'in-place ; uses *my* scroll-in-place feature
  window-combination-resize t  ; try to see if this is useful
  ;; window-resize-pixelwise t ; this would go with frame-resize-pixelwise
- scroll-step 0
- scroll-conservatively 0 ; doesn't look like values <=100 work as intended
-                         ; use 0 with scroll-*-aggresively as above
+ scroll-step 1             ; not sure about this one
+ scroll-conservatively 500 ; 0 or small => isearch to far place: point at top
  scroll-margin 0 ; >0 values don't work too well (and issues with C-up/down)
  hscroll-margin 2
  hscroll-step 4
