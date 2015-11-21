@@ -2,16 +2,20 @@
 ;;-----------------------------------------------------------------------------
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
-(add-hook 'shell-mode-hook
-  (lambda ()
-    ;; Usually, the shell buffer is entered through `pop-to-buffer', which
-    ;; doesn't leave it at the top -- this hack makes sure it is selected
-    ;; (better to avoid surprises when switching buffers).
-    (switch-to-buffer (current-buffer))
-    (setq truncate-lines t)))
-
 ;;-----------------------------------------------------------------------------
 ;; Friendlier `shell' and `shell-command'
+
+(defvar eli-shell-default-command nil
+  "Default shell name used by `eli-shell', or `nil' to use whatever
+default thing `shell' runs (`shell-file-name').
+Setting this makes it possible to have a specific shell for interactions
+while maintaining another for normal uses (still `shell-file-name').
+Note that it's used via `explicit-shell-file-name', so to set arguments
+different than the default \"-i\" you need to set `explicit-<name>-args'.")
+
+(defvar-local eli-shell-current-executable nil
+  "Buffer-local value indicating the name of the executable that is used
+for the current eli-shell run.")
 
 (defvar eli-last-shell nil)
 (defvar eli-last-shells nil)
@@ -45,10 +49,15 @@
                          (setq s (cadr p))
                          (setcdr p (cddr p))))
                      (or s name)))
-                  (t nil))))
-    (switch-to-buffer (save-window-excursion
-                        (if s (shell s) (call-interactively 'shell))))
-    (setq-local bs-buffer-show-mark 'always)
+                  (t nil)))
+         (isnew (and s (not (get-buffer s)))))
+    (let ((explicit-shell-file-name (or explicit-shell-file-name
+                                        eli-shell-default-command)))
+      (if s (shell s) (call-interactively 'shell))
+      (setq eli-shell-current-executable explicit-shell-file-name))
+    (when isnew
+      (setq-local truncate-lines t)
+      (setq-local bs-buffer-show-mark 'always))
     (add-hook 'post-command-hook
               (lambda ()
                 (unless (equal eli-last-shell (buffer-name))
