@@ -142,6 +142,13 @@
   '("<C-f12>"         goto-line)
   '("<S-f12>"         goto-char)
   '("<C-S-f12>"       eli-toggle-lines-mode)
+  ;; some WM-like bindings
+  '("<M-f1>" raise-frame)
+  '("<M-f3>" lower-frame)
+  '("<M-f9>" iconify-or-deiconify-frame)
+  '("<M-f10>" toggle-frame-maximized)
+  '("<M-f11>" toggle-frame-fullscreen)
+
   ;; misc stuff
   'global
   '("RET"             newline-and-indent)

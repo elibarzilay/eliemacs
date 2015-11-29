@@ -57,10 +57,10 @@
 (autoload 'git-blame-mode "git-blame" nil t)
 
 ;;-----------------------------------------------------------------------------
-;; Vkill
+;; idle-clock
 
-(autoload 'vkill "vkill" nil t)
-(autoload 'list-unix-processes "vkill" nil t)
+(autoload 'clock "idle-clock" nil t)
+(autoload 'idle-clock-mode "idle-clock" nil t)
 
 ;;-----------------------------------------------------------------------------
 ;; mode-compile

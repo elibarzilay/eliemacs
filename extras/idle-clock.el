@@ -1,0 +1,53 @@
+(defvar idle-clock-timer nil)
+(defvar idle-clock-running nil)
+
+(defun clock (&optional arg)
+  (interactive "p")
+  (unless idle-clock-running
+    (let ((fmt (concat (if (< 0 arg) " %H:%M " "%H:%M:%S")
+                       "\n   %Y-%m-%d   "))
+          (sleep (if (< 0 arg) 30 0.5))
+          (c (current-window-configuration))
+          (b (get-buffer-create "*clock*"))
+          (old-sc scroll-bar-mode)
+          (idle-clock-running t))
+      (switch-to-buffer "*clock*")
+      (delete-other-windows)
+      (message nil)
+      (while (not (input-pending-p))
+        (erase-buffer)
+        ;; keep the cursor on, to indicate window focus
+        ;; (setq-local cursor-type nil)
+        (setq-local mode-line-format nil)
+        (setq-local truncate-lines t)
+        (set-window-fringes nil 1 1)
+        (set-scroll-bar-mode nil)
+        (let* ((strs (split-string (format-time-string fmt) "\n"))
+               (str1 (car strs))
+               (str2 (cadr strs))
+               (scale1 (/ (frame-width) 1.0 (length str1)))
+               (scale2 (/ (frame-width) 1.0 (length str2))))
+          (insert "\n\n" (propertize str1 'display `(height ,scale1))
+                  "\n\n" (propertize str2 'display `(height ,scale2)))
+          (goto-char (point-min)))
+        (sit-for sleep))
+      (kill-buffer b)
+      (set-scroll-bar-mode old-sc)
+      (set-window-configuration c)
+      (when idle-clock-timer
+        (setcdr idle-clock-timer
+                (run-with-idle-timer (car idle-clock-timer) nil
+                                     'clock arg))))))
+
+(defun idle-clock-mode (&optional arg)
+  (interactive "P")
+  (if idle-clock-timer
+    (progn (cancel-timer (cdr idle-clock-timer))
+           (setq idle-clock-timer nil)
+           (message "Clock canceled"))
+    (let* ((mins (if (not arg) 15 (prefix-numeric-value arg)))
+           (arg  (cond ((> mins 0) +1) ((< mins 0) -1) (t 0)))
+           (secs (* 60 (abs mins))))
+      (setq idle-clock-timer
+            (cons secs (run-with-idle-timer secs nil 'clock arg)))
+      (message "Clock set to start after %s idle minutes" (abs mins)))))

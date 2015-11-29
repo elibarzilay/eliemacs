@@ -391,8 +391,8 @@ one added first), if negative removes all."
    ;; and using a scale messes up `comint-highlight-prompt' too.
    (minibuffer-prompt yellow/*-bold black/*-bold)
    ;;
-   (region                       yellow/blue2           blue4/yellow)
-   (secondary-selection          yellow/cyan4           cyan4/yellow)
+   (region                       yellow/h339            blue4/yellow)
+   (secondary-selection          yellow/h838            cyan4/yellow)
    (highlight                    yellow/purple4-bold    purple4/yellow-bold)
    (isearch                      yellow/red2            red2/yellow)
    (query-replace                yellow/red2            red2/yellow)
@@ -480,7 +480,7 @@ one added first), if negative removes all."
   '("C-(" prev-paren-hilight-mode)
   '("C-)" next-paren-hilight-mode))
 
-(simple-make-face 'yellow/blue3  'paren-face-match)
+(simple-make-face 'yellow/h22a   'paren-face-match)
 (simple-make-face 'yellow/h315   'paren-face-match-full)
 (simple-make-face 'yellow/red3   'paren-face-mismatch)
 (simple-make-face 'yellow/green3 'paren-face-no-match)

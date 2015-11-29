@@ -23,7 +23,7 @@
  x-select-enable-clipboard-manager t
  ;; >> editing/indent
  standard-indent 2
- tab-always-indent t
+ tab-always-indent t ; should try 'complete
  indent-tabs-mode nil
  ;; >> editing/paragraphs
  paragraph-ignore-fill-prefix t
