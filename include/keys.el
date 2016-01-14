@@ -305,8 +305,11 @@
             '("W" dired-copy-filename-as-kill)  ; originally on w
             '([remap eli-next-line] dired-next-line)
             '([remap eli-previous-line] dired-previous-line)
-            '("<M-next>" dired-next-dirline)
-            '("<M-prior>" dired-prev-dirline))
+            '("<M-next>"  dired-next-dirline)
+            '("<M-prior>" dired-prev-dirline)
+            ;; dired rebinds M-s as a prefix for its special searches
+            ;; (which seem nice but broken), so disable it
+            '("M-s" nil))
           (add-hook 'dired-mode-hook
             (lambda ()
               (setq truncate-lines t)

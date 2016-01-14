@@ -57,7 +57,8 @@ or set such a marker."
       (let ((data (gethash key eli-markers)) (more nil))
         (unless data (error "No `%s' marker set." key))
         (if (stringp data)
-          (progn (insert data) (message "Inserted `%s'." key))
+          (progn (when mark-active (delete-active-region))
+                 (insert data) (message "Inserted `%s'." key))
           (progn
             (dolist (d data)
               (cond ((markerp d)

@@ -592,10 +592,7 @@ If N is negative, search forwards for the -Nth following match."
 ))
 
 ;;-----------------------------------------------------------------------------
-;; Override from "dired.el": make these functions have ^ in their
-;; interactive specs.
-
-(eval-after-load "dired" '(progn
+;; General tool to add ^ to interactive specs, and using in a few places
 
 (defmacro add-^-to-interactive-command (name)
   `(advice-add ',name :filter-return
@@ -603,6 +600,12 @@ If N is negative, search forwards for the -Nth following match."
        "Add ^ to the interactive spec of this function"
        (interactive (lambda (o) (advice-eval-interactive-spec (concat "^" o))))
        x)))
+
+(add-^-to-interactive-command forward-page)
+(add-^-to-interactive-command backward-page)
+
+(eval-after-load "dired" '(progn
+
 (add-^-to-interactive-command dired-next-line)
 (add-^-to-interactive-command dired-previous-line)
 (add-^-to-interactive-command dired-next-dirline)

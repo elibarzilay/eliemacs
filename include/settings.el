@@ -794,7 +794,7 @@
    w32-pass-alt-to-system nil
    w32-pass-lwindow-to-system t ; they still work fine
    w32-pass-rwindow-to-system t ;   as a super modifier
-   w32-pass-multimedia-buttons-to-system nil ; doesn't always block them anyway
+   w32-pass-multimedia-buttons-to-system t ; let players do their thing
    ;; w32-pass-extra-mouse-buttons-to-system <- might be needed
    w32-capslock-is-shiftlock nil
    w32-enable-caps-lock t
