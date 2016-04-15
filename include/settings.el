@@ -181,7 +181,7 @@
                     ;; newline-mark       ; newlines via display table
                     )
  whitespace-line-column 79
- whitespace-global-modes t ; maybe only in scheme mode and turn on global mode?
+ whitespace-global-modes t
  ;; whitespace-action '(report-on-bogus) ; too extreme
  ;; >> convenience/kmacro [uninteresting]
  ;; >> convenience/abbrev [uninteresting]
@@ -459,11 +459,11 @@
  ;; >> programming/languages/info-lookup [uninteresting]
  ;; >> programming/languages/js
  js-indent-level 2
- js-expr-indent-offset 2 ; ?
- ;; js-paren-indent-offset 0
- ;; js-square-indent-offset 0
- ;; js-curly-indent-offset 0
- ;; js-switch-indent-offset 0
+ js-expr-indent-offset   0 ; expr continuation
+ js-paren-indent-offset  0 ; after open paren and immediate newline
+ js-square-indent-offset 0 ; same
+ js-curly-indent-offset  0 ; same
+ js-switch-indent-offset 0
  ;; >> programming/languages/ld-script [uninteresting]
  ;; >> programming/languages/m4 [uninteresting]
  ;; >> programming/languages/meta-font [uninteresting]

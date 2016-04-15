@@ -104,7 +104,7 @@
   :group 'git-blame)
 
 (defcustom git-blame-prefix-format
-  "%h %A:"
+  "%h %A|"
   "The format of the prefix added to each line in `git-blame'
 mode. The format is passed to `format-spec' with the following format keys:
 
@@ -120,8 +120,8 @@ mode. The format is passed to `format-spec' with the following format keys:
 
 (defcustom git-blame-mouseover-format
   "%h %a %A:\n%s"
-  "The format of the description shown when pointing at a prefix of a
-line in `git-blame' mode. The format string is passed to `format-spec'
+  "The format of the description shown when pointing at a line in
+`git-blame' mode. The format string is passed to `format-spec'
 with the following format keys:
 
   %h - the abbreviated hash

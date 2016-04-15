@@ -32,7 +32,16 @@
                    (faces-history            .  40))
                  (delq 'file-name-history desktop-globals-to-save))
         desktop-locals-to-save
-          (nconc '(word-wrap line-move-visual) desktop-locals-to-save)
+          (nconc '(word-wrap line-move-visual text-scale-mode-amount)
+                 desktop-locals-to-save)
+        desktop-minor-mode-handlers
+          (nconc '((text-scale-mode
+                    . (lambda (locals)
+                        (require 'face-remap)
+                        (text-scale-mode)
+                        (let ((amt (assq 'text-scale-mode-amount locals)))
+                          (when amt (text-scale-set (cdr amt)))))))
+                 desktop-minor-mode-handlers)
         desktop-buffers-not-to-save ; skip " *" names & completions
           (concat "\\(^[ ]\\|^.completions$\\|\\(?:"
                   ;; the next line is the default
