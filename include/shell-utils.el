@@ -167,9 +167,10 @@ Notes:
                   (car range) (cadr range) command
                   obuf current-prefix-arg error-buffer)))
         (with-current-buffer obuf
-          (setq list-buffers-directory
+          (setq default-directory dir) ; make sure we're in the right directory
+          (setq list-buffers-directory ; show "<dir>$ <cmd>" in buffer lists
                 (concat (replace-regexp-in-string
-                         "/?\\'" "" (abbreviate-file-name ddir))
+                         "/?\\'" "" (abbreviate-file-name dir))
                         "$ " command))
           (unless output-buffer (view-mode 1)))
         (when async-p

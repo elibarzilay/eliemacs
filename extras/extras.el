@@ -51,7 +51,12 @@
   isearch-mode-map '([(meta return)] isearch-toggle-eli-input-method/single))
 
 ;;-----------------------------------------------------------------------------
-;; Git
+;; text hiding
+
+(autoload 'hide-text "hide-text" nil t)
+
+;;-----------------------------------------------------------------------------
+;; git stuff
 
 (autoload 'git-status "git" nil t)
 (autoload 'git-blame-mode "git-blame" nil t)
@@ -59,7 +64,7 @@
 ;;-----------------------------------------------------------------------------
 ;; idle-clock
 
-(autoload 'clock "idle-clock" nil t)
+(autoload 'idle-clock "idle-clock" nil t)
 (autoload 'idle-clock-mode "idle-clock" nil t)
 
 ;;-----------------------------------------------------------------------------

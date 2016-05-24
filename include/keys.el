@@ -69,7 +69,6 @@
   '("<C-S-tab>"       nil) ; the above deals with shift
   '("<C-M-tab>"       indent-region)
   '("<S-tab>"         eli-next-buffer-acyclic)
-  '([(shift iso-lefttab)] eli-next-buffer-acyclic) ; for some X setups
   ;; tab completes a symbol when editing a minibuffer lisp expression
   read-expression-map
   '("TAB"             completion-at-point)
@@ -280,6 +279,7 @@
   '("C-S-l"           font-lock-fontify-buffer)
   '("C-S-a"           add-color-pattern)
   '("C-S-r"           remove-added-color-pattern)
+  '("C-S-h"           hide-text)
   '("C-x C-S-a"       set-regexp-face)
   '("C-x C-S-r"       remove-set-face-overlays)
   '("C-x C-S-o"       set-region-face)
