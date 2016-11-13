@@ -72,8 +72,12 @@
   ;; tab completes a symbol when editing a minibuffer lisp expression
   read-expression-map
   '("TAB"             completion-at-point)
+  ;; fix the mess with `backtab` or `iso-lefttab`: just use `tab`
+  function-key-map
+  '([S-tab] nil)
+  local-function-key-map
+  '([S-tab] nil) '([S-iso-lefttab] [S-tab]) '([iso-lefttab] [S-tab])
   'global
-
   ;; F1 - file/buffer operations
   '("<f1>"            find-file)
   '("<C-f1>"          eli-show-buffers)

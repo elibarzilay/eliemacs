@@ -83,6 +83,9 @@ or show a previously hidden text if we're next to one."
           (overlay-put o 'isearch-open-invisible t)
           (overlay-put o 'face ; make it look nice when opened by isearsh
                        '(:background "gray20"))
+          ;; (overlay-put o 'help-echo
+          ;;              (buffer-substring-no-properties
+          ;;               (overlay-start o) (overlay-end o)))
           (deactivate-mark)
           (goto-char (overlay-start o))))))
 

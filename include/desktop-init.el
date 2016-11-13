@@ -6,7 +6,8 @@
   (require 'desktop)
   (unless load-buffers ; avoid loading buffers, don't save the desktop
     (fset 'desktop-create-buffer (lambda (&rest _) nil))
-    (remove-hook 'kill-emacs-hook 'desktop-kill))
+    (remove-hook 'kill-emacs-hook 'desktop-kill)
+    (setq desktop-auto-save-timeout nil))
   (setq desktop-save 'ask-if-new
         desktop-load-locked-desktop t
         desktop-path '("." "~") ; maybe go back to just "~"?

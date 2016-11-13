@@ -762,13 +762,17 @@
 ;; avoid the annoying split window when loading multiple files
 (add-hook 'emacs-startup-hook 'delete-other-windows)
 
-;; handle txz files
+;; handle txz & tlz files
 (eval-after-load "jka-cmpr-hook"
   '(progn
      (push ["\\.txz\\'" "XZ compressing" "xz" ("-c" "-q")
             "XZ uncompressing" "xz" ("-c" "-q" "-d") t nil "\3757zXZ\0"]
            jka-compr-compression-info-list)
+     (push ["\\.tlz\\'" "LZip compressing" "lzip" ("-c" "-q")
+            "LZip uncompressing" "lzip" ("-c" "-q" "-d") t nil "LZIP\1"]
+           jka-compr-compression-info-list)
      (push '("\\.txz\\'" . tar-mode) jka-compr-mode-alist-additions)
+     (push '("\\.tlz\\'" . tar-mode) jka-compr-mode-alist-additions)
      (jka-compr-update)))
 ;; should be on by default
 (unless auto-compression-mode (auto-compression-mode 1))
