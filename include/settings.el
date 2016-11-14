@@ -13,12 +13,15 @@
  kill-ring-max 100
  save-interprogram-paste-before-kill t
  kill-do-not-save-duplicates nil ; <- t is bad for macros!
+ ;; kill-append-merge-undo nil ; ??
  yank-pop-change-selection nil
  kill-read-only-ok nil
  backward-delete-char-untabify-method 'untabify
  kill-whole-line t
- x-select-enable-clipboard t
- x-select-enable-primary t
+ select-enable-clipboard t
+ select-enable-primary t
+ x-select-enable-clipboard t ; aliases for
+ x-select-enable-primary t   ; the above
  select-active-regions nil
  x-select-enable-clipboard-manager t
  ;; >> editing/indent
@@ -41,16 +44,20 @@
  ;; >> editing/fill/align [uninteresting]
  ;; >> editing/electricity
  electric-indent-mode nil    ; see comment at the top of "edit-utils.el"
- electric-pair-skip-self nil ; --""--
- electric-pair-mode nil      ; --""--
+ electric-pair-mode nil      ; --""-- should try it
+ electric-pair-skip-self t
+ electric-pair-open-newline-between-pairs nil ; ?
+ electric-pair-skip-whitespace 'chomp
  electric-layout-mode t
+ electric-quote-mode nil     ; maybe use this instead of the "‘’" display hack?
  ;; >> editing/matching
  case-replace t
+ replace-char-fold nil ; try t?
  ;; replace-lax-whitespace t        ; maybe use t here, or leave this to
  ;; replace-regexp-lax-whitespace t ; "smart" searches, when really wanted
  ;; query-replace-from-history-variable 'query-replace-history-from
  ;; query-replace-to-history-variable 'query-replace-history-to
- ;; query-replace-skip-read-only t ; ?
+ query-replace-skip-read-only t ; is this a good idea?
  query-replace-show-replacement t
  query-replace-highlight t
  query-replace-lazy-highlight t
@@ -112,6 +119,8 @@
  mouse-wheel-follow-mouse t
  mouse-highlight 1
  make-pointer-invisible t
+ ;; double-click-time 500
+ ;; double-click-fuzz 3
  ;; >> editing/mouse/tooltip
  tooltip-mode t ; should really be done via a call
  tooltip-delay 0.8
@@ -155,6 +164,8 @@
  parse-sexp-ignore-comments t
  ;; words-include-escapes nil ??
  ;; open-paren-in-column-0-is-defun-start t ??
+ ;; >> editing/rectangle
+ rectangle-preview t
  ;; >> convenience
  confirm-kill-emacs nil
  repeat-on-final-keystroke t
@@ -164,6 +175,8 @@
  ;; >> convenience/Buffer-menu
  Buffer-menu-use-header-line t
  Buffer-menu-buffer+size-width 25
+ Buffer-menu-name-width 19
+ Buffer-menu-size-width 7
  Buffer-menu-mode-width 14
  Buffer-menu-use-frame-buffer-list t
  ;; >> convenience/whitespace
@@ -223,7 +236,7 @@
  ;; >> files/uniquify
  uniquify-buffer-name-style 'post-forward
  uniquify-after-kill-buffer-p t
- uniquify-ask-about-buffer-names-p nil
+ uniquify-ask-about-buffer-names-p nil ; undocumented?
  uniquify-min-dir-content 0
  uniquify-strip-common-suffix t
  ;; >> files/auto-save [in "eli-backup.el"]
@@ -239,16 +252,21 @@
  ;; dired-use-ls-dired t
  ;; dired-chmod-program "chmod"
  ;; dired-touch-program "touch"
+ dired-dwim-target t          ; try this for a while
  dired-copy-preserve-time t
  dired-dnd-protocol-alist nil ; disable file copying on d&d to a dired buffer
                               ; so d&d always does the same thing
+ dired-hide-details-hide-symlink-targets nil
+ dired-hide-details-hide-information-lines t
  dired-auto-revert-buffer t
  dired-recursive-deletes 'top
  dired-no-confirm '() ; might be useful to add stuff here
- dired-recursive-copies 'top
+ dired-recursive-copies 'always
  ;; >> files/dired/ls-lisp
  ls-lisp-emulation nil
  ls-lisp-ignore-case nil
+ ls-lisp-use-string-collate nil
+ ls-lisp-UCA-like-collation nil
  ls-lisp-dirs-first t
  ;; no link count, username, group (mostly useless, but very long)
  ;; ("ls-lisp" is used on windows to do ls by default)
@@ -263,7 +281,11 @@
  ;; dired-keep-marker-hardlink 72
  ;; dired-keep-marker-symlink 89
  ;; >> files/dired/dired-faces [just faces]
- ;; >> files/dired/dired-x [uninteresting]
+ ;; >> files/dired/dired-x
+ dired-find-subdir nil
+ dired-enable-local-variables t
+ dired-clean-up-buffers-too t
+ dired-x-hands-off-my-keys t
  ;; >> files/dired/find-dired
  find-exec-terminator "+"
  ;; -h would be nice below, but messes up output alignment,
@@ -392,35 +414,41 @@
  ;; >> external/browse-url [uninteresting]
  ;; >> external/postscript [uninteresting]
  ;; >> external/locate [uninteresting]
+ ;; >> external/pinentry [uninteresting]
  ;; >> external/server [uninteresting]
  ;; >> comm
  ;; >> comm/url [uninteresting]
  ;; >> comm/netrc [uninteresting]
+ ;; >> comm/gnutls [uninteresting]
  ;; >> comm/tls [uninteresting]
+ ;; >> comm/nsm [uninteresting]
  ;; >> comm/bug-reference [uninteresting]
  ;; >> comm/dig [uninteresting]
  ;; >> comm/eudc [uninteresting]
  ;; >> comm/gravatar [uninteresting]
  ;; >> comm/ldap [uninteresting]
  ;; >> comm/net-utils [uninteresting]
+ ;; >> comm/ntlm [uninteresting]
  ;; >> programming
  ;; >> programming/languages
- ;; >> programming/languages/prog-mode [empty]
+ ;; >> programming/languages/prog-mode [uninteresting]
  ;; >> programming/languages/lisp
  eval-expression-print-level 5
  eval-expression-print-length 20
  eval-expression-debug-on-error t
  parens-require-spaces t
+ ;; >> programming/languages/lisp/eldoc
+ eldoc-minor-mode-string " Doc"
+ global-eldoc-mode t
  ;; >> programming/languages/lisp/bytecomp [uninteresting]
  ;; >> programming/languages/lisp/pp [uninteresting]
- ;; >> programming/languages/lisp/advice [uninteresting]
  ;; >> programming/languages/lisp/find-function [uninteresting]
- ;; >> programming/languages/lisp/eldoc [uninteresting]
+ ;; >> programming/languages/lisp/advice [uninteresting]
  ;; >> programming/languages/lisp/checkdoc [uninteresting]
  ;; >> programming/languages/lisp/lisp-indent [uninteresting]
  ;; >> programming/languages/lisp/edebug [uninteresting]
  ;; >> programming/languages/lisp/elp [uninteresting]
- ;; >> programming/languages/lisp/ert [uninteresting]
+ ;; >> programming/languages/lisp/ert [empty]
  ;; >> programming/languages/lisp/gmm [uninteresting]
  ;; >> programming/languages/lisp/ielm [uninteresting]
  ;; >> programming/languages/lisp/inferior-lisp [uninteresting]
@@ -457,6 +485,7 @@
  ;; >> programming/languages/icon [uninteresting]
  ;; >> programming/languages/idlwave [uninteresting]
  ;; >> programming/languages/info-lookup [uninteresting]
+ ;; >> programming/languages/sgml [uninteresting]
  ;; >> programming/languages/js
  js-indent-level 2
  js-expr-indent-offset   0 ; expr continuation
@@ -484,7 +513,6 @@
  ruby-comment-column 32
  ruby-insert-encoding-magic-comment t
  ruby-use-encoding-map t
- ;; >> programming/languages/sgml [uninteresting]
  ;; >> programming/languages/sh
  ;; >> programming/languages/sh/sh-script
  sh-indentation 2
@@ -497,6 +525,7 @@
  ;; >> programming/languages/verilog-mode [uninteresting]
  ;; >> programming/tools
  ;; >> programming/tools/semantic [uninteresting]
+ ;; >> programming/tools/diff-mode [uninteresting]
  ;; >> programming/tools/tempo [uninteresting]
  ;; >> programming/tools/gdb [uninteresting]
  ;; >> programming/tools/which-func [uninteresting]
@@ -505,6 +534,7 @@
  ;; >> programming/tools/calculator
  calculator-electric-mode t
  calculator-bind-escape t
+ ;; >> programming/tools/check-declare [uninteresting]
  ;; >> programming/tools/compare-windows
  ;; compare-windows-sync nil ; no syncing, but might be useful to use something
  compare-windows-sync 'compare-windows-sync-default-function
@@ -517,6 +547,8 @@
  ;; >> programming/tools/ediff [uninteresting]
  ;; >> programming/tools/elide-head [uninteresting]
  ;; >> programming/tools/emerge [uninteresting]
+ ;; >> programming/tools/project-vc [uninteresting -- maybe will get interesting?]
+ ;; >> programming/tools/xref [uninteresting]
  ;; >> programming/tools/etags [uninteresting]
  ;; >> programming/tools/flymake [uninteresting]
  ;; >> programming/tools/glasses [uninteresting]
@@ -531,17 +563,17 @@
  ;; >> programming/tools/vc/vc-git
  vc-git-diff-switches t ; might be useful to add stuff like `-x -w'
  ;; >> programming/tools/vc/vc-cvs [uninteresting]
- ;; >> programming/tools/vc/vc-arch [uninteresting]
  ;; >> programming/tools/vc/vc-bzr [uninteresting]
  ;; >> programming/tools/vc/vc-hg [uninteresting]
  ;; >> programming/tools/vc/vc-mtn [uninteresting]
  ;; >> programming/tools/vc/vc-rcs [uninteresting]
  ;; >> programming/tools/vc/vc-sccs [uninteresting]
+ ;; >> programming/tools/vc/vc-src [uninteresting]
  ;; >> programming/tools/vc/vc-svn
  vc-svn-diff-switches t ; might be useful to add stuff like `-x -w'
  ;; >> applications
+ ;; >> applications/package [uninteresting?]
  ;; >> applications/calendar [done below]
- ;; >> applications/package [uninteresting]
  ;; >> applications/mail [mostly elsewhere]
  read-mail-command 'rmail ; change to vm?
  mail-user-agent 'sendmail-user-agent ; maybe use feedmail
@@ -567,7 +599,7 @@
  ;; >> applications/htmlfontify [uninteresting]
  ;; >> applications/mpc [uninteresting]
  ;; >> applications/newsticker [uninteresting]
- ;; >> applications/rcirc [uninteresting]
+ ;; >> applications/rcirc [elsewhere]
  ;; >> applications/ses [uninteresting]
  ;; >> development
  ;; >> development/docs
@@ -587,7 +619,6 @@
  max-lisp-eval-depth 2000
  ;; >> development/maint
  ;; >> development/maint/elint [uninteresting]
- ;; >> development/maint/gulp [uninteresting]
  ;; >> development/maint/lisp-mnt [uninteresting]
  ;; >> development/debug
  debug-on-error nil
@@ -596,15 +627,6 @@
  ;; >> development/debug/debugger [uninteresting]
  ;; >> environment
  remote-shell-program "ssh"
- ;; >> environment/initialization
- initial-buffer-choice nil
- inhibit-startup-screen t
- inhibit-startup-echo-area-message (user-login-name) ; always apply
- ;; inhibit-default-init t ; might be useful to ignore distro-stupidities
- inhibit-startup-buffer-menu t ; no need for this silly thing on startup
- initial-major-mode 'indented-text-mode
- initial-scratch-message nil ; v23: no scratch text
- ;; >> environment/initialization/fancy-splash-screen [uninteresting]
  ;; >> environment/minibuffer
  completion-auto-help t
  ;; completion-styles '(basic partial-completion emacs22) ; what's this??
@@ -612,6 +634,7 @@
  ;; example) is a sole completion; and `emacs22' adds a completion based on the
  ;; stuff before the cursor
  completion-styles '(partial-completion)
+ ;; completion-category-overrides '() ; if there’s a need for different completion styles
  completion-cycle-threshold nil
  completions-format 'vertical ; easier to find things
  read-file-name-completion-ignore-case t
@@ -621,6 +644,7 @@
  ;; file-name-shadow-properties '(face file-name-shadow field shadow)
  ;; file-name-shadow-tty-properties '(before-string "{" after-string "} " field shadow)
  ;; file-name-shadow-mode t ; doesn't really matter if we do the electric thing
+ minibuffer-eldef-shorten-default t
  echo-keystrokes 1
  enable-recursive-minibuffers nil
  history-length 500
@@ -631,12 +655,26 @@
  completion-ignore-case t ; manually added
  ;; >> environment/minibuffer/icomplete [uninteresting]
  ;; >> environment/minibuffer/savehist [uninteresting]
+ ;; >> environment/initialization
+ initial-buffer-choice nil
+ inhibit-startup-screen t
+ inhibit-startup-echo-area-message (user-login-name) ; always apply
+ ;; inhibit-default-init t ; might be useful to ignore distro-stupidities
+ inhibit-startup-buffer-menu t ; no need for this silly thing on startup
+ initial-major-mode 'indented-text-mode
+ initial-scratch-message nil ; v23: no scratch text
+ ;; >> environment/initialization/fancy-splash-screen [uninteresting]
  ;; >> environment/w32 [below]
  ;; >> environment/hardware [uninteresting]
  ;; >> environment/terminals [uninteresting]
- ;; >> environment/unix [uninteresting]
+ ;; >> environment/unix [empty]
  ;; >> environment/x [uninteresting]
  ;; >> environment/frames [some in "win-init.el"]
+ ;; >> environment/frames/window-divider
+ ;; window-divider-mode t ; maybe try this ?
+ ;; window-divider-default-places t
+ ;; window-divider-default-bottom-width 6
+ ;; window-divider-default-right-width 6
  ;; >> environment/frames/cursor
  cursor-in-non-selected-windows '(hbar . 4)
  display-hourglass t
@@ -740,6 +778,7 @@
  ;; >> multimedia
  ;; >> multimedia/image [uninteresting]
  image-animate-loop t
+ ;; >> multimedia/image/iimage [uninteresting, but maybe useful]
  ;; >> multimedia/image-dired [uninteresting]
  ;; >> multimedia/thumbs [uninteresting]
  ;; >> misc (non-custom)
