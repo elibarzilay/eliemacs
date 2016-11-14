@@ -11,8 +11,7 @@
 
 ;; (electric-indent-mode 1) ; would be nice, but indents the existing line too
                             ; also affects C-o in the same way
-;; (electric-pair-mode 1)   ; would be nice, but doesn't play well with delsel
-                            ; eg, type "(" when there's an active region
+;; (electric-pair-mode 1)   ; should try it?
 ;; (electric-layout-mode 1) ; tends to be really annoying (eg, in js-mode)
 
 ;;-----------------------------------------------------------------------------
@@ -177,14 +176,8 @@ With a prefix argument go back to the default."
   (unless arg (setq arg 1))
   (if line-move-visual (beginning-of-visual-line arg) (beginning-of-line arg)))
 
-(defun eli-up-directory (&optional other-window)
-  "Similar to `dired-up-directory', but works from non-dired buffers too."
-  (interactive "P")
-  (if (bound-and-true-p dired-subdir-alist)
-    (dired-up-directory other-window)
-    (let ((up default-directory) (file buffer-file-name))
-      (if other-window (dired-other-window up) (dired up))
-      (when file (dired-goto-file file)))))
+;; This is useful, make it available before using dired
+(autoload 'dired-jump "dired-x" nil t)
 
 ;;-----------------------------------------------------------------------------
 ;; More utilities.

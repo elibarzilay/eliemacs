@@ -271,7 +271,7 @@
   '("C-x <f12>"       widen)
   '("<C-return>"      calculator)
   (and (not window-system) '("M-RET" calculator))
-  '("M-."             eli-up-directory)
+  '("M-."             dired-jump)
   '("M-j"             eli-join-line)
   '("C-;"             eli-toggle-comment-line)
   '("M-C"             eli-compare-two-buffers)
