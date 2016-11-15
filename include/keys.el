@@ -311,6 +311,8 @@
             '([remap eli-previous-line] dired-previous-line)
             '("<M-next>"  dired-next-dirline)
             '("<M-prior>" dired-prev-dirline)
+            '("* ." dired-mark-extension)
+            '("* d" dired-flag-extension)
             ;; dired rebinds M-s as a prefix for its special searches
             ;; (which seem nice but broken), so disable it
             '("M-s" nil))
