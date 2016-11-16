@@ -5,7 +5,7 @@
 ;;    /*****************************************************************\   ;;
 ;;    ***                                                             ***   ;;
 ;;    ***               Eli's Emacs initialization file               ***   ;;
-                                "[2016-11-15]"
+                                "[2016-11-16]"
 ;;    *** Written by Eli Barzilay: Maze is Life!   <eli@barzilay.org> ***   ;;
 ;;    ***                                                             ***   ;;
 ;;    \*****************************************************************/   ;;
@@ -46,6 +46,7 @@
 (load/include "colors")
 (load/include "win-init")
 (load/include "edit-utils")
+(load/include "dired-utils")
 (load/include "shell-utils")
 (load/include "eli-backup")
 (load/include "mail-news")

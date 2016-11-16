@@ -304,6 +304,8 @@
 
 (eval-after-load "dired"
   '(progn (define-keys dired-mode-map
+            '("l" eli-last-dired-buffer)
+            '("f" eli-next-dired-buffer)
             '("r" wdired-change-to-wdired-mode)
             '("w" wdired-change-to-wdired-mode) ; I always used that
             '("W" dired-copy-filename-as-kill)  ; originally on w

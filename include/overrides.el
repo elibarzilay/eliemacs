@@ -463,31 +463,6 @@ If N is negative, search forwards for the -Nth following match."
 ))
 
 ;;-----------------------------------------------------------------------------
-;; Override from "dired-x.el": default suffix by the file on current line
-
-(defun read-suffix-based-on-current-line (args verb)
-  (cons (or (car args)
-            (let* ((name (dired-get-filename 'no-dir t))
-                   (ext  (save-match-data
-                           (and (stringp name)
-                                (string-match "[.][^./]+$" name)
-                                (substring name (match-beginning 0))))))
-              (or (read-from-minibuffer (format "%s extension: " verb) ext)
-                  "")))
-        (cdr args)))
-
-(eval-after-load "dired" '(progn
-  (require 'dired-x)
-  (advice-add 'dired-mark-extension :filter-args
-     (lambda (args) "Add default extension to `dired-mark-extension'"
-       (interactive) (read-suffix-based-on-current-line args "Marking"))
-     '((name . default-extension-for-dired-mark-extension)))
-  (advice-add 'dired-flag-extension :filter-args
-     (lambda (args) "Add default extension to `dired-flag-extension'"
-       (interactive) (read-suffix-based-on-current-line args "Deleting"))
-     '((name . default-extension-for-dired-flag-extension)))))
-
-;;-----------------------------------------------------------------------------
 ;; Override from "delsel.el": arrange for a single undo boundary.
 
 (defvar-local delsel-undo-to-tweak t)
