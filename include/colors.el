@@ -447,6 +447,7 @@ one added first), if negative removes all."
       paren-highlight-at-point  t
       paren-highlight-offscreen t
       paren-display-message     'only
+      paren-message-linefeed-display " ⏎ "
       paren-message-no-match    t
       paren-ding-unmatched      nil
       paren-delay               0.1

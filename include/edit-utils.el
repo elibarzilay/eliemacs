@@ -612,6 +612,22 @@ the last indentation level."
 (put 'eli-backward-delete-char-unindent 'delete-selection 'supersede)
 
 ;;-----------------------------------------------------------------------------
+;; Toggle both case- and char-folding for isearch
+
+(defun eli-toggle-case-and-char-fold ()
+  "Toggle both case- and char-fold searching on or off."
+  (interactive)
+  (setq isearch-case-fold-search
+        (if isearch-case-fold-search nil 'yes))
+  (setq isearch-regexp-function
+        (and isearch-case-fold-search #'char-fold-to-regexp))
+  (setq isearch-regexp nil)
+  (isearch--momentary-message
+   (if isearch-case-fold-search "case+char insensitive" "case+char sensitive"))
+  (setq isearch-success t isearch-adjusted t)
+  (isearch-update))
+
+;;-----------------------------------------------------------------------------
 ;; Change the default font size
 
 (defun eli-use-larger-font (n)

@@ -2,7 +2,12 @@
 ;;-----------------------------------------------------------------------------
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
-(set-language-environment "UTF-8")
+;; Maybe this is not needed? -- At least on Windows, Eli Zaretski said:
+;; "I would advise against setting the UTF-8 language environment on
+;; MS-Windows. [...] You shouldn't need to do this, not in Emacs 25
+;; anyway."
+;; (set-language-environment "UTF-8")
+
 (when (functionp 'set-fringe-mode) (set-fringe-mode 2))
 (require 'uniquify)
 
@@ -61,12 +66,16 @@
  query-replace-show-replacement t
  query-replace-highlight t
  query-replace-lazy-highlight t
- case-fold-search t
+ case-fold-search t ; see also `search-default-mode' below
  ;; >> editing/matching/paren-matching
  ;; >> editing/matching/paren-matching/paren-blinking
  blink-matching-paren nil ; use `show-paren-mode'
  blink-matching-paren-distance 200000
  blink-matching-delay 0.5
+ ;; >> editing/matching/paren-matching/paren-showing -- mic-paren still better!
+ ;; show-paren-style 'parenthesis
+ ;; show-paren-when-point-inside-paren t ; try this...
+ ;; show-paren-when-point-in-periphery nil ; activates in weird places
  ;; >> editing/matching/paren-matching/mic-paren-matching [in mic-paren]
  ;; >> editing/matching/isearch
  search-exit-option t
@@ -80,8 +89,9 @@
  search-highlight t
  isearch-lazy-highlight t
  isearch-allow-scroll t ; note my hack that exits isearch when scrolling away
- ;; isearch-lax-whitespace t          ; (not custom options)
- ;; isearch-regexp-lax-whitespace nil ; these are the defaults
+ isearch-lax-whitespace t          ; (not custom options)
+ isearch-regexp-lax-whitespace nil ; these are the defaults
+ search-default-mode 'char-fold-to-regexp ; do char-folding too
  ;; >> editing/matching/isearch/lazy-highlight
  lazy-highlight-cleanup t
  lazy-highlight-initial-delay 0.25

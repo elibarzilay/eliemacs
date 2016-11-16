@@ -225,7 +225,7 @@
   '("C-k"             isearch-yank-line)
   '("C-y"             isearch-yank-kill)
   ;; some more stuff
-  '("C-t"             isearch-toggle-case-fold)
+  '("C-t"             eli-toggle-case-and-char-fold) ; isearch-toggle-case-fold
   '("M-c"             isearch-toggle-case-fold)
   '("M-e"             isearch-edit-string)
   '("C-^"             isearch-edit-string)

@@ -80,6 +80,11 @@
 ;;-----------------------------------------------------------------------------
 ;; Redefine navigation keys so they place the cursor at the end and no errors
 
+;; Note: there are also `previous-line-or-history-element' and
+;; `next-line-or-history-element', but I find it more useful to always move to
+;; the end of the input, and to have a predictable way to get the previous
+;; history element in macros etc.
+
 (defun eli-previous-history-element (n)
   (interactive "p")
   (ignore-errors-beep (previous-history-element n))
