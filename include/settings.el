@@ -5,8 +5,10 @@
 ;; Maybe this is not needed? -- At least on Windows, Eli Zaretski said:
 ;; "I would advise against setting the UTF-8 language environment on
 ;; MS-Windows. [...] You shouldn't need to do this, not in Emacs 25
-;; anyway."
-;; (set-language-environment "UTF-8")
+;; anyway." -- No, it looks like it's needed after all, when we're
+;; dealing with random files (with UTF-8 by default) and processes (in
+;; cygwin, mostly).
+(set-language-environment "UTF-8")
 
 (when (functionp 'set-fringe-mode) (set-fringe-mode 2))
 (require 'uniquify)
@@ -367,7 +369,7 @@
  comint-move-point-for-output nil
  comint-scroll-show-maximum-output 1
  comint-buffer-maximum-size 5000
- comint-input-ring-size 500
+ comint-input-ring-size 2000
  ;; t is nice, but sometimes screws up (try `cat', or enter a number in racket)
  ;; a way to fix this is to use `stty echo'; better: only use t on linux (but
  ;; set to nil in case of non-shells, like running racket directly via
@@ -657,7 +659,7 @@
  minibuffer-eldef-shorten-default t
  echo-keystrokes 1
  enable-recursive-minibuffers nil
- history-length 500
+ history-length 1000
  history-delete-duplicates t
  read-buffer-completion-ignore-case t
  ;; minibuffer-prompt-properties '(read-only t face minibuffer-prompt point-entered minibuffer-avoid-prompt)

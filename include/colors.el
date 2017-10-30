@@ -315,7 +315,7 @@ Examples:
         (font-lock-mode -1)
         (setq font-lock-defaults '(nil))
         (font-lock-mode 1))
-      (font-lock-ensure))))
+      (font-lock-flush))))
 (put 'add-color-pattern 'safe-local-eval-function t)
 
 ;; used temporarily, to make it easy to choose a pattern
@@ -344,7 +344,7 @@ one added first), if negative removes all."
                             added-color-patterns)))
            (font-lock-remove-keywords nil (list rem))
            (setq added-color-patterns (delq rem added-color-patterns))))))
-  (font-lock-ensure))
+  (font-lock-flush))
 (put 'remove-added-color-pattern 'safe-local-eval-function t)
 
 ;;-----------------------------------------------------------------------------
