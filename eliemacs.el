@@ -5,7 +5,7 @@
 ;;    /*****************************************************************\   ;;
 ;;    ***                                                             ***   ;;
 ;;    ***               Eli's Emacs initialization file               ***   ;;
-                                "[2017-07-06]"
+                                "[2018-01-30]"
 ;;    *** Written by Eli Barzilay: Maze is Life!   <eli@barzilay.org> ***   ;;
 ;;    ***                                                             ***   ;;
 ;;    \*****************************************************************/   ;;
@@ -75,6 +75,8 @@
         (while msgs
           (message (car msgs))
           (setq msgs (and (sit-for 3 t) (cdr msgs))))))
+    ;; undo this, since it messes up custom variable saving
+    (put 'inhibit-startup-echo-area-message 'saved-value nil)
     (message nil))
   t)
 

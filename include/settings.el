@@ -831,8 +831,8 @@
 ;; remember lots of files
 (put 'file-name-history 'history-length 500)
 
-;; need to do this to make it have an effect
-(eval '(put 'inhibit-startup-echo-area-message 'saved-value t))
+;; need to do this to make it have an effect (see also startup code)
+(put 'inhibit-startup-echo-area-message 'saved-value t)
 
 ;; do it this way to avoid auto-loading cc-mode
 (eval-after-load "cc-mode" '(c-add-style "java" '((c-basic-offset . 2))))
