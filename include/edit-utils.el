@@ -524,18 +524,36 @@ will be used by `counter-insert'."
          counter-last-increment inc)
    (message "Macro counter incremented by %s to %s" inc counter-value))
 
-(defun counter-insert (inc)
+(defun counter-insert (inc &optional force-repeat)
   "Increment the counter value and insert it (using the current format, if any).
 Increment by INC, defaults to 1 or to a last explicit increment.
 \(Note: does not increment on first use.)"
   (interactive "*P")
-  (when (and (eq this-command last-command) counter-last-position)
+  (when (and (or force-repeat (eq this-command last-command))
+             counter-last-position)
     (delete-region (point) counter-last-position))
   (setq counter-last-position (point))
   (when counter-inserted (counter-increment inc))
   (insert (format (or counter-format "%d") counter-value))
   (setq counter-inserted t))
 (put 'counter-insert 'delete-selection t)
+
+(defun increment-integer (inc)
+  "Increment the integer at the current point.
+Increment by INC, defaults to 1 or to a last explicit increment.
+Sets the current counter value (`counter-insert' etc), and shares
+increment with it."
+  (interactive "*P")
+  (save-excursion
+    (skip-chars-forward "0-9")
+    (unless (<= ?0 (char-before) ?9)
+      (error "No integer found at the current position"))
+    (let ((p (point)))
+      (save-excursion
+        (skip-chars-backward "0-9")
+        (setq counter-value (string-to-number (buffer-substring (point) p)))
+        (setq counter-last-position (point))))
+    (counter-insert inc t)))
 
 ;;-----------------------------------------------------------------------------
 ;; Comment-line toggling

@@ -1,3 +1,6 @@
+(defvar idle-clock-start-hook nil)
+(defvar idle-clock-end-hook   nil)
+
 (defvar-local idle-clock-seconds-p nil)
 (defvar-local idle-clock-prev-conf nil)
 
@@ -35,6 +38,7 @@
   (interactive)
   (when idle-clock-work-timer (cancel-timer idle-clock-work-timer))
   (switch-to-buffer (or idle-clock-buffer (error "idle-clock-done: no clock")))
+  (run-hooks 'idle-clock-end-hook)
   (let ((p idle-clock-prev-conf))
     (kill-buffer idle-clock-buffer)
     (setq idle-clock-buffer nil)
@@ -52,6 +56,7 @@
     (setq major-mode 'fundamental-mode)
     (setq-local idle-clock-seconds-p (< arg 0))
     (delete-other-windows)
+    (run-hooks 'idle-clock-start-hook)
     (message nil)
     ;; keep the cursor on, to indicate window focus
     ;; (setq-local cursor-type nil)

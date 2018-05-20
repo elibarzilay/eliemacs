@@ -38,7 +38,7 @@ for the current eli-shell run.")
                        (replace-regexp-in-string "\\.exe$" ""
                          (downcase (file-name-nondirectory
                                     explicit-shell-file-name)))))
-         (name (if ex-name (format "*shell: %s*" ex-name) (concat "*shell*")))
+         (name (if ex-name (format "*shell: %s*" ex-name) "*shell*"))
          (s (cond ((eq arg 0) (generate-new-buffer-name name))
                   ((eq arg 1) name)
                   ((and (integerp arg) (> arg 1)) (format "%s<%S>" name arg))
@@ -178,6 +178,21 @@ Notes:
           ;; the window is not selected, so avoid switching to it if we
           ;; use `delete-other-windows'
           (set-window-prev-buffers win prev))))))
+
+(defun eli-shell-command-insert-output ()
+  "Similar to `eli-shell-command' with output inserted in the current buffer
+(i.e., using it with a prefix argument), but does not replace the selected
+text.
+
+(This is currently a hack that needs to be robustified.)"
+  (interactive)
+  (let ((current-prefix-arg nil)
+        (wconf (current-window-configuration)))
+    (when (< (point) (mark t)) (exchange-point-and-mark))
+    (call-interactively 'eli-shell-command)
+    (insert-buffer-substring "*Shell Command Output*")
+    (set-window-configuration wconf)
+    (activate-mark 'lambda)))
 
 ;;-----------------------------------------------------------------------------
 ;; * Make it possible for comint to send input immediately.

@@ -203,24 +203,17 @@ will use both overlays and properties (overlays don't stick in copied text)."
                        (and current-prefix-arg t) nil)
                  (error "Use the mark, luke.")))
   (let* ((face (if dont-make-face face (simple-make-face face)))
-         ;; These are taken from `save-buffer-state' - make sure that
-         ;; we modify the buffer with no state changes.
-         (modified                   (buffer-modified-p))
-         (buffer-undo-list           t)
-         (inhibit-read-only          t)
-         (inhibit-point-motion-hooks t)
-         (inhibit-modification-hooks t)
          (use-overlays   (or force-overlays
                              (and font-lock-mode font-lock-defaults)))
          (use-properties (or (not use-overlays) (eq 'both force-overlays)))
          deactivate-mark buffer-file-name buffer-file-truename)
-    (when use-overlays
-      (let ((overlay (make-overlay beg end)))
-        (overlay-put overlay 'set-region-face t)
-        (overlay-put overlay 'face face)))
-    (when use-properties
-      (put-text-property beg end 'face face))
-    (unless modified (restore-buffer-modified-p nil))))
+    (with-silent-modifications
+      (when use-overlays
+        (let ((overlay (make-overlay beg end)))
+          (overlay-put overlay 'set-region-face t)
+          (overlay-put overlay 'face face)))
+      (when use-properties
+        (put-text-property beg end 'face face)))))
 (put 'set-region-face 'safe-local-eval-function t)
 
 (defun remove-set-face-overlays ()

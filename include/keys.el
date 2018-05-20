@@ -69,14 +69,16 @@
   '("<C-S-tab>"       nil) ; the above deals with shift
   '("<C-M-tab>"       indent-region)
   '("<S-tab>"         eli-next-buffer-acyclic)
+  '("<backtab>"         eli-next-buffer-acyclic)
   ;; tab completes a symbol when editing a minibuffer lisp expression
   read-expression-map
   '("TAB"             completion-at-point)
-  ;; fix the mess with `backtab` or `iso-lefttab`: just use `tab`
+  ;; try to fix the mess with `backtab` or `iso-lefttab`: just use `tab`
   function-key-map
   '([S-tab] nil)
   local-function-key-map
   '([S-tab] nil) '([S-iso-lefttab] [S-tab]) '([iso-lefttab] [S-tab])
+  ;; '([S-backtab] [S-tab]) --> no --> need to do this on all new frames
   'global
   ;; F1 - file/buffer operations
   '("<f1>"            find-file)
@@ -98,7 +100,7 @@
   ;; F4 - shell stuff
   '("<f4>"            eli-shell-command)
   '("<C-f4>"          eli-shell)
-  '("<S-f4>"          eli-shell-command-on-buffer)
+  '("<S-f4>"          eli-shell-command-insert-output)
   '("<C-S-f4>"        eli-term)
   ;; F5 - replacing
   '("<f5>"            query-replace)
@@ -187,6 +189,7 @@
   '("ESC M-="         counter-set)
   '("ESC M-+"         counter-increment)
   '("ESC M-*"         counter-insert)
+  '("M-+"             increment-integer)
 
   ;; backward transpose keys.
   'global
