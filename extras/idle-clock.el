@@ -4,8 +4,8 @@
 (defvar-local idle-clock-seconds-p nil)
 (defvar-local idle-clock-prev-conf nil)
 
-(defvar idle-clock-buffer nil)
-(defvar idle-clock-timer nil)
+(defvar idle-clock-buffer     nil)
+(defvar idle-clock-timer      nil)
 (defvar idle-clock-work-timer nil)
 
 (defun idle-clock-display-string (&rest strs)
@@ -25,26 +25,29 @@
   (goto-char (point-min)))
 
 (defun idle-clock-work ()
-  (with-current-buffer (or idle-clock-buffer (error "idle-clock-work: no clock"))
-  (let* ((now  (current-time))
-         (date (decode-time now))
-         (next (apply 'encode-time
-                      (if idle-clock-seconds-p (1+ (car date)) 60)
-                      (cdr date))))
-    (idle-clock-draw date)
-    (setq idle-clock-work-timer (run-at-time next nil 'idle-clock-work)))))
+  (with-current-buffer
+      (or idle-clock-buffer (error "idle-clock-work: no clock"))
+    (let* ((now  (current-time))
+           (date (decode-time now))
+           (next (apply 'encode-time
+                        (if idle-clock-seconds-p (1+ (car date)) 60)
+                        (cdr date))))
+      (idle-clock-draw date)
+      (setq idle-clock-work-timer (run-at-time next nil 'idle-clock-work)))))
 
 (defun idle-clock-done ()
   (interactive)
   (when idle-clock-work-timer (cancel-timer idle-clock-work-timer))
-  (switch-to-buffer (or idle-clock-buffer (error "idle-clock-done: no clock")))
-  (run-hooks 'idle-clock-end-hook)
-  (let ((p idle-clock-prev-conf))
-    (kill-buffer idle-clock-buffer)
-    (setq idle-clock-buffer nil)
-    (set-scroll-bar-mode (cadr p))
-    (set-window-configuration (car p))
-    (setq this-command '(lambda () nil))))
+  (when (and idle-clock-buffer (buffer-live-p idle-clock-buffer))
+    (save-excursion
+      (switch-to-buffer idle-clock-buffer)
+      (run-hooks 'idle-clock-end-hook)
+      (let ((p idle-clock-prev-conf))
+        (kill-buffer idle-clock-buffer)
+        (setq idle-clock-buffer nil)
+        (set-scroll-bar-mode (cadr p))
+        (set-window-configuration (car p))
+        (setq this-command '(lambda () nil))))))
 
 (defun idle-clock (&optional arg)
   (interactive "p")
@@ -71,6 +74,8 @@
     (setq-local emulation-mode-map-alists nil)
     (when idle-clock-work-timer (cancel-timer idle-clock-work-timer))
     (idle-clock-work)))
+
+(add-hook 'before-make-frame-hook 'idle-clock-done)
 
 (defun idle-clock-mode (&optional arg)
   (interactive "P")
