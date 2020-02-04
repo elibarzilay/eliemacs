@@ -69,7 +69,7 @@
   '("<C-S-tab>"       nil) ; the above deals with shift
   '("<C-M-tab>"       indent-region)
   '("<S-tab>"         eli-next-buffer-acyclic)
-  '("<backtab>"         eli-next-buffer-acyclic)
+  '("<backtab>"       eli-next-buffer-acyclic)
   ;; tab completes a symbol when editing a minibuffer lisp expression
   read-expression-map
   '("TAB"             completion-at-point)
@@ -78,6 +78,7 @@
   '([S-tab] nil)
   local-function-key-map
   '([S-tab] nil) '([S-iso-lefttab] [S-tab]) '([iso-lefttab] [S-tab])
+  '([C-S-iso-lefttab] [C-S-tab]) '([C-iso-lefttab] [C-S-tab])
   ;; '([S-backtab] [S-tab]) --> no --> need to do this on all new frames
   'global
   ;; F1 - file/buffer operations
@@ -143,7 +144,7 @@
   ;; '("<S-f11>"      ...)
   ;; '("<C-S-f11>"    ...)
   ;; F12 - window misc
-  '("<f12>"           delete-other-windows)
+  '("<f12>"           eli-delete-other-windows-or-restore)
   '("<C-f12>"         goto-line)
   '("<S-f12>"         goto-char)
   '("<C-S-f12>"       eli-toggle-lines-mode)
@@ -282,6 +283,7 @@
   '("C-c C-n"         browse-url-at-point)
   '("C-<"             eli-use-smaller-font)
   '("C->"             eli-use-larger-font)
+  '("C-S-q"           eli-flip-antialias)
   '("C-S-f"           font-lock-mode)
   '("C-S-l"           font-lock-fontify-buffer)
   '("C-S-a"           add-color-pattern)

@@ -10,18 +10,20 @@
 
 (defun idle-clock-display-string (&rest strs)
   (dolist (str strs)
-    (let ((scale (/ (frame-width) 1.0 (length str))))
+    (let* ((spaces (make-string (/ (length str) 2) ?\ ))
+           (str (concat spaces str spaces))
+           (scale (/ (frame-width) 1.0 (length str))))
       (insert "\n\n" (propertize str 'display `(height ,scale))))))
 
 (defun idle-clock-draw (now) ; called in the clock buffer
   (erase-buffer)
   (idle-clock-display-string
-   (format (if idle-clock-seconds-p "%02d:%02d:%02d" " %02d:%02d ")
+   (format (if idle-clock-seconds-p "%02d:%02d:%02d" "%02d:%02d")
            (nth 2 now)
            (+ (nth 1 now) (if (or idle-clock-seconds-p (< (car now) 45)) 0 1))
            (nth 0 now))
-   (format "   %04d-%02d-%02d   " (nth 5 now) (nth 4 now) (nth 3 now))
-   (format "        %s <%s>        " user-full-name user-mail-address))
+   (format "%04d-%02d-%02d" (nth 5 now) (nth 4 now) (nth 3 now))
+   (format "%s <%s>" user-full-name user-mail-address))
   (goto-char (point-min)))
 
 (defun idle-clock-work ()

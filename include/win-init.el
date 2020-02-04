@@ -75,6 +75,8 @@ is not used.")
         )
     (frame-notice-user-settings)))
 
+(defvar current-antialias nil)
+
 (defun win-init-apply-conf (&rest frame)
   (interactive) ; make it easy to use manually
   (let* ((frame (or (car frame) (selected-frame)))
@@ -100,7 +102,10 @@ is not used.")
             ((y:)    (setq y v))
             ((fn:)   (setq fn v)))))
       ;; redisplay after each setting to avoid oddities
-      (when fn (set-frame-font fn) (redisplay t))
+      (when fn
+        (setq current-antialias (not (string-match-p "antialias=0" fn)))
+        (set-frame-font fn nil t)
+        (redisplay t))
       (cond ((and w h) (set-frame-size   frame w h) (redisplay t))
             (w         (set-frame-width  frame w)   (redisplay t))
             (h         (set-frame-height frame w)   (redisplay t)))
@@ -119,5 +124,32 @@ is not used.")
 ;; the font might not be available right now, so use a hook
 (ignore-errors (win-init-apply-conf))
 (add-hook 'emacs-startup-hook 'win-init-apply-conf)
+
+;;-----------------------------------------------------------------------------
+;; Some font tweaking functions
+
+(defun eli-use-larger-font (n)
+  (interactive "P")
+  (let* ((n (cond ((eq n '-) -10) ((not n) 10) (t n)))
+         (size1 (face-attribute 'default :height))
+         (size2 (+ size1 n)))
+    (set-face-attribute 'default nil :height size2)
+    (message "Font size changed: %S --[%s%S]--> %S"
+             size1 (if (> n 0) "+" "") n size2)))
+
+(defun eli-use-smaller-font (n)
+  (interactive "P")
+  (let* ((n (cond ((eq n '-) -10) ((not n) 10) (t n))))
+    (eli-use-larger-font (- n))))
+
+(defun eli-flip-antialias ()
+  (interactive)
+  (set-frame-font
+   (format ":antialias=%S"
+           (if (setq current-antialias
+                     (if current-prefix-arg
+                       (<= 0 (prefix-numeric-value current-prefix-arg))
+                       (not current-antialias)))
+             1 0))))
 
 ;;; win-init.el ends here

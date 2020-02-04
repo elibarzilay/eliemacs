@@ -1,6 +1,6 @@
 ;;; calculator.el --- a calculator for Emacs  -*- lexical-binding: t -*-
 
-;; Copyright (C) 1998, 2000-2015 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 2000-2019 Free Software Foundation, Inc.
 
 ;; Author: Eli Barzilay <eli@barzilay.org>
 ;; Keywords: tools, convenience
@@ -18,7 +18,7 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+;; along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;;=====================================================================
 ;;; Commentary:
@@ -162,7 +162,7 @@ floats, otherwise the Emacs reader will fail on them."
   :type  'boolean
   :group 'calculator)
 (make-obsolete-variable 'calculator-paste-decimals
-                        "it is no longer used." nil)
+                        "it is no longer used." "26.1")
 
 (defcustom calculator-copy-displayer nil
   "If non-nil, this is any value that can be used for
@@ -626,7 +626,7 @@ Here are the editing keys:
 
 These operators are pre-defined:
 * `+' `-' `*' `/' the common binary operators
-* `\\' `%'         integer division and reminder
+* `\\' `%'         integer division and remainder
 * `_' `;'         postfix unary negation and reciprocal
 * `^' `L'         binary operators for x^y and log(x) in base y
 * `Q' `!'         unary square root and factorial

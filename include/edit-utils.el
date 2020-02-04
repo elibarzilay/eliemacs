@@ -483,6 +483,60 @@ call (on consecutive calls)."
     (eli-insert-pair arg)))
 
 ;;-----------------------------------------------------------------------------
+;; A much simpler align function
+
+(defun align-fields (beg end sep &optional sep-rx)
+  "A simple field alignment function."
+  (interactive (list (region-beginning) (region-end)
+                     (read-string "Separator: " "|")))
+  (unless sep-rx (setq sep-rx (regexp-quote sep)))
+  (save-excursion
+    (goto-char beg) (forward-line 0) (setq beg (point))
+    (goto-char end) (unless (bolp) (forward-line 1)) (setq end (1- (point))))
+  (let* ((rows (split-string (buffer-substring-no-properties beg end) "\n"))
+         (rows (mapcar (lambda (row)
+                         (and (not (equal "" row)) (split-string row sep)))
+                       rows))
+         (N    (apply #'max (mapcar #'length rows)))
+         (cols (let ((rows rows) (n (1- N)) (r '()))
+                 (while (>= n 0)
+                   (push (mapcar (lambda (line) (nth n line)) rows) r)
+                   (setq n (1- n)))
+                 r))
+         (alignments
+          (mapcar (lambda (fields)
+                    (let ((l nil) (r nil))
+                      (dolist (f fields)
+                        (when (and f (string-match-p "[^ ]" f))
+                          (when (string-match-p "^ " f) (setq l t))
+                          (when (string-match-p " $" f) (setq r t))))
+                      (if (or (equal l r) r) 'l 'r)))
+                  cols))
+         (lens (mapcar
+                (lambda (col)
+                  (apply #'max
+                         (mapcar (lambda (f)
+                                   (length (and f (replace-regexp-in-string
+                                                   "^ +\\| +$" "" f))))
+                                 col)))
+                cols)))
+    (goto-char beg)
+    (delete-region beg end)
+    (dolist (row rows)
+      (let ((r* row) (lens lens) (align alignments) (field nil) (pad nil))
+        (while r*
+          (unless (eq r* row) (insert sep))
+          (setq field (replace-regexp-in-string "^ +\\| +$" "" (car r*)))
+          (setq pad (- (car lens) (length field)))
+          (setq pad (and (> pad 0) (make-string pad ?\ )))
+          ;; (message-sit -1 "pad = %S" pad)
+          (when (and pad (eq (car align) 'r)) (insert pad))
+          (insert field)
+          (when (and pad (eq (car align) 'l) (cdr r*)) (insert pad))
+          (setq r* (cdr r*) lens (cdr lens) align (cdr align))))
+      (insert "\n"))))
+
+;;-----------------------------------------------------------------------------
 ;; A useful counter thing
 
 (defvar counter-value 1 "*Counter value for the counter commands.")
@@ -644,23 +698,6 @@ the last indentation level."
    (if isearch-case-fold-search "case+char insensitive" "case+char sensitive"))
   (setq isearch-success t isearch-adjusted t)
   (isearch-update))
-
-;;-----------------------------------------------------------------------------
-;; Change the default font size
-
-(defun eli-use-larger-font (n)
-  (interactive "P")
-  (let* ((n (cond ((eq n '-) -10) ((not n) 10) (t n)))
-         (size1 (face-attribute 'default :height))
-         (size2 (+ size1 n)))
-    (set-face-attribute 'default nil :height size2)
-    (message "Font size changed: %S --[%s%S]--> %S"
-             size1 (if (> n 0) "+" "") n size2)))
-
-(defun eli-use-smaller-font (n)
-  (interactive "P")
-  (let* ((n (cond ((eq n '-) -10) ((not n) 10) (t n))))
-    (eli-use-larger-font (- n))))
 
 ;;-----------------------------------------------------------------------------
 ;; show tabs and extra spaces for files

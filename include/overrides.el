@@ -121,6 +121,8 @@ Do not call this in the scope of `with-help-window'."
 ;;-----------------------------------------------------------------------------
 ;; Override from "userlock.el": make a changed file automatically reload
 
+(defvar-local eli-buffer-reverted 0)
+
 (when eli-auto-revert-on-change
 
 (defvar inside-ask-user-about-supersession-threat nil)
@@ -156,12 +158,14 @@ THIS IS A MODIFIED VERSION THAT AUTOMATICALLY RELOADS THE FILE."
         (set-window-start win (min wstart (point-max)))
         (goto-char (min opoint (point-max)))
         (when has-undo
-          (setq buffer-undo-list
-                (cons (cons (point-min) (point-max))
-                      (cons (cons bufstr (point-min))
-                            (cons opoint saved-undo))))))
+          (push opoint saved-undo)                         ; cursor position
+          (push `(,bufstr . ,(- (point-min))) saved-undo)  ; buffer deleted
+          (push `(,(point-min) . ,(point-max)) saved-undo) ; new text inserted
+          (setq buffer-undo-list saved-undo)))
       (undo-boundary)
-      (error "%s was modifed on disk, reloaded" (file-name-nondirectory fn)))))
+      (setq eli-buffer-reverted (1+ eli-buffer-reverted))
+      (signal 'file-supersession
+              (list "File reverted" (file-name-nondirectory fn))))))
 
 ))
 
@@ -471,23 +475,25 @@ If N is negative, search forwards for the -Nth following match."
 
 (define-minor-mode delete-selection-mode
   "Toggle Delete Selection mode.
-With a prefix argument ARG, enable Delete Selection mode if ARG
-is positive, and disable it otherwise.  If called from Lisp,
-enable the mode if ARG is omitted or nil.
+Interactively, with a prefix argument, enable
+Delete Selection mode if the prefix argument is positive,
+and disable it otherwise.  If called from Lisp, toggle
+the mode if ARG is `toggle', disable the mode if ARG is
+a non-positive integer, and enable the mode otherwise
+\(including if ARG is omitted or nil or a positive integer).
 
 When Delete Selection mode is enabled, typed text replaces the selection
 if the selection is active.  Otherwise, typed text is just inserted at
-point regardless of any selection.  Also, commands that normally delete
-just one character will delete the entire selection instead.
+point regardless of any selection.
 
 See `delete-selection-helper' and `delete-selection-pre-hook' for
 information on adapting behavior of commands in Delete Selection mode."
   :global t :group 'editing-basics
   (if (not delete-selection-mode)
       (progn (remove-hook 'pre-command-hook 'delete-selection-pre-hook)
-             (remove-hook 'post-command-hook 'delete-selection-post-hook))
+             (remove-hook 'post-command-hook 'delete-selection-post-hook)) ;ELI
     (progn (add-hook 'pre-command-hook 'delete-selection-pre-hook)
-           (add-hook 'post-command-hook 'delete-selection-post-hook))))
+           (add-hook 'post-command-hook 'delete-selection-post-hook))))    ;ELI
 
 (defun delete-selection-pre-hook ()
   "Function run before commands that delete selections are executed.
@@ -497,11 +503,20 @@ have this property won't delete the selection.
 See `delete-selection-helper'."
   (when (and delete-selection-mode (use-region-p)
 	     (not buffer-read-only))
-    (setq delsel-undo-to-tweak buffer-undo-list)
-    (delete-selection-helper (and (symbolp this-command)
-                                  (get this-command 'delete-selection)))
-    (when (eq delsel-undo-to-tweak buffer-undo-list)
-      (setq delsel-undo-to-tweak t))))
+    (setq delsel-undo-to-tweak buffer-undo-list)     ;ELI
+    (let ((old-buffer-reverted eli-buffer-reverted)) ;ELI
+      (delete-selection-helper (and (symbolp this-command)
+                                    (get this-command 'delete-selection)))
+      ;;ELI:
+      (unless (equal old-buffer-reverted eli-buffer-reverted)
+        (setq delsel-undo-to-tweak t)
+        (setq this-command 'delete-selection-command-after-revert))
+      (when (eq delsel-undo-to-tweak buffer-undo-list)
+        (setq delsel-undo-to-tweak t)))))
+
+(defun delete-selection-command-after-revert (&rest _)
+  (interactive)
+  (message "Buffer reverted, edit canceled"))
 
 (defun delete-selection-post-hook ()
   "Function run after commands to make `delete-selection' deletions not

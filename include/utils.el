@@ -47,8 +47,11 @@ the message.  If it is negative, sit for that time and then hide the message."
 
 (defun eli-get-key (prompt &optional not-this-command)
   "Like `read-key-sequence-vector', but arranges for the cursor to be in the
-echo area, does the usual thing for C-g, and possibly returns nil if you use the
-same key as for `this-command'."
+echo area, does the usual thing for C-g, and possibly returns nil if you use
+the same key as for `this-command'.
+
+If `not-this-command' is non-nil, return nil when the key read is the one used
+to invoke the current command."
   (let* ((cursor-in-echo-area t)
          (key (read-key-sequence-vector prompt nil t))
          (bind (key-binding key)))
@@ -73,7 +76,7 @@ The KEYS/FUNCS-OR-MAPS arguments are a list of:
       (setq x (car keys/funcs-or-maps)
             keys/funcs-or-maps (cdr keys/funcs-or-maps))
       (cond
-        ((null x) nil) ; this allow nils to appear (good for conditionals)
+        ((null x) nil) ; allow nil values (for conditional bindings)
         ((keymapp x) (setq keymap x))
         ((symbolp x) (setq keymap (cond ((eq x 'global) (current-global-map))
                                         ((eq x 'local) (current-local-map))
