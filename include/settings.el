@@ -715,7 +715,7 @@
  mouse-autoselect-window nil
  ;; scalable-fonts-allowed t ; '("") allows all?  I don't see how to use this.
  x-stretch-cursor t
- text-scale-mode-step 1.2
+ text-scale-mode-step 1.25
  auto-hscroll-mode t ; not a custom
  ;; >> environment/installation [uninteresting]
  ;; >> environment/keyboard

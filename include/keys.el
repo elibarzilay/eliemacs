@@ -296,6 +296,10 @@
   '("M-o M-o"         set-region-face)
   ;; '("M-/"          complete) ; use dabbrev
 
+  ;; Controll + Mousewheel to change font size
+  '("<C-mouse-4>"     eli-text-scale-bigger)
+  '("<C-mouse-5>"     eli-text-scale-smaller)
+
   ;; XEmacs-like mouse bindings (clear menu bindings, use down for menus)
   'global
   '("<S-down-mouse-1>" nil)

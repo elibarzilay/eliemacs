@@ -784,4 +784,19 @@ full page scrolling."
              (setq eli-View-scroll-page-lines (and (integerp lines) lines)))
            (View-scroll-page-backward eli-View-scroll-page-lines))))
 
+;;-----------------------------------------------------------------------------
+;; Smaller text size adjustments (for use with the mouse wheel)
+
+(eval-when-compile (require 'face-remap))
+(defun eli-text-scale-bigger (steps)
+  (interactive "p")
+  (text-scale-increase (* steps 0.5))
+  (let ((s (format (if (>= text-scale-mode-amount 0) "+%.1f" "%.1f")
+                   text-scale-mode-amount)))
+    (setq text-scale-mode-lighter
+          (if (eq ?0 (aref s (1- (length s)))) (substring s 0 -2) s))))
+(defun eli-text-scale-smaller (steps)
+  (interactive "p")
+  (eli-text-scale-bigger (- steps)))
+
 ;;; edit-utils.el ends here
