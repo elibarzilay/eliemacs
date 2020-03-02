@@ -172,11 +172,80 @@ THIS IS A MODIFIED VERSION THAT AUTOMATICALLY RELOADS THE FILE."
 )
 
 ;;-----------------------------------------------------------------------------
+;; Override from "files.el": expand ".../**/..." to all dirs
+
+(eval-after-load "files" '(progn
+
+(defun eli-join-paths (p1 p2)
+  (if (file-name-absolute-p p2) p2
+      (concat (file-name-as-directory p1) p2)))
+
+(defun directory-dirtree (directory &optional full)
+  (let* ((loop #'(lambda (name)
+                   (and (not (string-match "\\`\\.\\.?\\'"
+                                           (file-name-nondirectory name)))
+                        (let ((name (eli-join-paths directory name)))
+                          (and (file-accessible-directory-p name)
+                               (directory-dirtree name full))))))
+         (subs (mapcar loop (directory-files directory full))))
+    (cons directory (apply #'nconc (delq nil subs)))))
+
+(defun file-expand-wildcards (pattern &optional full)
+  "Expand wildcard pattern PATTERN.
+This returns a list of file names which match the pattern.
+Files are sorted in `string<' order.
+
+If PATTERN is written as an absolute file name,
+the values are absolute also.
+
+If PATTERN is written as a relative file name, it is interpreted
+relative to the current default directory, `default-directory'.
+The file names returned are normally also relative to the current
+default directory.  However, if FULL is non-nil, they are absolute."
+  (save-match-data
+    (let* ((nondir (file-name-nondirectory pattern))
+	   (dirpart (file-name-directory pattern))
+	   ;; A list of all dirs that DIRPART specifies.
+	   ;; This can be more than one dir
+	   ;; if DIRPART contains wildcards.
+	   (dirs (if (and dirpart
+			  (string-match "[[*?]" ;(file-local-name dirpart)
+					(or (file-remote-p dirpart 'localname)
+					    dirpart)))
+		     (mapcar 'file-name-as-directory
+			     (file-expand-wildcards (directory-file-name dirpart)))
+		   (list dirpart)))
+	   contents)
+      (dolist (dir dirs)
+	(when (or (null dir)	; Possible if DIRPART is not wild.
+		  (file-accessible-directory-p dir))
+	  (let ((this-dir-contents
+		 ;; Filter out "." and ".."
+		 (delq nil
+		       (mapcar #'(lambda (name)
+				   (unless (string-match "\\`\\.\\.?\\'"
+							 (file-name-nondirectory name))
+				     name))
+			       (if (equal "**" nondir)
+                                 (directory-dirtree (or dir ".") full)
+                                 (directory-files (or dir ".") full
+						  (wildcard-to-regexp nondir)))))))
+	    (setq contents
+		  (nconc
+		   (if (and dir (not full))
+		       (mapcar #'(lambda (name) (eli-join-paths dir name))
+			       this-dir-contents)
+		     this-dir-contents)
+		   contents)))))
+      contents)))
+
+))
+
+;;-----------------------------------------------------------------------------
 ;; Override from "files.el": don't ask about reverting a buffer, just say it
 
 (when eli-auto-revert-on-change
 
-;; do it after loading, so the new definition isn't replaced by the original
 (eval-after-load "files" '(progn
 
 (defun find-file-noselect (filename &optional nowarn rawfile wildcards)
