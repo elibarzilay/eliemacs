@@ -272,7 +272,7 @@ the various files."
 	  (error "%s is a directory" filename))
     (if (and wildcards
 	     find-file-wildcards
-	     (not (string-match "\\`/:" filename))
+	     (not (string-match "\\`/:" filename)) ; (not (file-name-quoted-p filename))
 	     (string-match "[[*?]" filename))
 	(let ((files (condition-case nil
 			 (file-expand-wildcards filename t)

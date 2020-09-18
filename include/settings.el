@@ -238,7 +238,7 @@
  ;; >> files/backup [in "eli-backup.el"]
  ;; >> files/find-file
  find-file-existing-other-name t
- find-file-visit-truename t
+ find-file-visit-truename nil ; see also vc-follow-symlinks
  revert-without-query '() ; I have a better hack anyway
  find-file-run-dired t
  enable-local-variables t ; ask if there are unsafe vars
@@ -569,7 +569,7 @@
  ;; >> programming/tools/soap-client [uninteresting]
  ;; >> programming/tools/srecode [uninteresting]
  ;; >> programming/tools/vc
- vc-follow-symlinks 'ask ; shouldn't matter with `find-file-visit-truename'
+ vc-follow-symlinks nil ; related to `find-file-visit-truename'
  vc-display-status t
  vc-suppress-confirm nil
  ;; >> programming/tools/vc/vc-git
