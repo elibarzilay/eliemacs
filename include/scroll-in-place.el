@@ -77,10 +77,6 @@
 ;;;;   has to stray from its desired window position.  This straying is undone
 ;;;;   when (and if) the scrolling action is reversed.
 
-;;; Requirements:
-
-(eval-when-compile (require 'cl))
-
 ;;; Code:
 
 (defvar SIP-last-scroll-arg nil

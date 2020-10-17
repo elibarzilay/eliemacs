@@ -86,7 +86,41 @@
       '("<next>"   cua-resize-rectangle-page-down)
       '("DEL"      cua-delete-char-rectangle)
       )))
-(define-keys cua-global-keymap
+(define-keys
+  cua-global-keymap
   '("<S-return>" eli-cua-set-rectangle-mark))
+
+;; make M-mouse-1 activate cua-rect (load it when needed)
+(defun eli-activate-cua-rect (e)
+  "activate cua-rect"
+  (interactive "e")
+  (require 'cua-rect)
+  (cua-mouse-set-rectangle-mark e))
+(define-keys 'global
+  '("<M-mouse-1>"      nil)
+  '("<M-drag-mouse-1>" nil)
+  '("<M-down-mouse-1>" eli-activate-cua-rect))
+
+;; plain mouse-1 cancels an active rect and goes to the point
+(defun eli-mouse-cua-cancel (e)
+  "cancel cua-rect and set point"
+  (interactive "e")
+  (cua-cancel)
+  (mouse-set-point e))
+
+(eval-after-load 'cua-rect
+  (lambda ()
+    (cua--init-rectangles)
+    (define-keys
+      'global
+      '("<M-mouse-1>"      nil)
+      cua-global-keymap
+      ;; '("<M-mouse-1>"      nil)
+      '("<M-down-mouse-1>" cua-mouse-set-rectangle-mark)
+      '("<M-drag-mouse-1>" cua-mouse-resize-rectangle)
+      cua--rectangle-keymap
+      '("<M-down-mouse-1>" cua-mouse-resize-rectangle)
+      '("<mouse-1>"        eli-mouse-cua-cancel)
+      )))
 
 ;;; eli-cua.el ends here

@@ -238,7 +238,9 @@ that is shown in some other window."
                           (not (eq (aref (buffer-name buf) 0) ?\s))
                           (or (and (consp buf*)
                                    current-prefix-arg ; no arg: no visible bufs
-                                   switch-to-visible-buffer)
+                                   (if (boundp 'switch-to-visible-buffer)
+                                     switch-to-visible-buffer ; old
+                                     (not switch-to-prev-buffer-skip)))
                               (null (get-buffer-window buf))))))
           (when good (if (zerop n) (setq found buf*) (setq n (1- n))))
           (setq buffers (cdr buffers))))
@@ -703,7 +705,7 @@ the last indentation level."
 ;; show tabs and extra spaces for files
 
 ;; this one is better:
-(add-hook 'find-file-hooks 'whitespace-mode)
+(add-hook 'find-file-hook 'whitespace-mode)
 (eval-after-load "whitespace"
   ;; no indicator for this
   '(setcar (cdr (assq 'whitespace-mode minor-mode-alist)) nil))
@@ -718,7 +720,7 @@ the last indentation level."
 ;;                  (set (make-variable-buffer-local var) t))))))
 ;;     (funcall f 'show-trailing-whitespace 'trailing-whitespaces)
 ;;     (funcall f 'x-stretch-cursor         'cursor-stretch)))
-;; (add-hook 'find-file-hooks 'eli-turn-on-indicators)
+;; (add-hook 'find-file-hook 'eli-turn-on-indicators)
 
 ;;-----------------------------------------------------------------------------
 ;; A variable & hook function to hide the local-variable section.
@@ -745,7 +747,7 @@ file when you want this section to be hidden.")
              (1- (point)))))
       (narrow-to-region (point-min) locals-start))))
 
-(add-hook 'find-file-hooks 'hide-local-variable-section)
+(add-hook 'find-file-hook 'hide-local-variable-section)
 (put 'hide-local-variable-section 'safe-local-variable 'booleanp)
 
 ;;-----------------------------------------------------------------------------

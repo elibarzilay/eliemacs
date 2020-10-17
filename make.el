@@ -8,5 +8,8 @@
 (require 'view)
 (require 'bs)
 (require 'server)
+(require 'cua-base)
+(require 'cua-rect)
 
+(setq byte-compile-cond-use-jump-table nil)
 (byte-compile-file "~/EliEmacs/eliemacs.el")

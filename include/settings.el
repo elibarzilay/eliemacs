@@ -33,7 +33,7 @@
  x-select-enable-clipboard-manager t
  ;; >> editing/indent
  standard-indent 2
- tab-always-indent t ; should try 'complete
+ tab-always-indent 'complete
  indent-tabs-mode nil
  ;; >> editing/paragraphs
  paragraph-ignore-fill-prefix t
@@ -133,6 +133,10 @@
  make-pointer-invisible t
  ;; double-click-time 500
  ;; double-click-fuzz 3
+ ;; mouse-drag-and-drop-region t ; maybe enable? (>=26 only) => leaves region active
+ ;; mouse-drag-and-drop-region-cut-when-buffers-differ nil
+ ;; mouse-drag-and-drop-region-show-tooltip 256
+ ;; mouse-drag-and-drop-region-show-cursor t
  ;; >> editing/mouse/tooltip
  tooltip-mode t ; should really be done via a call
  tooltip-delay 0.8
@@ -739,7 +743,6 @@
  ;; >> environment/windows
  window-min-height 2
  window-min-width 4
- switch-to-visible-buffer t ; also affects `eli-next-buffer-acyclic' with arg
  split-window-keep-point t
  pop-up-frames nil
  display-buffer-reuse-frames nil
@@ -801,6 +804,14 @@
  gnutls-min-prime-bits nil    ; mainly avoid a warning, also default = better(?)
  )
 
+(if (string< emacs-version "27")
+  (setq-default ; old
+   switch-to-visible-buffer t ; affects `eli-next-buffer-acyclic' with arg
+   )
+  (setq-default ; new
+   switch-to-prev-buffer-skip nil ; affects `eli-next-buffer-acyclic' with arg
+   ))
+
 ;; Racket files
 (add-to-list 'auto-mode-alist '("\\.rkt.?$" . scheme-mode))
 
@@ -837,7 +848,7 @@
 ;; do it this way to avoid auto-loading cc-mode
 (eval-after-load "cc-mode" '(c-add-style "java" '((c-basic-offset . 2))))
 
-(unless mouse-wheel-mode (mwheel-install)) ; should be on
+(unless mouse-wheel-mode (mouse-wheel-mode 1)) ; should be on
 
 (when (eq system-type 'windows-nt)
   (setq-default

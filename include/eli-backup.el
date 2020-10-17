@@ -49,7 +49,7 @@ buffer-local setting.  See also `eli-max-backup-size'."
                        (if (and no-backup no-auto) " and ")
                        (if no-auto "no autosaving" "")
                        " for this file.")))))
-(add-hook 'find-file-hooks 'eli-decide-if-backup-inhibited)
+(add-hook 'find-file-hook 'eli-decide-if-backup-inhibited)
 
 ;; Deal with autosave files too
 (setq delete-auto-save-files t)

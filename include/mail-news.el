@@ -31,7 +31,7 @@
 
 ;; Copy values from mail-* variables.
 (setq message-yank-prefix    mail-yank-prefix
-      message-from-style     mail-from-style
+      ;; message-from-style     mail-from-style
       message-signature      mail-signature
       message-signature-file mail-signature-file)
 

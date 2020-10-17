@@ -21,6 +21,8 @@
       (when (funcall pred x) (throw 'done x)))
     default))
 
+(defalias 'list* 'cl-list*)
+
 ;; Replace strings & regexps the quick way
 (defun eli-replace (from to)
   "Replace FROM to TO in the current buffer (for use in elisp)."

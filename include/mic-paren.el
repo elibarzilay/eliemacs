@@ -334,7 +334,7 @@
 (defvar mic-paren-version "3.13"
   "Version of mic-paren.")
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 
 ;;; ======================================================================
 ;; Compatibility stuff
@@ -1151,7 +1151,7 @@ This is the main function of mic-paren."
 
          (sexp-mode-p
           ()
-          (case paren-sexp-mode
+          (cl-case paren-sexp-mode
             (match (not mismatch))
             (mismatch mismatch)
             ((nil t) paren-sexp-mode)))

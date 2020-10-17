@@ -93,14 +93,14 @@ is not used.")
       (let ((p conf) (k nil) (v nil))
         (while p
           (setq k (car p) v (cadr p) p (cddr p))
-          (case k
-            ((size:) (setq w (car v) h (cadr v)))
-            ((w:)    (setq w v))
-            ((h:)    (setq h v))
-            ((pos:)  (setq x (car v) y (cadr v)))
-            ((x:)    (setq x v))
-            ((y:)    (setq y v))
-            ((fn:)   (setq fn v)))))
+          (pcase k
+            ('size: (setq w (car v) h (cadr v)))
+            ('w:    (setq w v))
+            ('h:    (setq h v))
+            ('pos:  (setq x (car v) y (cadr v)))
+            ('x:    (setq x v))
+            ('y:    (setq y v))
+            ('fn:   (setq fn v)))))
       ;; redisplay after each setting to avoid oddities
       (when fn
         (setq current-antialias (not (string-match-p "antialias=0" fn)))
