@@ -262,7 +262,7 @@
  list-directory-verbose-switches "-laFh"
  ;; directory-free-space-program "df"
  directory-free-space-args "-h"
- dired-listing-switches "-laFh --dired --time-style=iso"
+ dired-listing-switches "-laFhv --dired --time-style=iso"
  dired-subdir-switches nil
  ;; dired-chown-program "chown"
  ;; dired-use-ls-dired t
@@ -287,7 +287,10 @@
  ;; no link count, username, group (mostly useless, but very long)
  ;; ("ls-lisp" is used on windows to do ls by default)
  ls-lisp-verbosity '()
- ls-lisp-use-insert-directory-program nil ; to use ls-lisp (default on w32)
+ ls-lisp-use-insert-directory-program t ; avoid ls-lisp
+ ;;   (the default on w32, but it fails with "--time-style" in the
+ ;;   switches just because it doesn't ignore the "--xxx" so sees all
+ ;;   characters as flags)
  ls-lisp-support-shell-wildcards t
  ls-lisp-format-time-list '("%m-%d %H:%M" "%Y-%m-%d")
  ls-lisp-use-localized-time-format nil
