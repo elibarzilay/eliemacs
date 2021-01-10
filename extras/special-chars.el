@@ -136,6 +136,11 @@
     ("all"    #x2200)
     ("sqrt"   #x221A)
     ("bot"    #x22A5)
+    ;; useful things
+    ("o"      #x2218) ; composition
+    ("."      #x00B7) ; centered dot
+    ("^"      #x2229) ; intersection
+    ("u"      #x222A) ; union
     ;; additional subscripts and superscripts etc
     ("^0" #x2070) ("sup0" #x2070) ("_0" #x2080) ("sub0" #x2080)
     ("^1" #x00B9) ("sup1" #x00B9) ("_1" #x2081) ("sub1" #x2081)
