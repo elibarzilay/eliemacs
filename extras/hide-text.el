@@ -73,7 +73,8 @@
 or show a previously hidden text if we're next to one."
   (interactive)
   (let ((new '(hide-text . t)))
-    (unless (member new buffer-invisibility-spec)
+    (unless (and (listp buffer-invisibility-spec)
+                 (member new buffer-invisibility-spec))
       (add-to-invisibility-spec new)))
   (let ((o (hide-text-find-block-or-overlay)))
     (if (overlayp o) (delete-overlay o)

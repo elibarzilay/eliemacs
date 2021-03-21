@@ -80,6 +80,9 @@
   '([S-tab] nil) '([S-iso-lefttab] [S-tab]) '([iso-lefttab] [S-tab])
   '([C-S-iso-lefttab] [C-S-tab]) '([C-iso-lefttab] [C-S-tab])
   ;; '([S-backtab] [S-tab]) --> no --> need to do this on all new frames
+  x-alternatives-map ; used in new terminals
+  '([S-tab] nil) '([S-iso-lefttab] [S-tab]) '([iso-lefttab] [S-tab])
+  '([C-S-iso-lefttab] [C-S-tab]) '([C-iso-lefttab] [C-S-tab])
   'global
   ;; F1 - file/buffer operations
   '("<f1>"            find-file)
@@ -92,7 +95,7 @@
   '("<f2>"            save-buffer)
   '("<C-f2>"          save-some-buffers)
   '("<S-f2>"          eli-write-or-move-file)
-  '("<C-S-f2>"        save-buffers-kill-emacs)
+  '("<C-S-f2>"        save-buffers-kill-terminal)
   ;; F3 - inserting stuff
   '("<f3>"            insert-file)
   '("<C-f3>"          insert-buffer)

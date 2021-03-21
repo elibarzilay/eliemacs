@@ -122,7 +122,7 @@ is not used.")
       after-make-frame-functions)
 
 ;; the font might not be available right now, so use a hook
-(ignore-errors (win-init-apply-conf))
+;; (ignore-errors (win-init-apply-conf))
 (add-hook 'emacs-startup-hook 'win-init-apply-conf)
 
 ;;-----------------------------------------------------------------------------

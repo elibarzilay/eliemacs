@@ -32,6 +32,7 @@ Attributes can also be in these forms:
 * `big[N]', `small[N]' for a multiplier or divider of N0%, defaults to 25%
 * `scale[N]' for a scale of N%
 * `height[N]' for a fixed height of N
+* `ext(end)` to set the `:extend` attribute (showing colors beyond an EOL)
 
 An optional argument FACE-NAME will make it be defined as the result face, and
 force the face to be modified if it exists (good for setting properties of
@@ -52,24 +53,30 @@ existing faces)."
 
 (defun simple-set-face-attribute (face attr)
   (let* ((a (intern attr))
-         (as (cond ((eq a 'normal)
-                    (list :width a :weight a :slant a))
-                   ((memq a '(ultra-condensed extra-condensed condensed
-                              semi-condensed semi-expanded expanded
-                              extra-expanded ultra-expanded))
-                    (list :width a))
-                   ((memq a '(ultra-bold extra-bold bold semi-bold
-                              semi-light light extra-light ultra-light))
-                    (list :weight a))
-                   ((memq a '(italic oblique reverse-italic reverse-oblique))
-                    (list :slant a))
-                   ((eq a 'underline)   '(:underline t))
-                   ((eq a 'ununderline) '(:underline nil))
-                   ((eq a 'overline)    '(:overline t))
-                   ((eq a 'unoverline)  '(:overline nil))
-                   ((eq a 'inverse)     '(:inverse t))
-                   ((eq a 'uninverse)   '(:inverse nil))
-                   (t (simple-face-parse-compound-attr attr)))))
+         (as (pcase a
+               ('normal (list :width a :weight a :slant a))
+               ((or 'ultra-condensed 'extra-condensed 'condensed
+                    'semi-condensed 'semi-expanded 'expanded
+                    'extra-expanded 'ultra-expanded)
+                (list :width a))
+               ((or 'ultra-bold 'extra-bold 'bold 'semi-bold
+                    'semi-light 'light 'extra-light 'ultra-light)
+                (list :weight a))
+               ((or 'italic 'oblique 'reverse-italic 'reverse-oblique)
+                (list :slant a))
+               ('underline        '(:underline t))
+               ((or 'ununderline
+                    'nounderline) '(:underline nil))
+               ('overline         '(:overline t))
+               ((or 'unoverline
+                    'nooverline) '(:overline nil))
+               ('inverse         '(:inverse t))
+               ((or 'uninverse
+                    'noinverse)   '(:inverse nil))
+               ((or 'ext 'extend)     '(:extend t))
+               ((or 'unext 'unextend
+                    'noext 'noextend) '(:extend nil))
+               (_ (simple-face-parse-compound-attr attr)))))
     (ignore-errors (apply 'set-face-attribute face nil as))))
 
 (defun simple-face-parse-compound-attr (attr)

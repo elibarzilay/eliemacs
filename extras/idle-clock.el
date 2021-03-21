@@ -43,24 +43,35 @@
   (when (and idle-clock-buffer (buffer-live-p idle-clock-buffer))
     (save-excursion
       (switch-to-buffer idle-clock-buffer)
-      (run-hooks 'idle-clock-end-hook)
-      (let ((p idle-clock-prev-conf))
+      (let ((confs idle-clock-prev-conf))
         (kill-buffer idle-clock-buffer)
         (setq idle-clock-buffer nil)
-        (set-scroll-bar-mode (cadr p))
-        (set-window-configuration (car p))
-        (setq this-command '(lambda () nil))))))
+        (dolist (conf confs)
+          (with-selected-frame (car conf)
+            (set-scroll-bar-mode (caddr conf))
+            (set-window-configuration (cadr conf))))
+        (setq this-command '(lambda () nil)))
+      (run-hooks 'idle-clock-end-hook))))
 
 (defun idle-clock (&optional arg)
   (interactive "p")
   (unless idle-clock-buffer
-    (let ((c (list (current-window-configuration) scroll-bar-mode)))
-      (setq idle-clock-buffer (switch-to-buffer " *clock* "))
-      (setq-local idle-clock-prev-conf c))
+    (setq idle-clock-buffer (switch-to-buffer " *clock* "))
     (setq mode-name "Clock")
     (setq major-mode 'fundamental-mode)
     (setq-local idle-clock-seconds-p (< arg 0))
-    (delete-other-windows)
+    (setq-local
+     idle-clock-prev-conf
+     (mapcar (lambda (f)
+               (with-selected-frame f
+                 (let ((c (list (current-window-configuration)
+                                scroll-bar-mode)))
+                   (switch-to-buffer idle-clock-buffer)
+                   (delete-other-windows)
+                   (cons f c))))
+             (filter (lambda (f)
+                       (not (equal "initial_terminal" (terminal-name f))))
+                     (frame-list))))
     (run-hooks 'idle-clock-start-hook)
     (message nil)
     ;; keep the cursor on, to indicate window focus
@@ -81,13 +92,18 @@
 
 (defun idle-clock-mode (&optional arg)
   (interactive "P")
-  (if idle-clock-timer
-    (progn (cancel-timer idle-clock-timer)
-           (setq idle-clock-timer nil)
-           (message "Clock canceled"))
-    (let* ((mins (if (not arg) 60 (prefix-numeric-value arg)))
-           (arg  (cond ((> mins 0) +1) ((< mins 0) -1) (t 0)))
-           (secs (* 60 (abs mins))))
-      (setq idle-clock-timer
-            (run-with-idle-timer secs t 'idle-clock arg))
-      (message "Clock set to start after %s idle minutes" (abs mins)))))
+  (cond
+    ((eq arg 'disable)
+     (if idle-clock-timer
+       (idle-clock-mode)
+       (message "Clock already canceled")))
+    (idle-clock-timer
+     (cancel-timer idle-clock-timer)
+     (setq idle-clock-timer nil)
+     (message "Clock canceled"))
+    (t (let* ((mins (if (not arg) 60 (prefix-numeric-value arg)))
+              (arg  (cond ((> mins 0) +1) ((< mins 0) -1) (t 0)))
+              (secs (* 60 (abs mins))))
+         (setq idle-clock-timer
+               (run-with-idle-timer secs t 'idle-clock arg))
+         (message "Clock set to start after %s idle minutes" (abs mins))))))
