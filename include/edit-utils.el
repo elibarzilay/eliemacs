@@ -37,7 +37,7 @@
   "*Delete windows when `kill-save-buffer' is used.
 If this is non-nil, then `kill-save-buffer' will also delete the corresponding
 windows.  This is inverted by `kill-save-buffer' when called with a prefix.")
-(defun kill-save-buffer (arg)
+(defun kill-save-buffer (&optional arg)
   "Save the current buffer (if needed) and then kill it.
 Also, delete its windows according to `kill-save-buffer-delete-windows'.
 A prefix argument ARG reverses this behavior."
