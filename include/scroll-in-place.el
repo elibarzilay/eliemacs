@@ -79,6 +79,16 @@
 
 ;;; Code:
 
+(defvar scroll-in-place t
+  "If this is nil, `scroll-in-place' functionality is disabled.
+The main way for controlling `scroll-in-place' is via
+`scroll-preserve-screen-position', but this variable is also used for older
+packages that expect to disable changing scrolling when it is nil.")
+
+(defvar SIP-error-on-edges nil
+  "If this is t, `scroll-in-place' will throw errors when reaching the buffer
+edges.")
+
 (defvar SIP-last-scroll-arg nil
   "The last prefix argument scroll was invoked with.")
 
@@ -155,7 +165,8 @@ POSN is in the format of `SIP-get-scroll-posn'."
                    (not isdown) isdown))
          ;; these hold the referencing cons cell (so it can be modified)
          past-box future-box
-         (curpos (SIP-get-scroll-posn)))
+         (curpos (SIP-get-scroll-posn))
+         error-to-throw)
     (setq SIP-last-bufchars bufchars)
     (unless (and repeated SIP-scroll-posns)
       (setq SIP-scroll-posns (list '() '())))
@@ -178,17 +189,19 @@ POSN is in the format of `SIP-get-scroll-posn'."
          (setcar future-box (cdar future-box))
          (SIP-set-scroll-posn posn)))
       ;; we're at the edge so there is nothing to do
-      ((if isdown (bobp) (eobp)) nil)
+      ((if isdown (bobp) (eobp))
+       (setq error-to-throw (if isdown 'beginning-of-buffer 'end-of-buffer)))
       ;; otherwise try to do the needed scroll if the edge is not visible...
       ((or (pos-visible-in-window-p (if isdown (point-min) (point-max)))
-           (condition-case nil
+           (condition-case err
                (progn (funcall orig arg)
                       (SIP-goto-visual-column)
                       (when (and (not isdown)
                                  (pos-visible-in-window-p (point-max)))
                         (save-excursion (goto-char (point-max)) (recenter -1)))
                  nil)
-             ((beginning-of-buffer end-of-buffer) t)))
+             ((beginning-of-buffer end-of-buffer)
+              (setq error-to-throw (car err)))))
        ;; ...but if the edge is visible (or scrolling failed), move instead
        (if (integerp arg)
          (let (;; set a goal column, and make sure we do a visual movement
@@ -199,13 +212,12 @@ POSN is in the format of `SIP-get-scroll-posn'."
            (with-no-warnings
              (if isdown (previous-line (abs arg)) (next-line (abs arg))))
            (SIP-goto-visual-column))
-         (goto-char (if isdown (point-min) (point-max))))))))
-
-(defvar scroll-in-place t
-  "If this is nil, `scroll-in-place' functionality is disabled.
-The main way for controlling `scroll-in-place' is via
-`scroll-preserve-screen-position', but this variable is also used for older
-packages that expect to disable changing scrolling when it is nil.")
+         (goto-char (if isdown (point-min) (point-max))))))
+    (when error-to-throw
+      (let ((msg (error-message-string (list error-to-throw))))
+        (if SIP-error-on-edges
+          (signal error-to-throw (list msg))
+          (message "%s" msg))))))
 
 (defun SIP-do-scroll (arg isdown group)
   "Scroll, endeavouring to keep the cursor in the same place on the screen.
@@ -222,9 +234,9 @@ cancel each other out."
     (if (and (eq scroll-preserve-screen-position 'in-place)
              scroll-in-place)
       (SIP-do-scroll-internal arg isdown group orig)
-      (progn ;; forcibly break any sequence of scrolling commands
-             (setq SIP-last-bufchars nil)
-             (funcall orig arg)))))
+      (progn ; forcibly break any sequence of scrolling commands
+        (setq SIP-last-bufchars nil)
+        (funcall orig arg)))))
 
 (defmacro defun-SIP-up/down (name-pat inter other docstr)
   "A macro to generate up/down scrolling commands.
@@ -295,5 +307,16 @@ Also:
            (old-doc (documentation std)))
       (fset std (symbol-function replace))
       (put std 'function-documentation old-doc))))
+
+(defun scroll-up/error (&optional arg)
+  (interactive "^p")
+  (let ((SIP-error-on-edges t)) (scroll-up arg)))
+(defun scroll-down/error (&optional arg)
+  (interactive "^p")
+  (let ((SIP-error-on-edges t)) (scroll-down arg)))
+
+;; mwheel scrolling depends on a signal at the edges
+(setq mwheel-scroll-up-function   'scroll-up/error
+      mwheel-scroll-down-function 'scroll-down/error)
 
 (provide 'scroll-in-place)

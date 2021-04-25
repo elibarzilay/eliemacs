@@ -51,13 +51,15 @@
 ;; Make navigation from a dired buffer to another bury the former, so we
 ;; mostly see less dired buffers cluttering the top of the buffer list
 
-(dolist (fun '(dired-find-file dired-up-directory))
+(dolist (fun '(dired-find-file dired-up-directory dired-mouse-find-file))
   (advice-add fun :around
     (lambda (orig &rest args)
       "When navigating between dired buffers, bury original"
       (interactive)
       (let ((buf1 (current-buffer))
-            (ret  (apply orig args))
+            (ret  (if (called-interactively-p 'any)
+                    (call-interactively orig)
+                    (apply orig args)))
             (buf2 (current-buffer)))
         (when (and (eq major-mode 'dired-mode)
                    (buffer-live-p buf1)
