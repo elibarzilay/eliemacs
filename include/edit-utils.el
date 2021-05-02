@@ -51,6 +51,38 @@ A prefix argument ARG reverses this behavior."
       (when del (delete-windows-on buf))
       (kill-buffer buf))))
 
+;; Goto line or line+column
+(defvar eli-goto-line-mode-alist
+  '((scheme-mode     1 0 move-to-column)
+    (js-mode         1 1 forward-char)
+    (typescript-mode 1 1 forward-char)
+    (*               1 0 move-to-column)))
+(defun eli-goto-line (arg &optional buffer)
+  "Like `goto-line` but accepts LINE:COL as input"
+  (interactive
+   (if (and current-prefix-arg (not (consp current-prefix-arg)))
+     (list (prefix-numeric-value current-prefix-arg))
+     (list (read-string "Goto line(:col): "))))
+  (pcase (if (stringp arg)
+           (save-match-data
+             (and (string-match (concat "\\(\\`[a-zA-Z]+\\)?.*?\\([0-9]+\\)"
+                                        "\\(?:[^0-9]+\\([0-9]+\\)\\)?")
+                                arg)
+                  (mapcar (lambda (n) (match-string n arg)) '(1 2 3))))
+           (list nil (number-to-string arg) nil))
+    (`(,mode ,line ,col)
+     (let* ((mode (cdr (or (assq (pcase (and mode (intern (downcase mode)))
+                                   ((or 'r 'rkt 'racket) 'scheme-mode)
+                                   ((or 't 'ts 'typescript) 'typescript-mode)
+                                   (_ major-mode))
+                                 eli-goto-line-mode-alist)
+                           (assq '* eli-goto-line-mode-alist))))
+            (rdelta (car mode)) (cdelta (cadr mode))
+            (line (and line (- (string-to-number line) rdelta)))
+            (col  (and col  (- (string-to-number col)  cdelta))))
+       (with-no-warnings (goto-line (1+ line) buffer))
+       (when col (forward-line 0) (funcall (nth 2 mode) col))))))
+
 ;; Move to another window in either direction
 (defun eli-other-window (arg &optional all-frames)
   "Same as `other-window' but goes back when shifted."
@@ -78,6 +110,19 @@ A prefix argument ARG reverses this behavior."
   (when (and mark-active (not (= beg end)))
     (setq last-command nil)
     (kill-region beg end)))
+
+(defun eli-yank-really-pop (&optional arg)
+  "Like `yank', but pops the value out of the `kill-ring-yank-pointer' top."
+  (interactive "*p")
+  (yank arg)
+  ;; `yank' sets `this-command'
+  (when (eq this-command 'yank)
+    (if (cdr kill-ring-yank-pointer)
+      (progn (setcar kill-ring-yank-pointer (cadr kill-ring-yank-pointer))
+             (setcdr kill-ring-yank-pointer (cddr kill-ring-yank-pointer)))
+      (setcar kill-ring-yank-pointer "")))
+  nil)
+(put 'eli-yank-really-pop 'delete-selection t)
 
 (defun eli-toggle-lines-mode ()
   "Toggle `truncate-lines', `line-move-visual', and `visual-line-mode'.
@@ -109,19 +154,6 @@ With a prefix argument go back to the default."
     (save-excursion (forward-line 0) (sit-for 0)
                     (redraw-frame (selected-frame)))
     (message "Using %s." (cadr (assq next disps)))))
-
-(defun eli-yank-really-pop (&optional arg)
-  "Like `yank', but pops the value out of the `kill-ring-yank-pointer' top."
-  (interactive "*p")
-  (yank arg)
-  ;; `yank' sets `this-command'
-  (when (eq this-command 'yank)
-    (if (cdr kill-ring-yank-pointer)
-      (progn (setcar kill-ring-yank-pointer (cadr kill-ring-yank-pointer))
-             (setcdr kill-ring-yank-pointer (cddr kill-ring-yank-pointer)))
-      (setcar kill-ring-yank-pointer "")))
-  nil)
-(put 'eli-yank-really-pop 'delete-selection t)
 
 ;;-----------------------------------------------------------------------------
 ;; Functions for movement that are similar to the normal ones, except that
@@ -608,8 +640,9 @@ increment with it."
     (let ((p (point)))
       (save-excursion
         (skip-chars-backward "0-9")
-        (setq counter-value (string-to-number (buffer-substring (point) p)))
+        (counter-set (buffer-substring (point) p))
         (setq counter-last-position (point))))
+    (setq counter-inserted t)
     (counter-insert inc t)))
 
 ;;-----------------------------------------------------------------------------

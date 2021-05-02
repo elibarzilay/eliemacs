@@ -5,7 +5,7 @@
 ;;    /*****************************************************************\   ;;
 ;;    ***                                                             ***   ;;
 ;;    ***               Eli's Emacs initialization file               ***   ;;
-                                "[2021-04-25]"
+                                "[2021-05-02]"
 ;;    *** Written by Eli Barzilay: Maze is Life!   <eli@barzilay.org> ***   ;;
 ;;    ***                                                             ***   ;;
 ;;    \*****************************************************************/   ;;
@@ -61,25 +61,29 @@
 (when (file-accessible-directory-p (concat eli-dir "extras"))
   (load (concat eli-dir "extras/extras") t t))
 (load/include "eli-logo")
-(when (equal "initial_terminal" (terminal-name)) (setq fake-initial-key 27))
+(when (daemonp) (setq fake-initial-key 27))
 (load/include "desktop-init")
+
+(defun eli-stuartup ()
+  (cond
+    ((buffer-live-p (get-buffer "*Warnings*"))
+     (pop-to-buffer "*Warnings*"))
+    ((not (input-pending-p))
+     (let* ((eli-msg (concat "---===###>>>   Eli Barzilay: Maze is Life!  "
+                             eli-version "   <<<###===---"))
+            (msgs `(,eli-msg "Use `C-h e' for a quick reference." ,eli-msg)))
+       (while msgs
+         (message (car msgs))
+         (setq msgs (and (sit-for 3 t) (cdr msgs)))))))
+  ;; undo this, since it messes up custom variable saving
+  (put 'inhibit-startup-echo-area-message 'saved-value nil)
+  (message nil))
 
 ;; I used to do it with an idle-timer and not emacs-startup-hook so it's done
 ;; after everything is initialized, but that makes the first key not update the
 ;; display.
-(unless (equal "initial_terminal" (terminal-name))
-  (add-hook 'emacs-startup-hook
-    (lambda ()
-      (unless (input-pending-p)
-        (let* ((eli-msg (concat "---===###>>>   Eli Barzilay: Maze is Life!  "
-                                eli-version "   <<<###===---"))
-               (msgs `(,eli-msg "Use `C-h e' for a quick reference." ,eli-msg)))
-          (while msgs
-            (message (car msgs))
-            (setq msgs (and (sit-for 3 t) (cdr msgs))))))
-      ;; undo this, since it messes up custom variable saving
-      (put 'inhibit-startup-echo-area-message 'saved-value nil)
-      (message nil))
-    t))
+(if (daemonp)
+  (add-hook 'server-after-make-frame-hook 'eli-stuartup t) ; maybe only once?
+  (add-hook 'emacs-startup-hook 'eli-stuartup t))
 
 ;;; eliemacs.el ends here

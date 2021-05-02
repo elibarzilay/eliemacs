@@ -148,7 +148,7 @@
   ;; '("<C-S-f11>"    ...)
   ;; F12 - window misc
   '("<f12>"           eli-delete-other-windows-or-restore)
-  '("<C-f12>"         goto-line)
+  '("<C-f12>"         eli-goto-line)
   '("<S-f12>"         goto-char)
   '("<C-S-f12>"       eli-toggle-lines-mode)
   ;; some WM-like bindings
