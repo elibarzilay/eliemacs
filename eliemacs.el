@@ -5,7 +5,7 @@
 ;;    /*****************************************************************\   ;;
 ;;    ***                                                             ***   ;;
 ;;    ***               Eli's Emacs initialization file               ***   ;;
-                                "[2021-05-02]"
+                                "[2021-05-12]"
 ;;    *** Written by Eli Barzilay: Maze is Life!   <eli@barzilay.org> ***   ;;
 ;;    ***                                                             ***   ;;
 ;;    \*****************************************************************/   ;;
@@ -61,10 +61,9 @@
 (when (file-accessible-directory-p (concat eli-dir "extras"))
   (load (concat eli-dir "extras/extras") t t))
 (load/include "eli-logo")
-(when (daemonp) (setq fake-initial-key 27))
 (load/include "desktop-init")
 
-(defun eli-stuartup ()
+(defun eli-startup ()
   (cond
     ((buffer-live-p (get-buffer "*Warnings*"))
      (pop-to-buffer "*Warnings*"))
@@ -77,13 +76,15 @@
          (setq msgs (and (sit-for 3 t) (cdr msgs)))))))
   ;; undo this, since it messes up custom variable saving
   (put 'inhibit-startup-echo-area-message 'saved-value nil)
-  (message nil))
+  (message nil)
+  (remove-hook 'server-after-make-frame-hook 'eli-startup)
+  (remove-hook 'emacs-startup-hook 'eli-startup))
 
 ;; I used to do it with an idle-timer and not emacs-startup-hook so it's done
 ;; after everything is initialized, but that makes the first key not update the
 ;; display.
 (if (daemonp)
-  (add-hook 'server-after-make-frame-hook 'eli-stuartup t) ; maybe only once?
-  (add-hook 'emacs-startup-hook 'eli-stuartup t))
+  (add-hook 'server-after-make-frame-hook 'eli-startup t) ; maybe only once?
+  (add-hook 'emacs-startup-hook 'eli-startup t))
 
 ;;; eliemacs.el ends here

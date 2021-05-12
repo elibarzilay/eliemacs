@@ -2,18 +2,16 @@
 ;;-----------------------------------------------------------------------------
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
-(defun eli-use-desktop (load-buffers)
+(eval-when-compile (require 'desktop))
+
+(defun eli-use-desktop (&optional no-load-buffers no-save-on-exit)
   (require 'desktop)
-  (unless load-buffers ; avoid loading buffers, don't save the desktop
-    (fset 'desktop-create-buffer (lambda (&rest _) nil))
-    (remove-hook 'kill-emacs-hook 'desktop-kill)
-    (setq desktop-auto-save-timeout nil))
   (setq desktop-save 'ask-if-new
         desktop-load-locked-desktop t
         desktop-path '("." "~") ; maybe go back to just "~"?
         desktop-missing-file-warning nil
         desktop-file-name-format 'absolute
-        desktop-restore-frames (and load-buffers t)
+        desktop-restore-frames (not no-load-buffers)
         ;; would be nice to use some lazy loading, but if Emacs exits before
         ;; the lazy loading, then these buffers are lost
         desktop-restore-eager t
@@ -48,31 +46,14 @@
                   ;; the next line is the default
                   "^/[^/:]*:"
                   "\\)\\)"))
-  (desktop-save-mode 1))
-
-;; Decide whether to load the previous desktop or not
-;; (Do that now, not in the startup hook, since there it cannot change
-;; `command-line-args')
-(defvar is-fast-p nil)
-(setq is-fast-p
-      (and (member "--fast" command-line-args)
-           (progn (setq command-line-args (delete "--fast" command-line-args))
-                  t)))
-(defvar fake-initial-key nil
-  "If this is set, it's used as the initial keypress result (and no
-logo-question will appear).")
-(add-hook 'emacs-startup-hook
-  (lambda ()
-    ;; don't use the desktop if we have `--fast' or some other command-line
-    ;; argument
-    (unless (or is-fast-p (cdr command-line-args))
-      (let* ((key (or fake-initial-key
-                      (eli-logo
-                       (concat "Hit any key to continue, escape/right-click:"
-                               " don't load previous desktop."))))
-             (key (if (integerp key) key (event-basic-type key))))
-        (eli-use-desktop (not (memq key '(27 escape mouse-3))))
-        (desktop-read) ; do this because we're running after `after-init-hook'
-        (message nil)))))
+  (when no-load-buffers
+    (fset 'desktop-create-buffer (lambda (&rest _) nil))
+    (setq desktop-restore-frames nil)
+    (setq desktop-buffers-not-to-save-function (lambda (&rest _) nil)))
+  (when no-save-on-exit
+    (remove-hook 'kill-emacs-hook 'desktop-kill)
+    (setq desktop-auto-save-timeout nil))
+  (desktop-save-mode 1)
+  (add-hook 'emacs-startup-hook 'desktop-read))
 
 ;;; desktop-init.el ends here
