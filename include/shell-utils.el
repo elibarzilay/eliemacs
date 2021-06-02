@@ -292,14 +292,23 @@ if the cursor is on one."
              (setq p (previous-single-property-change (point) 'field))
              (when p (goto-char p))))
          (forward-line 0) (point))))))
+(defun eli-comint-clear-previous-lines (&optional all)
+  "Erase buffer lines before point, or the whole buffer with a prefix argument"
+  (interactive "P")
+  (if all
+    (eli-comint-clear-except-command)
+    (let ((inhibit-modification-hooks t))
+      (delete-region
+       (point-min)
+       (save-excursion (forward-line 0) (point))))))
 
-(eval-after-load "comint"
-  '(define-keys comint-mode-map
-     '("M-q"           comint-quoted-send)
-     '("<C-up>"        comint-previous-matching-input-from-input-or-scroll)
-     '("<C-down>"      comint-next-matching-input-from-input-or-scroll)
-     '("<home>"        eli-comint-beginning-of-line)
-     '("<end>"         eli-comint-end-of-line)
-     '("<S-backspace>" eli-comint-clear-except-command)))
+(with-eval-after-load "comint"
+  (define-keys comint-mode-map
+    '("M-q"           comint-quoted-send)
+    '("<C-up>"        comint-previous-matching-input-from-input-or-scroll)
+    '("<C-down>"      comint-next-matching-input-from-input-or-scroll)
+    '("<home>"        eli-comint-beginning-of-line)
+    '("<end>"         eli-comint-end-of-line)
+    '("<S-backspace>" eli-comint-clear-previous-lines)))
 
 ;;; shell-utils.el ends here

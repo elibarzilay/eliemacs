@@ -11,10 +11,11 @@
   "*A function to determine window configurations.
 
 This function is called whenever a new frame is made (and on the initial
-frame), and passed that frame as its single input argument.  It should return
-a plist of (option: value ...) that determine the configuration of this frame.
+frame), and passed that frame as its first argument, and `t' as its second if
+this is for a newly-made frame.  It should return a plist of
+(option: value ...) that determine the configuration of this frame.
 
-The known options are:
+The options are:
 - `size:' the value should be a list of width/height in characters to be used
   for the window (defaults to `eli-size')
 - `w:' and `h:' can be used to set the width and height individually
@@ -77,11 +78,11 @@ is not used.")
 
 (defvar current-antialias nil)
 
-(defun win-init-apply-conf (&rest frame)
+(defun win-init-apply-conf (&optional frame init)
   (interactive) ; make it easy to use manually
-  (let* ((frame (or (car frame) (selected-frame)))
+  (let* ((frame (or frame (selected-frame)))
          (conf  (and (window-system) window-configurations
-                     (funcall window-configurations frame)))
+                     (funcall window-configurations frame init)))
          ;; chosen configuration
          (w (car  eli-size))
          (h (cadr eli-size))
@@ -118,12 +119,12 @@ is not used.")
 (push (lambda (f)
         ;; changing the font doesn't work immediately for some
         ;; reason
-        (run-with-idle-timer 0.2 nil `(lambda () (win-init-apply-conf ,f))))
+        (run-with-idle-timer 0.2 nil (lambda () (win-init-apply-conf f t))))
       after-make-frame-functions)
 
 ;; the font might not be available right now, so use a hook
 ;; (ignore-errors (win-init-apply-conf))
-(add-hook 'emacs-startup-hook 'win-init-apply-conf)
+(add-hook 'emacs-startup-hook (lambda () (win-init-apply-conf nil t)))
 
 ;;-----------------------------------------------------------------------------
 ;; Some font tweaking functions
