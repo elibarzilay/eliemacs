@@ -292,15 +292,20 @@ if the cursor is on one."
              (setq p (previous-single-property-change (point) 'field))
              (when p (goto-char p))))
          (forward-line 0) (point))))))
-(defun eli-comint-clear-previous-lines (&optional all)
-  "Erase buffer lines before point, or the whole buffer with a prefix argument"
+(defun eli-comint-clear-previous-lines (&optional arg)
+  "Erase buffer lines before point.
+
+With a positive prefix argument, leave that many lines before the current.
+
+Any other pprefix argument: clear the whole buffer."
   (interactive "P")
-  (if all
-    (eli-comint-clear-except-command)
-    (let ((inhibit-modification-hooks t))
-      (delete-region
-       (point-min)
-       (save-excursion (forward-line 0) (point))))))
+  (let ((n (or arg 0)))
+    (if n
+      (let ((inhibit-modification-hooks t))
+        (delete-region
+         (point-min)
+         (save-excursion (forward-line (- n)) (point))))
+      (eli-comint-clear-except-command))))
 
 (with-eval-after-load "comint"
   (define-keys comint-mode-map
