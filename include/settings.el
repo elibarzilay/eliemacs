@@ -415,6 +415,7 @@
  ;; >> external/processes/executable [uninteresting]
  ;; >> external/processes/flyspell [uninteresting]
  ;; >> external/processes/grep
+ grep-save-buffers nil
  grep-window-height 10
  grep-scroll-output nil
  grep-highlight-matches 'always

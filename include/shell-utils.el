@@ -267,30 +267,33 @@ must be sent as well)."
       (end-of-visual-line arg)
       (end-of-line arg))))
 
+(defun eli-comint-is-output (p)
+  (memq (get-text-property p 'field) '(output boundary)))
+(defun eli-comint-go-to-beginning-of-input ()
+  (let ((p (point)))
+    (when (and (> p (point-min))
+               (not (eli-comint-is-output p))
+               (not (eli-comint-is-output (1- p))))
+      (setq p (previous-single-property-change (point) 'field))
+      (when p (goto-char p)))))
 (defun eli-comint-clear-except-command ()
   "Erase buffer, leaving the current command-line, and/or copy an old command
 if the cursor is on one."
   (interactive)
-  (let* ((is-output (lambda (p)
-                      (memq (get-text-property p 'field) '(output boundary))))
-         (p (or (get-buffer-process (current-buffer))
+  (let* ((p (or (get-buffer-process (current-buffer))
                 (user-error "Current buffer has no process")))
          (p (and p (process-mark p))))
     (when (and p (< (point) (marker-position p)))
-      (if (and (funcall is-output (point))
-               (or (<= (point) (point-min)) (funcall is-output (1- (point)))))
+      (if (and (eli-comint-is-output (point))
+               (or (<= (point) (point-min))
+                   (eli-comint-is-output (1- (point)))))
         (goto-char (point-max))
         (comint-copy-old-input)))
     (let ((inhibit-modification-hooks t))
       (delete-region
        (point-min)
        (save-excursion
-         (let ((p (point)))
-           (when (and (> p (point-min))
-                      (not (funcall is-output p))
-                      (not (funcall is-output (1- p))))
-             (setq p (previous-single-property-change (point) 'field))
-             (when p (goto-char p))))
+         (eli-comint-go-to-beginning-of-input)
          (forward-line 0) (point))))))
 (defun eli-comint-clear-previous-lines (&optional arg)
   "Erase buffer lines before point.
@@ -304,7 +307,9 @@ Any other pprefix argument: clear the whole buffer."
       (let ((inhibit-modification-hooks t))
         (delete-region
          (point-min)
-         (save-excursion (forward-line (- n)) (point))))
+         (save-excursion
+           (eli-comint-go-to-beginning-of-input)
+           (forward-line (- n)) (point))))
       (eli-comint-clear-except-command))))
 
 (with-eval-after-load "comint"
