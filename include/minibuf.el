@@ -268,7 +268,10 @@
       '("~" eli-minibuffer-electric-key) ; user names
       '("$" eli-minibuffer-electric-key) ; variable at the beginning
       (and (eq system-type 'windows-nt) '(":" eli-minibuffer-electric-colon))
-      '("M-." eli-minibuffer-dir-up))
+      '("M-." eli-minibuffer-dir-up)
+      '("C-?" minibuffer-completion-help) ; instead of "?"
+      '("C-." minibuffer-completion-help)
+      '("?" self-insert-command))
     map))
 
 ;; Make it convenient to navigate between file names using sexp commands.
