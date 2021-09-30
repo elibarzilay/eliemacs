@@ -153,4 +153,28 @@ is not used.")
                        (not current-antialias)))
              1 0))))
 
+;;-----------------------------------------------------------------------------
+;; Font size utility
+
+(defun eli-font-for-width (w &optional font-name)
+  "Find a font that will fill the whole monitor width at W characters, when
+including the fringe and scroll-bar widths.  The given font-name (defaults
+to \"Consolas\") is used with a \"-NN\" suffix to set its size."
+  (let* ((W (nth 3 (assq 'geometry (frame-monitor-attributes))))
+         (W (- W (frame-scroll-bar-width) (frame-fringe-width)))
+         (font-name (or font-name "Consolas"))
+         (wanted (/ W 1.0 w))
+         (lo 1) (hi 100) mid font font-width)
+    (while (< lo hi)
+      (setq mid (/ (+ lo hi) 2))
+      (setq font (format "%s-%s" font-name mid))
+      (setq font-width (let ((f (make-face 'temp)))
+                         (set-face-font f font)
+                         (window-font-width nil f)))
+      (cond ((= mid lo) (setq hi mid))
+            ((< font-width wanted) (setq lo mid))
+            ((> font-width wanted) (setq hi mid))
+            (t (setq lo mid hi mid))))
+    font))
+
 ;;; win-init.el ends here
