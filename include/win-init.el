@@ -23,7 +23,8 @@ The options are:
   `eli-window-pos')
 - `x:' and `y:' can be used to set the x and y position individually
 - `fn:' the value should be a string naming a default font to use (defaults to
-  `eli-font')
+  `eli-font'), or `auto', in which case calculate a font size that makes
+  `w:'-specified characters fit the width (see `eli-font-for-width').
 
 If it is bound to nil (the default) or if `window-system' returns nil, then it
 is not used.")
@@ -104,8 +105,14 @@ is not used.")
             ('fn:   (setq fn v)))))
       ;; redisplay after each setting to avoid oddities
       (when fn
-        (setq current-antialias (not (string-match-p "antialias=0" fn)))
-        (set-frame-font fn nil t)
+        (setq current-antialias
+              (or (not (stringp fn))
+                  (not (string-match-p "antialias=0" fn))))
+        (set-frame-font
+         (if (and (eq fn 'auto) w)
+           (progn (set-frame-parameter frame 'desired-width w)
+                  (eli-font-for-width w))
+           fn))
         (redisplay t))
       (cond ((and w h) (set-frame-size   frame w h) (redisplay t))
             (w         (set-frame-width  frame w)   (redisplay t))

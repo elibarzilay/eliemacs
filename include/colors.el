@@ -233,7 +233,7 @@ will use both overlays and properties (overlays don't stick in copied text)."
 ;; (But one-time highlighting, of course)
 (defun set-regexp-face (regexp face &optional force-overlays)
   "Set the face of all occurrences of REGEXP to FACE.
-FACE can be a a list of pairs of a subexp number and its color: (SUB . COLOR).
+FACE can be a list of pairs of a subexp number and its color: (SUB . COLOR).
 Uses `set-region-face' to set the faces."
   ;; interactive like `add-color-pattern'
   (interactive (list (read-from-minibuffer

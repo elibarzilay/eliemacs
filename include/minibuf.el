@@ -148,6 +148,7 @@
               ([(meta down)]    eli-next-history-contains)
               ;; misc
               ([(control tab)]  other-window) ; don't want file caching
+              ([(control home)] minibuffer-beginning-of-buffer)
               ))
       (keymaps (list minibuffer-local-map
                      minibuffer-local-completion-map

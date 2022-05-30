@@ -95,9 +95,10 @@
       gnus-subscribe-hierarchical-interactive t
       gnus-group-mode-line-format     "Gnus: %%b {%S}")
 (add-hook 'gnus-started-hook
-          '(lambda ()
-             (define-keys gnus-group-mode-map
-               '(save-buffer gnus-group-save-newsrc))))
+          #'(lambda ()
+              (when (boundp 'gnus-group-mode-map)
+                (define-keys gnus-group-mode-map
+                  '(save-buffer gnus-group-save-newsrc)))))
 (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
 (simple-make-face 'yellow-bold-underline 'gnus-header-subject-face)
 (simple-make-face 'green1-bold           'gnus-header-from-face)

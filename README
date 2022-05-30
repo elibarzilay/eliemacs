@@ -8,8 +8,8 @@ finally got to rewrite the whole thing in a more reasonable way, and
 also make it work with XEmacs too, but support for Emacs 19 is gone.
 Then came Emacs 22, and another major overhaul was done.  This time,
 only v22 was supported -- easier to just keep the previous environment
-as-is to be used with older versions.  the current version is now Emacs
-24.5, meaning less things to do still.
+as-is to be used with older versions.  The current version is now well beyond
+Emacs 24, meaning less things to do still.
 
 The version that you use is displayed after Emacs finishes initializing.
 The latest version can be found at
@@ -26,7 +26,7 @@ On a Windows machine, you might use something like:
   (load "c:/EliEmacs/eliemacs")
 
 All questions regarding my environment in specific or Emacs in general
-should go to: Eli Barzilay <eli@barzilay.org>
+should go to: Eli Barzilay <eli@barzilay.org>.
 
 
 Installing:

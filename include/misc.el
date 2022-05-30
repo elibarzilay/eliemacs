@@ -2,9 +2,10 @@
 ;;-----------------------------------------------------------------------------
 ;; Written by Eli Barzilay: Maze is Life!   (eli@barzilay.org)
 
-;; both are already the default, but better be safe
+;; all are already the default, but better be safe
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
 (add-hook 'comint-output-filter-functions 'comint-postoutput-scroll-to-bottom)
+(add-hook 'comint-output-filter-functions 'ansi-color-process-output)
 
 ;; Replace the true home directory name by the HOME environment value, this is
 ;; necessary for automounters that map some name to another
@@ -38,15 +39,22 @@
           ;;  +ethanb
           ;;while skipping
           ;;  +@SOFTWARE
-          ;; Match the username and home dir
-          (if (looking-at (concat "[+-]?\\([^:@\n+]+\\):[^:\n]*:[^:\n]*"
+          ;; Match the username, uid, and home dir
+          (if (looking-at (concat "[+-]?\\([^:@\n+]+\\):[^:\n]*:\\([^:\n]*\\)"
                                   ":[^:\n]*:[^:\n]*:\\([^\n:]+\\):"))
-            (setq r (cons (cons (match-string 1) (match-string 2)) r)))
+            (setq r (cons (list (match-string 1)
+                                (string-to-number (match-string 2))
+                                (match-string 3))
+                          r)))
           (beginning-of-line 2))
         (kill-buffer (current-buffer))
-        ;; remove users that have a "/" homedir, and sort
-        (sort (filter (lambda (x) (not (equal "/" (cdr x)))) r)
-              (lambda (x y) (string-lessp (car x) (car y)))))))
+        ;; remove users that have a bad homedir or special (small uid); sort
+        (let* ((r (filter (lambda (x)
+                            (not (or (member (caddr x) '("/" "/nonexistent"))
+                                     (< (cadr x) 800))))
+                          r))
+               (r (sort r (lambda (x y) (string-lessp (car x) (car y))))))
+          (mapcar (lambda (x) (cons (car x) (caddr x))) r)))))
   "Alist of local user -- homedir mapping.  t = uninitialized.")
 
 (dolist (u-h (sort (append eli-user-homedirs '())
@@ -55,7 +63,7 @@
   ;; avoid masking root out, and no need for ~eli
   (unless (or (equal "/" (cdr u-h)) (equal user-login-name (car u-h)))
     (add-to-list 'directory-abbrev-alist
-                 (cons (concat "^" (cdr u-h) "\\(/\\|$\\)")
+                 (cons (concat "\\`" (cdr u-h) "\\(/\\|\\'\\)")
                        (concat "~" (car u-h) "/")))))
 
 ;; dired stuff

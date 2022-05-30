@@ -54,7 +54,7 @@ Do not call this in the scope of `with-help-window'."
 		     (if (same-window-p (buffer-name standard-output))
 			 ;; Say how to scroll this window.
 			 (substitute-command-keys
-			  "\\[scroll-up] to scroll the help.")
+                          "\\[scroll-up-command] to scroll the help.")
 		       ;; Say how to scroll some other window.
 		       (substitute-command-keys
 			"\\[scroll-other-window] to scroll the help."))))))))
@@ -192,7 +192,7 @@ THIS IS A MODIFIED VERSION THAT AUTOMATICALLY RELOADS THE FILE."
 
 (defun file-expand-wildcards (pattern &optional full)
   "Expand wildcard pattern PATTERN.
-This returns a list of file names which match the pattern.
+This returns a list of file names that match the pattern.
 Files are sorted in `string<' order.
 
 If PATTERN is written as an absolute file name,
@@ -285,7 +285,7 @@ the various files."
 	     (truename (abbreviate-file-name (file-truename filename)))
 	     (attributes (file-attributes truename))
 	     (number (nthcdr 10 attributes))
-	     ;; Find any buffer for a file which has same truename.
+	     ;; Find any buffer for a file that has same truename.
 	     (other (and (not buf) (find-buffer-visiting filename))))
 	;; Let user know if there is a buffer with the same truename.
 	(if other
@@ -300,8 +300,12 @@ the various files."
 		  (setq buf other))))
 	;; Check to see if the file looks uncommonly large.
 	(when (not (or buf nowarn))
-	  (abort-if-file-too-large (nth 7 attributes) "open" filename)
-	  (warn-maybe-out-of-memory (nth 7 attributes)))
+	  (when (eq (abort-if-file-too-large
+                     (file-attribute-size attributes) "open" filename
+                     (not rawfile))
+                    'raw)
+            (setf rawfile t))
+	  (warn-maybe-out-of-memory (file-attribute-size attributes)))
 	(if buf
 	    ;; We are using an existing buffer.
 	    (let (nonexistent)
@@ -326,6 +330,8 @@ the various files."
 			   (message "Reverting file %s...done" filename)))
                         ;;ELI:
                         (t
+                         ;; Emacs has a `query-about-changed-file' option, but
+                         ;; I want a different message, and I want a ding
                          (message "File %s changed on disk!%s"
                                   (file-name-nondirectory filename)
                                   (if (buffer-modified-p buf)
@@ -375,53 +381,52 @@ the various files."
 			    ;; hexl-mode or image-mode.
 			    (memq major-mode '(hexl-mode image-mode)))
 		  (if (buffer-modified-p)
-		      (if (y-or-n-p
-			   (format
-			    (if rawfile
-				"The file %s is already visited normally,
+		      (if (let ((help-form
+				 (format-message
+				  (if rawfile "\
+The file %s is already visited normally,
 and you have edited the buffer.  Now you have asked to visit it literally,
 meaning no coding system handling, format conversion, or local variables.
-Emacs can only visit a file in one way at a time.
-
-Do you want to save the file, and visit it literally instead? "
-				"The file %s is already visited literally,
+Emacs can visit a file in only one way at a time."
+				    "\
+The file %s is already visited literally,
 meaning no coding system handling, format conversion, or local variables.
 You have edited the buffer.  Now you have asked to visit the file normally,
-but Emacs can only visit a file in one way at a time.
-
-Do you want to save the file, and visit it normally instead? ")
-			    (file-name-nondirectory filename)))
+but Emacs can visit a file in only one way at a time.")
+				  (file-name-nondirectory filename))))
+			    (y-or-n-p
+			     (if rawfile "\
+Do you want to save the file, and visit it literally instead? " "\
+Do you want to save the file, and visit it normally instead? ")))
 			  (progn
 			    (save-buffer)
 			    (find-file-noselect-1 buf filename nowarn
 						  rawfile truename number))
 			(if (y-or-n-p
-			     (format
-			      (if rawfile
-				  "\
-Do you want to discard your changes, and visit the file literally now? "
-				"\
-Do you want to discard your changes, and visit the file normally now? ")))
+			     (if rawfile "\
+Do you want to discard your changes, and visit the file literally now? " "\
+Do you want to discard your changes, and visit the file normally now? "))
 			    (find-file-noselect-1 buf filename nowarn
 						  rawfile truename number)
 			  (error (if rawfile "File already visited non-literally"
 				   "File already visited literally"))))
-		    (if (y-or-n-p
-			 (format
-			  (if rawfile
-			      "The file %s is already visited normally.
+		    (if (let ((help-form
+			       (format-message
+				(if rawfile "\
+The file %s is already visited normally.
 You have asked to visit it literally,
 meaning no coding system decoding, format conversion, or local variables.
-But Emacs can only visit a file in one way at a time.
-
-Do you want to revisit the file literally now? "
-			    "The file %s is already visited literally,
+But Emacs can visit a file in only one way at a time."
+				  "\
+The file %s is already visited literally,
 meaning no coding system decoding, format conversion, or local variables.
 You have asked to visit it normally,
-but Emacs can only visit a file in one way at a time.
-
-Do you want to revisit the file normally now? ")
-			  (file-name-nondirectory filename)))
+but Emacs can visit a file in only one way at a time.")
+				(file-name-nondirectory filename))))
+			  (y-or-n-p
+			   (if rawfile "\
+Do you want to revisit the file literally now? " "\
+Do you want to revisit the file normally now? ")))
 			(find-file-noselect-1 buf filename nowarn
 					      rawfile truename number)
 		      (error (if rawfile "File already visited non-literally"
@@ -441,49 +446,36 @@ Do you want to revisit the file normally now? ")
 ;; the point goes out of the screen.
 
 (defun isearch-post-command-hook ()
-  (when isearch-pre-scroll-point
-    (let ((ab-bel (isearch-string-out-of-window isearch-pre-scroll-point)))
-      ;; ELI: add the visibility check (which the above doesn't detect)
-      (if (or ab-bel (not (pos-visible-in-window-p isearch-pre-scroll-point)))
-	  ;; ELI: disable the following, and exit isearch instead
-	  ;; (isearch-back-into-window (eq ab-bel 'above) isearch-pre-scroll-point)
-	  (progn (setq isearch-pre-scroll-point nil)
-                 (isearch-exit))
-	;; ELI: also drag the rest of the function here
-	(progn (goto-char isearch-pre-scroll-point)
-	       (setq isearch-pre-scroll-point nil)
-	       (isearch-update))))))
-
-;;-----------------------------------------------------------------------------
-;; Override from "comint.el": don't leave point where it was, let it
-;; move to the EOL.  (Feature request for such an option submitted.)
-
-(eval-after-load "comint" '(progn
-
-(defun comint-previous-matching-input-from-input (n)
-  "Search backwards through input history for match for current input.
-\(Previous history elements are earlier commands.)
-With prefix argument N, search for Nth previous match.
-If N is negative, search forwards for the -Nth following match."
-  (interactive "p")
-  (let (; (opoint (point)) ELI: unused
-        )
-    (unless (memq last-command '(comint-previous-matching-input-from-input
-				 comint-next-matching-input-from-input))
-      ;; Starting a new search
-      (setq comint-matching-input-from-input-string
-	    (buffer-substring
-	     (or (marker-position comint-accum-marker)
-		 (process-mark (get-buffer-process (current-buffer))))
-	     (point))
-	    comint-input-ring-index nil))
-    (comint-previous-matching-input
-     (concat "^" (regexp-quote comint-matching-input-from-input-string))
-     n)
-    ;; ELI: don't do this: (goto-char opoint)
-    ))
-
-))
+   (when isearch-pre-scroll-point
+     (let ((ab-bel (isearch-string-out-of-window isearch-pre-scroll-point)))
+       ;; ELI: add the visibility check (which the above doesn't detect)
+       (if (or ab-bel (not (pos-visible-in-window-p isearch-pre-scroll-point)))
+	   ;; ELI: disable the following, and exit isearch instead
+	   ;; (isearch-back-into-window (eq ab-bel 'above) isearch-pre-scroll-point)
+	   (progn (setq isearch-pre-scroll-point nil)
+                  (isearch-exit))
+	 ;; ELI: also drag the rest of the code into this branch
+	 (progn (goto-char isearch-pre-scroll-point)
+	        (setq isearch-pre-scroll-point nil)
+	        (isearch-update)))))
+   (when (eq isearch-allow-scroll 'unlimited)
+     (when isearch-lazy-highlight
+       (isearch-lazy-highlight-new-loop)))
+   (when isearch-pre-move-point
+     (when (not (eq isearch-pre-move-point (point)))
+       (let ((string (buffer-substring-no-properties
+                      (or isearch-other-end isearch-opoint) (point))))
+         (if isearch-regexp (setq string (regexp-quote string)))
+         (setq isearch-string string)
+         (setq isearch-message (mapconcat 'isearch-text-char-description
+                                          string ""))
+         (setq isearch-yank-flag t)
+         (setq isearch-forward (<= (or isearch-other-end isearch-opoint) (point)))
+         (when isearch-forward
+           (goto-char isearch-pre-move-point))
+         (isearch-search-and-update)))
+     (setq isearch-pre-move-point nil))
+  (force-mode-line-update))
 
 ;;-----------------------------------------------------------------------------
 ;; General tool to add ^ to interactive specs, and using in a few places

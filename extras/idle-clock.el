@@ -1,5 +1,6 @@
 (defvar idle-clock-start-hook nil)
 (defvar idle-clock-end-hook   nil)
+(defvar idle-clock-frames     nil) ; for use in hooks
 
 (defvar-local idle-clock-seconds-p nil)
 (defvar-local idle-clock-prev-conf nil)
@@ -50,8 +51,9 @@
           (with-selected-frame (car conf)
             (set-scroll-bar-mode (caddr conf))
             (set-window-configuration (cadr conf))))
-        (setq this-command '(lambda () nil)))
-      (run-hooks 'idle-clock-end-hook))))
+        (let ((idle-clock-frames (mapcar #'car confs)))
+          (run-hooks 'idle-clock-end-hook))
+        (setq this-command '(lambda () nil))))))
 
 (defun idle-clock (&optional arg)
   (interactive "p")
@@ -72,7 +74,8 @@
              (filter (lambda (f)
                        (not (equal "initial_terminal" (terminal-name f))))
                      (frame-list))))
-    (run-hooks 'idle-clock-start-hook)
+    (let ((idle-clock-frames (mapcar #'car idle-clock-prev-conf)))
+      (run-hooks 'idle-clock-start-hook))
     (message nil)
     ;; keep the cursor on, to indicate window focus
     ;; (setq-local cursor-type nil)

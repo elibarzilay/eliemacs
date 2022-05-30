@@ -51,6 +51,7 @@
   '("<M-S-insert>"    eli-yank-really-pop)
   '("<delete>"        delete-char)
   '("<S-delete>"      eli-kill-region)
+  '("<S-backspace>"   eli-kill-region) ; for laptops with a single key
   '("<C-delete>"      kill-word)
   '("<M-delete>"      kill-sexp)
   '("<C-S-delete>"    delete-word)
@@ -193,7 +194,7 @@
   '("ESC M-="         counter-set)
   '("ESC M-+"         counter-increment)
   '("ESC M-*"         counter-insert)
-  '("M-+"             increment-integer)
+  '("C-+"             increment-integer)
 
   ;; backward transpose keys.
   'global

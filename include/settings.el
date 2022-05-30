@@ -38,7 +38,7 @@
  ;; >> editing/paragraphs
  paragraph-ignore-fill-prefix t
  ;; >> editing/fill
- sentence-end-double-space t
+ sentence-end-double-space nil
  fill-individual-varying-indent nil
  colon-double-space nil
  adaptive-fill-mode t
@@ -368,6 +368,9 @@
  ;; >> external/processes/processes-basics [uninteresting]
  ;; >> external/processes/ansi-colors
  ansi-color-for-comint-mode t
+ ansi-color-bold-is-bright t
+ ansi-color-for-comint-mode t
+ ansi-color-for-compilation-mode t
  ;; >> external/processes/comint
  comint-prompt-read-only nil
  comint-input-autoexpand nil
@@ -377,6 +380,7 @@
  comint-scroll-show-maximum-output 1
  comint-buffer-maximum-size 5000
  comint-input-ring-size 2000
+ comint-move-point-for-matching-input 'end-of-line
  ;; t is nice, but sometimes screws up (try `cat', or enter a number in racket)
  ;; a way to fix this is to use `stty echo'; better: only use t on linux (but
  ;; set to nil in case of non-shells, like running racket directly via
@@ -671,6 +675,7 @@
  history-delete-duplicates t
  read-buffer-completion-ignore-case t
  ;; minibuffer-prompt-properties '(read-only t face minibuffer-prompt point-entered minibuffer-avoid-prompt)
+ minibuffer-beginning-of-buffer-movement t
  minibuffer-auto-raise nil
  completion-ignore-case t ; manually added
  ;; >> environment/minibuffer/icomplete [uninteresting]
